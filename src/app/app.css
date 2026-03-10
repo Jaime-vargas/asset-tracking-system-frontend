@@ -1,0 +1,14 @@
+.mainframe {
+  display: flex;
+  background: #FAF9F6 !important;
+  width: 100%;
+  min-width: 1280px;
+  height: 100vh;
+  min-height: 720px;
+}
+.content{
+  flex:1;
+  padding: 24px;
+}
+
+

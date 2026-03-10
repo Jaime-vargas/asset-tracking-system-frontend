@@ -1,0 +1,92 @@
+<h2 nz-typography>Dashboard</h2>
+<nz-divider></nz-divider>
+<div nz-flex nzJustify="flex-start" nzGap="large">
+<app-dasboard-card-component [cardTitle]="'Open Reports'">
+  <div body>
+    <span class="bg-red bold-text">12</span>
+  </div>
+</app-dasboard-card-component>
+<app-dasboard-card-component [cardTitle]="'Overdue Reports'">
+  <div body>
+    <span class="bg-yellow bold-text">12</span>
+  </div>
+</app-dasboard-card-component>
+<app-dasboard-card-component [cardTitle]="'Total hardware'">
+  <div body>
+    <span class="bg-blue bold-text">12</span>
+  </div>
+</app-dasboard-card-component>
+<app-dasboard-card-component [cardTitle]="'Active Clients'">
+  <div body>
+    <span class="bg-green bold-text">12</span>
+  </div>
+</app-dasboard-card-component>
+</div>
+
+<nz-divider></nz-divider>
+
+<div nz-flex nzJustify="flex-start" nzGap="large">
+<app-dasboard-box-component [boxTitle]="'Recent Active Reports'">
+  <div body>
+    <nz-table #dashboardTable nzSize="middle" [nzData]="listOfData" nzTableLayout="fixed" [nzScroll]="{ x: '710px' }">
+      <thead>
+      <tr>
+        <th nzWidth="50px">ID</th>
+        <th nzWidth="200px">Title</th>
+        <th nzWidth="100px">Priority</th>
+        <th nzWidth="140px">Due Date</th>
+        <th nzWidth="120px">Status</th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (report of dashboardTable.data; track report){
+          <tr>
+            <td>{{report.id}}</td>
+            <td>{{report.title}}</td>
+            <td>{{report.priority}}</td>
+            <td>{{report.dueDate}}</td>
+            <td>{{report.status}}</td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </div>
+</app-dasboard-box-component>
+
+  <app-dasboard-box-component [boxTitle]="'Quick Access'">
+  <div body>
+    <div nz-row [nzGutter]="[16, 16]">
+      <div nz-col nzSpan="12">
+        <app-dasboard-card-component [cardTitle]="'Client 1'">
+          <div body>
+            <button nz-button nzType="primary" > View Branches <nz-icon nzType="right" /></button>
+          </div>
+        </app-dasboard-card-component>
+      </div>
+      <div nz-col nzSpan="12">
+        <app-dasboard-card-component [cardTitle]="'Client 2'">
+          <div body>
+            <button nz-button nzType="primary" > View Branches <nz-icon nzType="right" /></button>
+          </div>
+        </app-dasboard-card-component>
+      </div>
+    </div>
+    <div nz-row [nzGutter]="[16, 16]">
+      <div nz-col nzSpan="12">
+        <app-dasboard-card-component [cardTitle]="'Client 3'">
+          <div body>
+            <button nz-button nzType="primary" > View Branches <nz-icon nzType="right" /></button>
+          </div>
+        </app-dasboard-card-component>
+      </div>
+      <div nz-col nzSpan="12">
+        <app-dasboard-card-component [cardTitle]="'Client 4'">
+          <div body>
+            <button nz-button nzType="primary" > View Branches <nz-icon nzType="right" /></button>
+          </div>
+        </app-dasboard-card-component>
+      </div>
+    </div>
+  </div>
+  </app-dasboard-box-component>
+</div>

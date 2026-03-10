@@ -1,0 +1,32 @@
+.bg-white {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 18px;
+}
+.shadow{
+  border: 1px solid #e5e7ee;
+  box-shadow: 2px 2px 2px #e5e7ee;
+}
+
+.fitContent{
+  width: fit-content;
+}
+
+.bold-text {
+  font-weight: bold;
+  font-size: 38px;
+}
+
+.bg-red{
+  color: #c72e30;
+}
+.bg-green{
+  color: #428d5b;
+}
+.bg-yellow {
+  color: #ec8a42;
+}
+.bg-blue {
+  color: #255498;
+}
+

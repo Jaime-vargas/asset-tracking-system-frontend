@@ -1,0 +1,47 @@
+.sidebar {
+  width: 240px;
+  height: 100vh;
+  background: linear-gradient(180deg, #4a79c7, #2f5ea8);
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.menu-sidebar {
+  background: transparent;
+  border-right: none;
+}
+
+.menu-sidebar .ant-menu-item {
+  color: white;
+  height: 48px;
+  display: flex;
+  align-items: center;
+}
+
+.menu-sidebar .ant-menu-item nz-icon {
+  font-size: 22px;
+}
+
+.menu-sidebar .ant-menu-item:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+.menu-sidebar .ant-menu-item-selected {
+  background: rgba(0,0,0,0.25) !important;
+  color: white !important;
+}
+
+.menu-sidebar .ant-menu-item-selected::after {
+  border-right: none;
+}
