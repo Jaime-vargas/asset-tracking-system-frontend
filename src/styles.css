@@ -3,13 +3,21 @@
   border-radius: 10px;
   padding: 18px;
 }
+
+.bg-grey {
+  background-color: #ecf0f7;
+  border-radius: 10px;
+  padding: 18px;
+}
 .shadow{
   border: 1px solid #e5e7ee;
-  box-shadow: 2px 2px 2px #e5e7ee;
+  box-shadow: 1px 1px 2px #e5e7ee;
 }
 
 .fitContent{
-  width: fit-content;
+  overflow: hidden;
+  box-sizing: border-box;
+  width: max-content;
 }
 
 .bold-text {

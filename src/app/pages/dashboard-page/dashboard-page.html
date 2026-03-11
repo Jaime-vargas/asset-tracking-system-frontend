@@ -1,6 +1,8 @@
 <h2 nz-typography>Dashboard</h2>
 <nz-divider></nz-divider>
+<!-- Dashboard Cards -->
 <div nz-flex nzJustify="flex-start" nzGap="large">
+
 <app-dasboard-card-component [cardTitle]="'Open Reports'">
   <div body>
     <span class="bg-red bold-text">12</span>
@@ -25,17 +27,25 @@
 
 <nz-divider></nz-divider>
 
-<div nz-flex nzJustify="flex-start" nzGap="large">
-<app-dasboard-box-component [boxTitle]="'Recent Active Reports'">
+<div nz-flex nzJustify="flex-start" nzGap="large" nzWrap="wrap">
+  <!-- Table Recent Active Reports -->
+  <app-dasboard-box-component [boxTitle]="'Recent Active Reports'">
   <div body>
-    <nz-table #dashboardTable nzSize="middle" [nzData]="listOfData" nzTableLayout="fixed" [nzScroll]="{ x: '710px' }">
+    <nz-table #dashboardTable [nzShowPagination]="false" nzSize="default" [nzData]="listOfData" [nzScroll]="{ x: 'max-content' }" >
+      <colgroup>
+        <col style="width: 50px" />
+        <col style="width: 200px" />
+        <col style="width: 100px" />
+        <col style="width: 140px" />
+        <col style="width: 120px" />
+      </colgroup>
       <thead>
       <tr>
-        <th nzWidth="50px">ID</th>
-        <th nzWidth="200px">Title</th>
-        <th nzWidth="100px">Priority</th>
-        <th nzWidth="140px">Due Date</th>
-        <th nzWidth="120px">Status</th>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Priority</th>
+        <th>Due Date</th>
+        <th>Status</th>
       </tr>
       </thead>
       <tbody>
@@ -43,16 +53,16 @@
           <tr>
             <td>{{report.id}}</td>
             <td>{{report.title}}</td>
-            <td>{{report.priority}}</td>
+            <td><nz-tag [nzColor]="priorityColorTag(report.priority)">{{report.priority}}</nz-tag></td>
             <td>{{report.dueDate}}</td>
-            <td>{{report.status}}</td>
+            <td><nz-tag [nzColor]="statusColorTag(report.status)">{{report.status}}</nz-tag></td>
           </tr>
         }
       </tbody>
     </nz-table>
   </div>
-</app-dasboard-box-component>
-
+  </app-dasboard-box-component>
+  <!-- Quick Access -->
   <app-dasboard-box-component [boxTitle]="'Quick Access'">
   <div body>
     <div nz-row [nzGutter]="[16, 16]">
@@ -88,5 +98,46 @@
       </div>
     </div>
   </div>
+  </app-dasboard-box-component>
+  <!-- Hardware Overview -->
+  <app-dasboard-box-component [boxTitle]="'Hardware Overview'">
+    <div body>
+      <div nz-row nzGutter="16">
+        <div nz-col nzSpan="8">
+          <app-dasboard-grey-card-component>
+            <div body nz-flex nzGap="middle" class="hwMetric" nzAlign="flex-start">
+              <nz-icon nzType="video-camera" nzTheme="fill"></nz-icon>
+              <div nz-flex nzVertical nzGap="middle">
+                <span>Cameras</span>
+                <span class="bg-green bold-text">12</span>
+              </div>
+            </div>
+          </app-dasboard-grey-card-component>
+        </div>
+        <div nz-col nzSpan="8">
+          <app-dasboard-grey-card-component>
+            <div body nz-flex nzGap="middle" class="hwMetric" nzAlign="flex-start">
+              <nz-icon nzType="video-camera" nzTheme="fill"></nz-icon>
+              <div nz-flex nzVertical nzGap="middle">
+                <span>Switches</span>
+                <span class="bg-green bold-text">12</span>
+              </div>
+            </div>
+          </app-dasboard-grey-card-component>
+        </div>
+        <div nz-col nzSpan="8">
+          <app-dasboard-grey-card-component>
+            <div body nz-flex nzGap="middle" class="hwMetric" nzAlign="flex-start">
+              <nz-icon nzType="video-camera" nzTheme="fill"></nz-icon>
+              <div nz-flex nzVertical nzGap="middle">
+                <span>Other Devices</span>
+                <span class="bg-green bold-text">12</span>
+              </div>
+            </div>
+          </app-dasboard-grey-card-component>
+        </div>
+      </div>
+
+    </div>
   </app-dasboard-box-component>
 </div>
