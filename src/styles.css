@@ -16,8 +16,6 @@
 
 .fitContent{
   overflow: hidden;
-  box-sizing: border-box;
-  width: max-content;
 }
 
 .bold-text {

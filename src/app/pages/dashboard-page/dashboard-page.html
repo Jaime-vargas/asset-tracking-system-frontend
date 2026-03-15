@@ -5,22 +5,22 @@
 
 <app-dasboard-card-component [cardTitle]="'Open Reports'">
   <div body>
-    <span class="bg-red bold-text">12</span>
+    <span class="bg-yellow bold-text">{{ openReports() }}</span>
   </div>
 </app-dasboard-card-component>
 <app-dasboard-card-component [cardTitle]="'Overdue Reports'">
   <div body>
-    <span class="bg-yellow bold-text">12</span>
+    <span class="bg-red bold-text">{{ overdueReports() }}</span>
   </div>
 </app-dasboard-card-component>
 <app-dasboard-card-component [cardTitle]="'Total hardware'">
   <div body>
-    <span class="bg-blue bold-text">12</span>
+    <span class="bg-blue bold-text">{{ totalHardware() }}</span>
   </div>
 </app-dasboard-card-component>
 <app-dasboard-card-component [cardTitle]="'Active Clients'">
   <div body>
-    <span class="bg-green bold-text">12</span>
+    <span class="bg-green bold-text">{{ totalClients() }}</span>
   </div>
 </app-dasboard-card-component>
 </div>
@@ -31,7 +31,7 @@
   <!-- Table Recent Active Reports -->
   <app-dasboard-box-component [boxTitle]="'Recent Active Reports'">
   <div body>
-    <nz-table #dashboardTable [nzShowPagination]="false" nzSize="default" [nzData]="listOfData" [nzScroll]="{ x: 'max-content' }" >
+    <nz-table #dashboardTable [nzShowPagination]="false" nzSize="default" [nzData]="recentReports()" [nzScroll]="{ x: 'max-content' }" >
       <colgroup>
         <col style="width: 50px" />
         <col style="width: 200px" />
@@ -51,7 +51,7 @@
       <tbody>
         @for (report of dashboardTable.data; track report){
           <tr>
-            <td>{{report.id}}</td>
+            <td>#{{report.id}}</td>
             <td>{{report.title}}</td>
             <td><nz-tag [nzColor]="priorityColorTag(report.priority)">{{report.priority}}</nz-tag></td>
             <td>{{report.dueDate}}</td>
@@ -61,43 +61,24 @@
       </tbody>
     </nz-table>
   </div>
+    <div footer>
+      <nz-divider></nz-divider>
+      <button nz-button  nzType="text" class="bg-blue"> View All Reports <nz-icon nzType="right" /></button>
+    </div>
   </app-dasboard-box-component>
   <!-- Quick Access -->
-  <app-dasboard-box-component [boxTitle]="'Quick Access'">
-  <div body>
-    <div nz-row [nzGutter]="[16, 16]">
-      <div nz-col nzSpan="12">
-        <app-dasboard-card-component [cardTitle]="'Client 1'">
-          <div body>
-            <button nz-button nzType="primary" > View Branches <nz-icon nzType="right" /></button>
-          </div>
-        </app-dasboard-card-component>
-      </div>
-      <div nz-col nzSpan="12">
-        <app-dasboard-card-component [cardTitle]="'Client 2'">
-          <div body>
-            <button nz-button nzType="primary" > View Branches <nz-icon nzType="right" /></button>
-          </div>
-        </app-dasboard-card-component>
+  <app-dasboard-box-component [boxTitle]="'Quick Access'" style="width: 560px">
+    <div body>
+      <div nz-flex nzWrap="wrap" nzGap="middle">
+        @for (client of clients(); track client.id){
+            <app-dasboard-card-component [cardTitle]="client.name">
+              <div body>
+                <button nz-button nzType="primary" > View Branches <nz-icon nzType="right" /></button>
+              </div>
+            </app-dasboard-card-component>
+        }
       </div>
     </div>
-    <div nz-row [nzGutter]="[16, 16]">
-      <div nz-col nzSpan="12">
-        <app-dasboard-card-component [cardTitle]="'Client 3'">
-          <div body>
-            <button nz-button nzType="primary" > View Branches <nz-icon nzType="right" /></button>
-          </div>
-        </app-dasboard-card-component>
-      </div>
-      <div nz-col nzSpan="12">
-        <app-dasboard-card-component [cardTitle]="'Client 4'">
-          <div body>
-            <button nz-button nzType="primary" > View Branches <nz-icon nzType="right" /></button>
-          </div>
-        </app-dasboard-card-component>
-      </div>
-    </div>
-  </div>
   </app-dasboard-box-component>
   <!-- Hardware Overview -->
   <app-dasboard-box-component [boxTitle]="'Hardware Overview'">
@@ -109,7 +90,7 @@
               <nz-icon nzType="video-camera" nzTheme="fill"></nz-icon>
               <div nz-flex nzVertical nzGap="middle">
                 <span>Cameras</span>
-                <span class="bg-green bold-text">12</span>
+                <span class="bg-green bold-text">{{ totalCameras() }}</span>
               </div>
             </div>
           </app-dasboard-grey-card-component>
@@ -120,7 +101,7 @@
               <nz-icon nzType="video-camera" nzTheme="fill"></nz-icon>
               <div nz-flex nzVertical nzGap="middle">
                 <span>Switches</span>
-                <span class="bg-green bold-text">12</span>
+                <span class="bg-green bold-text">{{ totalSwitches() }}</span>
               </div>
             </div>
           </app-dasboard-grey-card-component>
@@ -131,7 +112,7 @@
               <nz-icon nzType="video-camera" nzTheme="fill"></nz-icon>
               <div nz-flex nzVertical nzGap="middle">
                 <span>Other Devices</span>
-                <span class="bg-green bold-text">12</span>
+                <span class="bg-green bold-text">{{ totalOtherHardware() }}</span>
               </div>
             </div>
           </app-dasboard-grey-card-component>

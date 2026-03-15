@@ -12,5 +12,5 @@ import {NzTypographyComponent} from 'ng-zorro-antd/typography';
   styleUrl: './dasboard-box-component.css',
 })
 export class DasboardBoxComponent {
-  boxTitle = input.required();
+  boxTitle = input();
 }

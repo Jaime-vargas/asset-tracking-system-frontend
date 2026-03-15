@@ -1,0 +1,46 @@
+<h2 nz-typography>Clients / {{clientSlug()}}</h2>
+<nz-divider></nz-divider>
+<app-dasboard-box-component>
+  <div body>
+    <nz-table #tableData nzSize="default" [nzScroll]="{ x: 'max-content' }" [nzData]="branches()" >
+      <colgroup>
+        <col style="width: 200px" />
+        <col style="width: 100px" />
+        <col style="width: 100px" />
+        <col style="width: 140px" />
+      </colgroup>
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Hardware</th>
+        <th>Reports</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      @if (tableData.data.length > 0) {
+      <tbody>
+        @for (branch of tableData.data; track branch.id){
+          <tr>
+            <td>{{branch.name}}</td>
+            <td><nz-icon nzType="video-camera" nzTheme="fill" class="bg-green table-icon"  />{{branch.totalHardware}}</td>
+            <td>
+              @if (branch.reportsActive > 0){
+                <nz-tag [nzColor]="'#428d5b'">{{branch.reportsActive}} Active</nz-tag>
+              } @else {
+                <nz-tag class="black-font" [nzColor]="'#f4f4f4'">{{branch.reportsActive}}</nz-tag>
+              } @if (branch.reportsActive > 0){
+              <nz-tag [nzColor]="'#c72e30'">{{branch.overdueReports}} Overdue</nz-tag>
+            }
+            </td>
+            <td><button nz-button nzType="primary" >Manage<nz-icon nzType="right" /></button> <button class="edit-button" nz-button nzType="default"><nz-icon nzType="edit" nzTheme="fill" />Edit</button> </td>
+          </tr>
+        }
+      </tbody>
+      } @else {
+        <td colspan="5">
+          <nz-empty nzNotFoundImage="simple"></nz-empty>
+        </td>
+      }
+    </nz-table>
+  </div>
+</app-dasboard-box-component>

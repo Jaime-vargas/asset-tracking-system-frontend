@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, computed, signal} from '@angular/core';
 import {DasboardCardComponent} from '../../components/dasboard-card-component/dasboard-card-component';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
@@ -10,6 +10,9 @@ import {NzButtonComponent} from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import {NzTagComponent} from 'ng-zorro-antd/tag';
 import {DasboardGreyCardComponent} from '../../components/dasboard-grey-card-component/dasboard-grey-card-component';
+import {DashboardService} from '../../services/dashboard.service';
+import {DashboardDataDto} from '../../interfaces/dashboard-data.dto';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -19,28 +22,58 @@ import {DasboardGreyCardComponent} from '../../components/dasboard-grey-card-com
 })
 export class DashboardPage {
 
-  //color tags
+  constructor(private dashboardService:DashboardService) {
+    this.getDashboardData();
+  }
+  // DASHBOARD DATA
+  private dashboardData = signal<DashboardDataDto | null>(null);
+  public openReports = computed(() =>
+    this.dashboardData()?.openReports ?? 0);
+  public overdueReports = computed(() =>
+    this.dashboardData()?.overdueReports ?? 0);
+  public totalHardware = computed(() =>
+    this.dashboardData()?.totalHardware ?? 0);
+  public totalClients = computed(() =>
+    this.dashboardData()?.totalClients ?? 0);
+  public recentReports = computed(() => {
+    const now = new Date();
+    return this.dashboardData()?.recentReports.map(rep => {
+      const date = new Date(rep.dueDate);
+      return {
+        ...rep,
+        dueDate: date.toLocaleDateString(),
+        status: date < now ? "Overdue" : "Active"
+      };
+    }) ?? [];
+  });
+  public clients = computed(() =>
+    this.dashboardData()?.clients ?? []);
+  public totalCameras = computed(() =>
+    this.dashboardData()?.totalCameras ?? 0);
+  public totalSwitches = computed(() =>
+    this.dashboardData()?.totalSwitches ?? 0);
+  public totalOtherHardware = computed(() =>
+    this.dashboardData()?.totalOtherHardware ?? 0);
+
+
+  getDashboardData(){
+    this.dashboardService.getDashboardData().subscribe({
+      next: data => {
+        this.dashboardData.set(data);
+      }
+    })
+  }
+
+  //COLOR TAGS
   priorityColorTag(priority: string){
-      if(priority === 'Alta') return '#c72e30';
-      if (priority === 'Media')return '#ec8a42';
-      if (priority === 'Baja')return '#428d5b';
+      if(priority === 'HIGH') return '#c72e30';
+      if (priority === 'MEDIUM')return '#ec8a42';
+      if (priority === 'LOW')return '#428d5b';
       else return '#CCC';
   }
   statusColorTag(status: string){
     if(status === 'Overdue') return '#c72e30';
-    if (status === 'Activo')return '#ec8a42';
+    if (status === 'Active')return '#ec8a42';
     else return '#CCC';
   }
-
-  //table data
-  listOfData = [
-    { id: '#101', title: 'Camara no se ve', priority: 'Alta', dueDate: '2026-03-09', status: 'Activo' },
-    { id: '#102', title: 'Servidor sin conexión', priority: 'Alta', dueDate: '2026-03-10', status: 'Activo' },
-    { id: '#103', title: 'Laptop no enciende', priority: 'Media', dueDate: '2026-03-12', status: 'Activo' },
-    { id: '#104', title: 'Problema con impresora', priority: 'Baja', dueDate: '2026-03-15', status: 'Activo' },
-    { id: '#105', title: 'Router reiniciándose', priority: 'Alta', dueDate: '2026-03-08', status: 'Overdue' },
-    { id: '#106', title: 'Pantalla dañada', priority: 'Media', dueDate: '2026-03-18', status: 'Overdue' },
-    { id: '#107', title: 'Acceso a red lento', priority: 'Baja', dueDate: '2026-03-20', status: 'Activo' },
-    { id: '#108', title: 'Correo no sincroniza', priority: 'Media', dueDate: '2026-03-11', status: 'Activo' }
-  ];
 }
