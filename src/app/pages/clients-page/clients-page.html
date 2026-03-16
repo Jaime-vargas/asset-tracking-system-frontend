@@ -4,7 +4,7 @@
   <div body nz-flex nzGap="middle">
     <nz-input-wrapper nzAllowClear >
       <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-      <input nz-input [ngModel]="nameFilter()" (ngModelChange)="nameFilter.set($event)" placeholder=" Search branches..." />
+      <input nz-input [ngModel]="clientNameFilter()" (ngModelChange)="clientNameFilter.set($event)" placeholder=" Search clients..." />
     </nz-input-wrapper>
     <button nz-button nzType="primary"><nz-icon nzType="plus" nzTheme="outline" />Add Branch</button>
   </div>

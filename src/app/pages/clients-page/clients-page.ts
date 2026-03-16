@@ -54,10 +54,10 @@ export class ClientsPage {
     });
   });
   // DATA FILTER
-  nameFilter = signal<string>('');
+  clientNameFilter = signal<string>('');
   clientsTable = computed(() => {
     return this.clients().filter(client => {
-      return client.name.toLowerCase().includes(this.nameFilter().toLowerCase());
+      return client.name.toLowerCase().includes(this.clientNameFilter().toLowerCase());
     })
   })
 
