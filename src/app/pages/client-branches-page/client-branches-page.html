@@ -1,8 +1,17 @@
 <h2 nz-typography>Clients / {{clientSlug()}}</h2>
 <nz-divider></nz-divider>
+<app-dasboard-box-component style="margin: 0 10px 0 0">
+  <div body nz-flex nzGap="middle">
+    <nz-input-wrapper nzAllowClear >
+      <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+      <input nz-input [ngModel]="branchNameFilter()" (ngModelChange)="branchNameFilter.set($event)" placeholder=" Search branches..." />
+    </nz-input-wrapper>
+    <button nz-button nzType="primary"><nz-icon nzType="plus" nzTheme="outline" />Add Branch</button>
+  </div>
+</app-dasboard-box-component>
 <app-dasboard-box-component>
   <div body>
-    <nz-table #tableData nzSize="default" [nzScroll]="{ x: 'max-content' }" [nzData]="branches()" >
+    <nz-table #tableData nzSize="default" [nzScroll]="{ x: 'max-content' }" [nzData]="branchesTable()" >
       <colgroup>
         <col style="width: 200px" />
         <col style="width: 100px" />
