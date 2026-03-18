@@ -1,0 +1,12 @@
+.vertical-divider {
+  height: auto;
+  align-self: stretch;
+}
+
+span {
+  color: #535d71;
+}
+
+.value{
+  font-weight: bold;
+}

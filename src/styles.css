@@ -18,6 +18,10 @@
   overflow: hidden;
 }
 
+.inline{
+  width: fit-content;
+}
+
 .bold-text {
   font-weight: bold;
   font-size: 38px;
@@ -34,5 +38,47 @@
 }
 .bg-blue {
   color: #255498;
+}
+
+/* PAGE STYLES */
+.headerButton{
+  font-size: 32px;
+  height: max-content;
+  padding: 0 4px;
+}
+.divider{
+  font-size: 32px;
+}
+
+/* TABLE STYLES */
+.table-icon{
+  margin-right: 10px;
+}
+
+thead{
+  background-color: #f4f4f9;
+}
+thead tr th{
+  font-size: 16px;
+  padding: 15px 5px;
+  color: #535d71;
+}
+
+td{
+  font-size: 14px;
+  font-weight: bold;
+  padding: 5px 5px;
+}
+
+.black-font{
+  color: black;
+}
+
+.edit-button{
+  background-color: #f4f4f4;
+  margin-left:10px;
+}
+.edit-button nz-icon{
+  color: #3a6abd;
 }
 
