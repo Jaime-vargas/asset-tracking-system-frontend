@@ -1,4 +1,4 @@
-<h2 nz-typography>Clients / {{clientSlug()}}</h2>
+<button nz-button nzType="text" class="headerButton" [routerLink]="'/clients'" >Clients</button><span class="divider">/</span><button nz-button nzType="text" class="headerButton" [routerLink]="['/clients', clientId(), clientSlug()]">{{clientSlug()}}</button>
 <nz-divider></nz-divider>
 <app-dasboard-box-component style="margin: 0 10px 0 0">
   <div body nz-flex nzGap="middle">
