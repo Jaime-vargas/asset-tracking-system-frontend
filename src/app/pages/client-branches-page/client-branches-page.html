@@ -34,14 +34,14 @@
             <td><nz-icon nzType="video-camera" nzTheme="fill" class="bg-green table-icon"  />{{branch.totalHardware}}</td>
             <td>
               @if (branch.reportsActive > 0){
-                <nz-tag [nzColor]="'#428d5b'">{{branch.reportsActive}} Active</nz-tag>
+                <nz-tag [nzColor]="'#428d5b'">{{branch.reportsActive}} ACTIVE</nz-tag>
               } @else {
                 <nz-tag class="black-font" [nzColor]="'#f4f4f4'">{{branch.reportsActive}}</nz-tag>
-              } @if (branch.reportsActive > 0){
-              <nz-tag [nzColor]="'#c72e30'">{{branch.overdueReports}} Overdue</nz-tag>
+              } @if (branch.overdueReports > 0){
+              <nz-tag [nzColor]="'#c72e30'">{{branch.overdueReports}} OVERDUE</nz-tag>
             }
             </td>
-            <td><button nz-button nzType="primary" >Manage<nz-icon nzType="right" /></button> <button class="edit-button" nz-button nzType="default"><nz-icon nzType="edit" nzTheme="fill" />Edit</button> </td>
+            <td><button nz-button nzType="primary" [routerLink]="['/clients',clientId(),clientSlug(),'branches',branch.id,utilityService.slugify(branch.name),'hardware']" >Manage<nz-icon nzType="right" /></button> <button class="edit-button" nz-button nzType="default"><nz-icon nzType="edit" nzTheme="fill" />Edit</button> </td>
           </tr>
         }
       </tbody>

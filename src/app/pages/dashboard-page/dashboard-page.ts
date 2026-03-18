@@ -44,7 +44,7 @@ export class DashboardPage {
       return {
         ...rep,
         dueDate: date.toLocaleDateString(),
-        status: date < now ? "Overdue" : "Active"
+        status: date < now ? "OVERDUE" : "ACTIVE"
       };
     }) ?? [];
   });
@@ -74,8 +74,8 @@ export class DashboardPage {
       else return '#CCC';
   }
   statusColorTag(status: string){
-    if(status === 'Overdue') return '#c72e30';
-    if (status === 'Active')return '#ec8a42';
+    if(status === 'OVERDUE') return '#c72e30';
+    if (status === 'ACTIVE')return '#ec8a42';
     else return '#CCC';
   }
 }
