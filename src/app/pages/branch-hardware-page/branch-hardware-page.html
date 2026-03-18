@@ -1,1 +1,93 @@
-<p>branch-hardware-page works!</p>
+<button nz-button nzType="text" class="headerButton" [routerLink]="'/clients'" >Clients</button><span class="divider">/</span>
+<button nz-button nzType="text" class="headerButton" [routerLink]="['/clients', clientId(), clientSlug()]">{{clientSlug()}}</button><span class="divider">/</span>
+<button nz-button nzType="text" class="headerButton" [routerLink]="['/clients', clientId(), clientSlug(),'branches',branchId(),branchSlug(),'hardware']">{{branchSlug()}}</button>
+<nz-divider></nz-divider>
+<app-dasboard-box-component style="margin: 0 10px 0 0">
+  <div body nz-flex nzGap="middle">
+    <nz-input-wrapper nzAllowClear >
+      <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+      <input nz-input [ngModel]="typeFilter()" (ngModelChange)="typeFilter.set($event)"  placeholder=" Search Type..." />
+    </nz-input-wrapper>
+    <nz-input-wrapper nzAllowClear >
+      <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+      <input nz-input [ngModel]="nameFilter()" (ngModelChange)="nameFilter.set($event)"  placeholder=" Search Name..." />
+    </nz-input-wrapper>
+    <nz-input-wrapper nzAllowClear >
+      <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+      <input nz-input [ngModel]="modelFilter()" (ngModelChange)="modelFilter.set($event)"  placeholder=" Search Model..." />
+    </nz-input-wrapper>
+    <nz-input-wrapper nzAllowClear >
+      <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+      <input nz-input [ngModel]="serialNumberFilter()" (ngModelChange)="serialNumberFilter.set($event)"  placeholder=" Search Serial Number..." />
+    </nz-input-wrapper>
+    <nz-input-wrapper nzAllowClear >
+      <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+      <input nz-input [ngModel]="locationFilter()" (ngModelChange)="locationFilter.set($event)" placeholder=" Search Location..." />
+    </nz-input-wrapper>
+    <nz-input-wrapper nzAllowClear >
+      <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+      <input nz-input [ngModel]="lastMaintenanceFilter()" (ngModelChange)="lastMaintenanceFilter.set($event)" placeholder=" Search Last Maintenance..." />
+    </nz-input-wrapper>
+    <button nz-button nzType="primary"><nz-icon nzType="plus" nzTheme="outline" />Add Hardware</button>
+  </div>
+</app-dasboard-box-component>
+ <!-- HARDWARE TABLE -->
+<app-dasboard-box-component>
+  <div body>
+    <nz-table #tableData nzSize="default" [nzScroll]="{ x: 'max-content' }" [nzData]="hardwareTable()" >
+      <colgroup>
+        <col style="width: 80px" />
+        <col style="width: 100px" />
+        <col style="width: 150px" />
+        <col style="width: 120px" />
+        <col style="width: 100px" />
+        <col style="width: 100px" />
+        <col style="width: 140px" />
+        <col style="width: 140px" />
+      </colgroup>
+      <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Model</th>
+        <th>Serial Number</th>
+        <th>Location</th>
+        <th>Reports</th>
+        <th>Last Maintenance</th>
+        <th>Actions</th>
+      </thead>
+      @if (tableData.data.length > 0) {
+        <tbody>
+          @for (hardware of tableData.data; track hardware.id){
+            <tr>
+              @if (hardware.type === "Camera") {
+                <td><nz-icon nzType="video-camera" nzTheme="fill" class="bg-blue" /> {{hardware.type}}</td>
+              } @else {
+                <td>{{hardware.type}}</td>
+              }
+              <td>{{hardware.name}}</td>
+              <td>{{hardware.model}}</td>
+              <td>{{hardware.serialNumber}}</td>
+              <td>{{hardware.location}}</td>
+              <td>
+                @if (hardware.reportsActive > 0){
+                  <nz-tag [nzColor]="'#428d5b'">{{hardware.reportsActive}} ACTIVE</nz-tag>
+                } @else {
+                  <nz-tag class="black-font" [nzColor]="'#f4f4f4'">{{hardware.reportsActive}}</nz-tag>
+                } @if (hardware.overdueReports > 0){
+                <nz-tag [nzColor]="'#c72e30'">{{hardware.overdueReports}} OVERDUE</nz-tag>
+              }
+              </td>
+              <td>{{hardware.lastMaintenanceDate}}</td>
+              <td><button nz-button nzType="primary">View<nz-icon nzType="right" /></button></td>
+            </tr>
+          }
+        </tbody>
+      } @else {
+        <td colspan="8">
+          <nz-empty nzNotFoundImage="simple"></nz-empty>
+        </td>
+      }
+    </nz-table>
+  </div>
+</app-dasboard-box-component>

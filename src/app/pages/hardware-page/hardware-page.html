@@ -1,1 +1,73 @@
-<p>hardware-page works!</p>
+<h2 nz-typography>Clients / Client / Branch / Camera</h2>
+<nz-divider></nz-divider>
+<div nz-flex nzVertical nzGap="middle">
+  <app-dasboard-box-component>
+    <div body nz-flex nzJustify="space-between">
+      <h3 nz-typography class="title">Entrance Camera</h3>
+      <button nz-button nzType="primary"><nz-icon nzType="edit" nzTheme="fill" />Edit Hardware</button>
+      <ng-content select="[header]"></ng-content>
+    </div>
+  </app-dasboard-box-component>
+  <div nz-flex nzGap="middle" nzJustify="space-around">
+    <div nz-flex nzVertical nzGap="middle" style="flex: 2;" >
+      <app-dasboard-box-component >
+        <div body>
+          <div nz-flex nzGap="middle">
+            <div><img [ngSrc]="defaultCameraImage" [priority]="" width="150" height="150" alt="default image camera" class="shadow" style="border-radius: 10px"></div>
+            <nz-divider nzType="vertical" class="vertical-divider" ></nz-divider>
+            <div nz-flex nzVertical nzJustify="space-around">
+              <span>Type</span>
+              <nz-divider nzSize="small"></nz-divider>
+              <span>Model</span>
+              <nz-divider nzSize="small"></nz-divider>
+              <span>Serial Number</span>
+              <nz-divider nzSize="small"></nz-divider>
+              <span>Location</span>
+            </div>
+            <div nz-flex nzVertical nzJustify="space-around">
+              <span class="value">Camera</span>
+              <nz-divider nzSize="small"></nz-divider>
+              <span class="value">Model-12356845</span>
+              <nz-divider nzSize="small"></nz-divider>
+              <span class="value">12345689</span>
+              <nz-divider nzSize="small"></nz-divider>
+              <span class="value">Entrada Ppal</span>
+            </div>
+          </div>
+        </div>
+      </app-dasboard-box-component>
+
+      <app-dasboard-box-component [boxTitle]="'Hardware Information'">
+        <div body nz-flex nzGap="middle">
+          <div nz-flex nzVertical nzJustify="space-around">
+            <span>Camera ID</span>
+            <nz-divider nzSize="small"></nz-divider>
+            <span>Name</span>
+            <nz-divider nzSize="small"></nz-divider>
+            <span>MAC Address</span>
+            <nz-divider nzSize="small"></nz-divider>
+            <span>IP Address</span>
+            <nz-divider nzSize="small"></nz-divider>
+            <span>Last Maintenance</span>
+          </div>
+          <div nz-flex nzVertical nzJustify="space-around">
+            <span class="value">Cam - 001</span>
+            <nz-divider nzSize="small"></nz-divider>
+            <span class="value">Camara principal</span>
+            <nz-divider nzSize="small"></nz-divider>
+            <span class="value">AA:BB:CC:DD:EE:FF</span>
+            <nz-divider nzSize="small"></nz-divider>
+            <span class="value">12345689</span>
+            <nz-divider nzSize="small">192.168.0.1</nz-divider>
+            <span class="value">2026-03-17</span>
+          </div>
+        </div>
+      </app-dasboard-box-component>
+    </div>
+    <app-dasboard-box-component [boxTitle]="'Hardware Information'" style="flex: 1;">
+    </app-dasboard-box-component>
+
+  </div>
+
+</div>
+

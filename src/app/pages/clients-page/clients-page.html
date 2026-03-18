@@ -1,4 +1,4 @@
-<h2 nz-typography>Clients</h2>
+<button nz-button nzType="text" class="headerButton" [routerLink]="'/clients'" >Clients</button>
 <nz-divider></nz-divider>
 <app-dasboard-box-component style="margin: 0 10px 0 0">
   <div body nz-flex nzGap="middle">
@@ -37,14 +37,14 @@
             <td><nz-icon nzType="video-camera" nzTheme="fill" class="bg-green table-icon"  />{{client.totalHardware}}</td>
             <td>
               @if (client.reportsActive > 0){
-              <nz-tag [nzColor]="'#428d5b'">{{client.reportsActive}} Active</nz-tag>
+              <nz-tag [nzColor]="'#428d5b'">{{client.reportsActive}} ACTIVE</nz-tag>
               } @else {
                 <nz-tag class="black-font" [nzColor]="'#f4f4f4'">{{client.reportsActive}}</nz-tag>
-              } @if (client.reportsActive > 0){
-              <nz-tag [nzColor]="'#c72e30'">{{client.overdueReports}} Overdue</nz-tag>
+              } @if (client.overdueReports > 0){
+              <nz-tag [nzColor]="'#c72e30'">{{client.overdueReports}} OVERDUE</nz-tag>
               }
             </td>
-            <td><button nz-button nzType="primary" [routerLink]="['/clients', client.id, slugify(client.name)]" >Manage<nz-icon nzType="right" /></button> <button class="edit-button" nz-button nzType="default"><nz-icon nzType="edit" nzTheme="fill" />Edit</button> </td>
+            <td><button nz-button nzType="primary" [routerLink]="['/clients', client.id, utilityService.slugify(client.name)]" >Manage<nz-icon nzType="right" /></button> <button class="edit-button" nz-button nzType="default"><nz-icon nzType="edit" nzTheme="fill" />Edit</button> </td>
           </tr>
         }
       </tbody>

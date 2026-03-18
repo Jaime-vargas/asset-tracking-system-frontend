@@ -73,7 +73,7 @@
         @for (client of clients(); track client.id){
             <app-dasboard-card-component [cardTitle]="client.name">
               <div body>
-                <button nz-button nzType="primary" > View Branches <nz-icon nzType="right" /></button>
+                <button nz-button nzType="primary" [routerLink]="['/clients', client.id, this.utilityService.slugify(client.name)]" > View Branches <nz-icon nzType="right" /></button>
               </div>
             </app-dasboard-card-component>
         }
@@ -118,7 +118,6 @@
           </app-dasboard-grey-card-component>
         </div>
       </div>
-
     </div>
   </app-dasboard-box-component>
 </div>
