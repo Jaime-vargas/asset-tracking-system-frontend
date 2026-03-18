@@ -1,19 +1,15 @@
 import {Injectable} from '@angular/core';
 import {ApiUrlBaseService} from './api-url-base.service';
-import {DashboardDataDto} from '../interfaces/dashboard-data.dto';
 import {Observable} from 'rxjs';
-import {BranchTableDto} from '../interfaces/branch-table.dto';
 import {HardwareTableDto} from '../interfaces/hardware-table.dto';
 
 @Injectable({providedIn: 'root'})
-export class DashboardService{
-
+export class BranchService {
   constructor(private api: ApiUrlBaseService) {
   }
 
-  getDashboardData(): Observable<DashboardDataDto>{
-    return this.api.get("dashboard");
+  getHardwareTableFromBranch(clientId:number, branchId:number): Observable<HardwareTableDto[]>{
+    return this.api.get(`clients/${clientId}/branches/${branchId}/hardware`);
   }
-
 
 }

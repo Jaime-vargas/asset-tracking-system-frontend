@@ -13,16 +13,18 @@ import {DasboardGreyCardComponent} from '../../components/dasboard-grey-card-com
 import {DashboardService} from '../../services/dashboard.service';
 import {DashboardDataDto} from '../../interfaces/dashboard-data.dto';
 import {Observable} from 'rxjs';
+import {RouterLink} from '@angular/router';
+import {UtilityService} from '../../services/utility.service';
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [DasboardCardComponent, DasboardGreyCardComponent, DasboardBoxComponent, NzTypographyComponent, NzDividerComponent, NzFlexDirective, NzIconModule, NzTableComponent, NzGridModule, NzButtonComponent, NzThMeasureDirective, NzCellBreakWordDirective, NzTagComponent, DasboardGreyCardComponent],
+  imports: [DasboardCardComponent, DasboardGreyCardComponent, DasboardBoxComponent, NzTypographyComponent, NzDividerComponent, NzFlexDirective, NzIconModule, NzTableComponent, NzGridModule, NzButtonComponent, NzThMeasureDirective, NzCellBreakWordDirective, NzTagComponent, DasboardGreyCardComponent, RouterLink],
   templateUrl: './dashboard-page.html',
   styleUrl: './dashboard-page.css',
 })
 export class DashboardPage {
 
-  constructor(private dashboardService:DashboardService) {
+  constructor(private dashboardService:DashboardService, protected utilityService: UtilityService) {
     this.getDashboardData();
   }
   // DASHBOARD DATA

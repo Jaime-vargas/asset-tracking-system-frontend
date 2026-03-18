@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
-import {RouterLink, RouterLinkActive} from '@angular/router';
+import {Router, RouterLink, RouterLinkActive} from '@angular/router';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 
 @Component({
@@ -16,4 +16,5 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
   styleUrl: './menu-sidebar-component.css',
 })
 export class MenuSidebarComponent {
+  constructor(public router: Router) {}
 }

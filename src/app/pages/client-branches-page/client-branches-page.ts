@@ -1,6 +1,6 @@
 import {Component, computed, signal} from '@angular/core';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, RouterLink} from '@angular/router';
 import {inject} from '@angular/core';
 import {ClientService} from '../../services/client.service';
 import {BranchTableDto} from '../../interfaces/branch-table.dto';
@@ -14,6 +14,7 @@ import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
 import {FormsModule} from '@angular/forms';
 import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 'ng-zorro-antd/input';
+import {UtilityService} from '../../services/utility.service';
 
 @Component({
   selector: 'app-client-branches-page',
@@ -31,7 +32,8 @@ import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 
     FormsModule,
     NzInputDirective,
     NzInputPrefixDirective,
-    NzInputWrapperComponent
+    NzInputWrapperComponent,
+    RouterLink
   ],
   templateUrl: './client-branches-page.html',
   styleUrl: './client-branches-page.css',
@@ -40,7 +42,7 @@ export class ClientBranchesPage {
 
   route: ActivatedRoute = inject(ActivatedRoute);
 
-  constructor(private clientService: ClientService) {
+  constructor(private clientService: ClientService, protected utilityService: UtilityService) {
     const id = this.route.snapshot.paramMap.get('id');
     const slug = this.route.snapshot.paramMap.get('slug');
     this.clientId.set(Number(id));

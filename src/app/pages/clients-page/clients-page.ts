@@ -12,6 +12,7 @@ import {FormsModule} from '@angular/forms';
 import {NzInputModule} from 'ng-zorro-antd/input';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
 import {RouterLink} from '@angular/router';
+import {UtilityService} from '../../services/utility.service';
 
 
 @Component({
@@ -35,7 +36,7 @@ import {RouterLink} from '@angular/router';
   styleUrl: './clients-page.css',
 })
 export class ClientsPage {
-  constructor(private clientService: ClientService) {
+  constructor(private clientService: ClientService, protected utilityService: UtilityService) {
     this.getClients()
   }
   clientsData = signal<ClientTableDto[] >([]);
@@ -60,13 +61,6 @@ export class ClientsPage {
       return client.name.toLowerCase().includes(this.clientNameFilter().toLowerCase());
     })
   })
-
-  // ROUTES
-  slugify(name: string) {
-    return name
-      .toLowerCase()
-      .replace(/\s+/g, '-');
-  }
 
   getClients() {
     this.clientService.getClients().subscribe({
