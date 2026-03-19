@@ -10,3 +10,9 @@ span {
 .value{
   font-weight: bold;
 }
+
+.row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+}
+

@@ -1,4 +1,6 @@
 <div class="card shadow bg-white">
-  <p nz-typography><strong>{{cardTitle()}}</strong></p>
+  @if (cardTitle()){
+    <p nz-typography><strong>{{cardTitle()}}</strong></p>
+  }
   <ng-content select="[body]"></ng-content>
 </div>

@@ -10,5 +10,5 @@ import {NzTypographyComponent} from 'ng-zorro-antd/typography';
   styleUrl: './dasboard-card-component.css',
 })
 export class DasboardCardComponent {
-    cardTitle = input.required();
+    cardTitle = input();
 }
