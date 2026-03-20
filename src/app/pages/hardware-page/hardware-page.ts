@@ -1,4 +1,4 @@
-import {Component, computed, signal} from '@angular/core';
+import {Component, computed, inject, OnInit, signal} from '@angular/core';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';
@@ -12,6 +12,9 @@ import {HardwareService} from '../../services/hardware.service';
 import {HardwareDetailDto} from '../../interfaces/hardware-detail.dto';
 import {computeMsgId} from '@angular/compiler';
 import {CameraDetailDto} from '../../interfaces/camera-detail.dto';
+import {NzTagComponent} from 'ng-zorro-antd/tag';
+import {ActivatedRoute, RouterLink} from '@angular/router';
+import {RouteContextService} from '../../services/route-context.service';
 
 @Component({
   selector: 'app-hardware-page',

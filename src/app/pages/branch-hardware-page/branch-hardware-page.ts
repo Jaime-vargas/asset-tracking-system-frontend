@@ -2,7 +2,6 @@ import {Component, computed, inject, signal} from '@angular/core';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {BranchService} from '../../services/branch.service';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
-import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';
 import {FormsModule} from '@angular/forms';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
@@ -13,12 +12,13 @@ import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
 import {NzTagComponent} from 'ng-zorro-antd/tag';
 import {HardwareTableDto} from '../../interfaces/hardware-table.dto';
+import {RouteContextService} from '../../services/route-context.service';
+import {UtilityService} from '../../services/utility.service';
 
 @Component({
   selector: 'app-branch-hardware-page',
   imports: [
     NzDividerComponent,
-    NzTypographyComponent,
     DasboardBoxComponent,
     FormsModule,
     NzButtonComponent,

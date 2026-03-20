@@ -29,6 +29,7 @@
         <th>Actions</th>
       </tr>
       </thead>
+      @if (tableData.data.length > 0) {
       <tbody>
         @for (client of tableData.data; track client.id){
           <tr>

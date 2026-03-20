@@ -1,5 +1,4 @@
 import {Component, computed, signal} from '@angular/core';
-import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {inject} from '@angular/core';
 import {ClientService} from '../../services/client.service';
@@ -15,11 +14,11 @@ import {NzFlexDirective} from 'ng-zorro-antd/flex';
 import {FormsModule} from '@angular/forms';
 import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 'ng-zorro-antd/input';
 import {UtilityService} from '../../services/utility.service';
+import {RouteContextService} from '../../services/route-context.service';
 
 @Component({
   selector: 'app-client-branches-page',
   imports: [
-    NzTypographyComponent,
     DasboardBoxComponent,
     NzButtonComponent,
     NzIconDirective,

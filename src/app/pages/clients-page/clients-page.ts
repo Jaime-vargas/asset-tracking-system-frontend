@@ -1,6 +1,5 @@
 import {Component, computed, signal} from '@angular/core';
 import {NzDividerComponent} from "ng-zorro-antd/divider";
-import {NzTypographyComponent} from "ng-zorro-antd/typography";
 import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';
 import {NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
 import {NzTagComponent} from 'ng-zorro-antd/tag';
@@ -13,13 +12,13 @@ import {NzInputModule} from 'ng-zorro-antd/input';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
 import {RouterLink} from '@angular/router';
 import {UtilityService} from '../../services/utility.service';
+import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 
 
 @Component({
   selector: 'app-clients-page',
   imports: [
     NzDividerComponent,
-    NzTypographyComponent,
     DasboardBoxComponent,
     NzTableComponent,
     NzTagComponent,
@@ -30,7 +29,8 @@ import {UtilityService} from '../../services/utility.service';
     NzInputModule,
     NzIconModule,
     NzFlexDirective,
-    RouterLink
+    RouterLink,
+    NzEmptyComponent
   ],
   templateUrl: './clients-page.html',
   styleUrl: './clients-page.css',
