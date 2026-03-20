@@ -1,6 +1,6 @@
 <button nz-button nzType="text" class="headerButton" [routerLink]="'/clients'" >Clients</button><span class="divider">/</span>
-<button nz-button nzType="text" class="headerButton" [routerLink]="['/clients', clientId(), clientSlug()]">{{clientSlug()}}</button><span class="divider">/</span>
-<button nz-button nzType="text" class="headerButton" [routerLink]="['/clients', clientId(), clientSlug(),'branches',branchId(),branchSlug(),'hardware']">{{branchSlug()}}</button>
+<button nz-button nzType="text" class="headerButton" [routerLink]="['/clients', routeContext.clientId(), routeContext.clientSlug()]">{{routeContext.clientSlug()}}</button><span class="divider">/</span>
+<button nz-button nzType="text" class="headerButton" >{{routeContext.branchSlug()}}</button>
 <nz-divider></nz-divider>
 <app-dasboard-box-component style="margin: 0 10px 0 0">
   <div body nz-flex nzGap="middle">
@@ -79,7 +79,11 @@
               }
               </td>
               <td>{{hardware.lastMaintenanceDate}}</td>
-              <td><button nz-button nzType="primary">View<nz-icon nzType="right" /></button></td>
+              <td><button nz-button nzType="primary"
+                          [routerLink]="['/clients',routeContext.clientId(), routeContext.clientSlug(),
+                        'branches',routeContext.branchId(), routeContext.branchSlug(),
+                        'hardware', hardware.id, utilityService.slugify(hardware.name),]">View<nz-icon nzType="right" /></button>
+              </td>
             </tr>
           }
         </tbody>

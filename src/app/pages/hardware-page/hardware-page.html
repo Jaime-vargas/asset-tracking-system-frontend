@@ -1,4 +1,7 @@
-<h2 nz-typography>Clients / Client / Branch / Camera</h2>
+<button nz-button nzType="text" class="headerButton" [routerLink]="'/clients'" >Clients</button><span class="divider">/</span>
+<button nz-button nzType="text" class="headerButton" [routerLink]="['/clients', routeContext.clientId(), routeContext.clientSlug()]">{{routeContext.clientSlug()}}</button><span class="divider">/</span>
+<button nz-button nzType="text" class="headerButton" [routerLink]="['/clients', routeContext.clientId(), routeContext.clientSlug(),'branches',routeContext.branchId(),routeContext.branchSlug(),'hardware']">{{routeContext.branchSlug()}}</button><span class="divider">/</span>
+<button nz-button nzType="text" class="headerButton" >{{routeContext.hardwareSlug()}}</button>
 <nz-divider></nz-divider>
 <div nz-flex nzVertical nzGap="middle">
   <app-dasboard-box-component>
