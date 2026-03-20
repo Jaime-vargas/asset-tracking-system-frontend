@@ -41,7 +41,7 @@
         <col style="width: 150px" />
         <col style="width: 120px" />
         <col style="width: 100px" />
-        <col style="width: 100px" />
+        <col style="width: 150px" />
         <col style="width: 140px" />
         <col style="width: 140px" />
       </colgroup>
@@ -71,7 +71,7 @@
               <td>{{hardware.location}}</td>
               <td>
                 @if (hardware.reportsActive > 0){
-                  <nz-tag [nzColor]="'#428d5b'">{{hardware.reportsActive}} ACTIVE</nz-tag>
+                  <nz-tag [nzColor]="'#ec8a42'">{{hardware.reportsActive}} ACTIVE</nz-tag>
                 } @else {
                   <nz-tag class="black-font" [nzColor]="'#f4f4f4'">{{hardware.reportsActive}}</nz-tag>
                 } @if (hardware.overdueReports > 0){

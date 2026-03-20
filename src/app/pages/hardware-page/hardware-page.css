@@ -10,6 +10,13 @@ span {
 .value{
   font-weight: bold;
 }
+.reportDate{
+  font-size: 16px;
+  font-weight: bold;
+}
+.reportTittle{
+  font-size: 16px;
+}
 
 .row {
   display: grid;

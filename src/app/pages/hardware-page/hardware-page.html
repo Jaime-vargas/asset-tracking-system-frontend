@@ -13,6 +13,7 @@
   </app-dasboard-box-component>
   <div nz-flex nzGap="middle" nzJustify="space-around">
     <div nz-flex nzVertical nzGap="middle" style="flex: 2;" >
+      <!-- GLOBAL HARDWARE DETAILS -->
       <app-dasboard-box-component >
         <div body >
           <div nz-flex nzGap="middle">
@@ -74,10 +75,10 @@
       </app-dasboard-box-component>
       }
     </div>
-
+    <!-- HISTORY OF REPORTS -->
     <app-dasboard-box-component [boxTitle]="'Report History'" style="flex: 1">
       <div body nz-flex nzVertical nzGap="small">
-        @if(!lastReports()){
+        @if(lastReports()?.length === 0){
           <nz-empty nzNotFoundImage="simple"></nz-empty>
         } @else {
           @for (report of lastReports(); track report.id){
@@ -85,15 +86,19 @@
               <div body nz-flex nzVertical nzGap="small"  >
                 <div nz-flex nzGap="small" nzJustify="space-between">
                   <div nz-flex nzGap="small" >
-                    <nz-icon [nzType]="report.icon.icon" nzTheme="fill" [class]="report.icon.color" /><span>{{report.dueDate}}</span>
+                    <nz-tag [nzColor]="report.tag.color">{{ report.tag.label }}</nz-tag>
+                    @if (report.status && report.overdue){
+                      <nz-tag [nzColor]="'#c72e30'">OVERDUE</nz-tag>
+                    }
+                    <span class="reportDate">{{report.dueDate}}</span>
                   </div>
                   <nz-icon nzType="right" nzTheme="outline" style="flex:0" />
                 </div>
                 <div>
-                  <span style="margin-left: 25px"><strong>{{ report.title }}</strong> </span>
+                  <span style="margin-left: 5px" class="reportTittle"><strong>{{ report.title }}</strong> </span>
                 </div>
                 <div>
-                  <span style="margin-left: 25px">Technician: <strong>{{report.reportedBy}}</strong> </span>
+                  <span style="margin-left: 5px">Technician: <strong>{{report.reportedBy}}</strong> </span>
                 </div>
               </div>
             </app-dasboard-card-component>

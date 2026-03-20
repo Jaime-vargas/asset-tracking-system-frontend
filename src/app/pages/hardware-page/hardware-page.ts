@@ -50,22 +50,23 @@ export class HardwarePage {
   });
 
   lastMaintenanceDate = computed(() =>{
-    const stringDate = this.hardwareDetail()?.lastMaintenanceDate;
-    if (!stringDate) return '';
-    const date = new Date(stringDate);
-    return date.toLocaleDateString('en-CA');
+    const date = new Date(this.hardwareDetail()?.lastMaintenanceDate ?? '');
+    return isNaN(date.getTime()) ? this.hardwareDetail()?.lastMaintenanceDate : date.toLocaleDateString('en-CA');
   });
+
   lastReports = computed(() => {
     const now = new Date();
     return this.hardwareDetail()?.recentActiveReports.map(report => {
-      const date = new Date()
-      const iconStyle = {closed: {icon:"close-circle", color:"bg-red"},
-                        open: {icon:"check-circle", color:"bg-green"}};
-      const icon = date < now ? iconStyle.closed : iconStyle.open;
+      const date = new Date(report.dueDate)
+      const tag = {closed: {label:"CLOSED", color:"#428d5b"},
+                        active: {label:"ACTIVE", color:"#ec8a42"}};
+      const active = report.status ? tag.active : tag.closed;
+      const overdue = date < now;
       return{
         ...report,
         dueDate: date.toLocaleDateString('en-CA'),
-        icon: icon
+        overdue: overdue,
+        tag: active
       }
     })
   });

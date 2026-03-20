@@ -38,7 +38,7 @@
             <td><nz-icon nzType="video-camera" nzTheme="fill" class="bg-green table-icon"  />{{client.totalHardware}}</td>
             <td>
               @if (client.reportsActive > 0){
-              <nz-tag [nzColor]="'#428d5b'">{{client.reportsActive}} ACTIVE</nz-tag>
+              <nz-tag [nzColor]="'#ec8a42'">{{client.reportsActive}} ACTIVE</nz-tag>
               } @else {
                 <nz-tag class="black-font" [nzColor]="'#f4f4f4'">{{client.reportsActive}}</nz-tag>
               } @if (client.overdueReports > 0){
@@ -49,6 +49,11 @@
           </tr>
         }
       </tbody>
+      } @else {
+        <td colspan="8">
+          <nz-empty nzNotFoundImage="simple"></nz-empty>
+        </td>
+      }
     </nz-table>
   </div>
 </app-dasboard-box-component>

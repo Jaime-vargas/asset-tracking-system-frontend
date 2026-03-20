@@ -4,4 +4,5 @@ export interface ReportHistoryDto {
   priority: string;
   title: string;
   reportedBy: string;
+  status: boolean;
 }
