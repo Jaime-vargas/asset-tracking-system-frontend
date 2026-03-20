@@ -9,10 +9,14 @@ export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardPage },
   { path: 'clients', component: ClientsPage },
-  { path: 'clients/:id/:slug', component: ClientBranchesPage },
+  { path: 'clients/:clientId/:clientSlug', component: ClientBranchesPage },
   { path: 'hardware', component: HardwarePage },
   {
     path: 'clients/:clientId/:clientSlug/branches/:branchId/:branchSlug/hardware',
     component: BranchHardwarePage
+  },
+  {
+    path: 'clients/:clientId/:clientSlug/branches/:branchId/:branchSlug/hardware/:hardwareId/:hardwareSlug',
+    component: HardwarePage
   }
 ];
