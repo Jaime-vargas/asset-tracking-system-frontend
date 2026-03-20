@@ -38,19 +38,15 @@ import {RouteContextService} from '../../services/route-context.service';
   styleUrl: './client-branches-page.css',
 })
 export class ClientBranchesPage {
-
   route: ActivatedRoute = inject(ActivatedRoute);
-
-  constructor(private clientService: ClientService, protected utilityService: UtilityService) {
-    const id = this.route.snapshot.paramMap.get('id');
-    const slug = this.route.snapshot.paramMap.get('slug');
-    this.clientId.set(Number(id));
-    this.clientSlug.set(slug ?? '');
+  routeContext = inject(RouteContextService)
+  constructor(private clientService: ClientService,
+              protected utilityService: UtilityService) {
+    this.routeContext.setFromRoute(this.route);
     this.getBranches();
   }
-
-  clientId = signal<number>(0);
-  clientSlug = signal('');
+  clientId = computed(() =>
+    this.routeContext.clientId() ?? 0);
 
   // TABLE DATA
   branchesData = signal<BranchTableDto[]>([]);

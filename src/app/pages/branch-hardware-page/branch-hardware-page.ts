@@ -39,22 +39,17 @@ import {UtilityService} from '../../services/utility.service';
 export class BranchHardwarePage {
 
   route: ActivatedRoute = inject(ActivatedRoute);
+  routeContext = inject(RouteContextService)
 
-  constructor(private branchService: BranchService) {
-    const clientId = this.route.snapshot.params['clientId'];
-    const clientSlug = this.route.snapshot.params['clientSlug'];
-    const branchId = this.route.snapshot.params['branchId'];
-    const branchSlug = this.route.snapshot.params['branchSlug'];
-    this.clientId.set(clientId);
-    this.clientSlug.set(clientSlug);
-    this.branchId.set(branchId);
-    this.branchSlug.set(branchSlug);
+  constructor(private branchService: BranchService,
+              protected utilityService: UtilityService) {
+    this.routeContext.setFromRoute(this.route);
     this.getHardware();
   }
-  clientId = signal<number>(0);
-  clientSlug = signal<string>("");
-  branchId = signal<number>(0);
-  branchSlug = signal<string>("");
+  clientId = computed(() =>
+    this.routeContext.clientId() ?? 0);
+  branchId = computed(() =>
+    this.routeContext.branchId() ?? 0);
 
   // TABLE DATA
   hardwareData = signal<HardwareTableDto[]>([]);
@@ -95,7 +90,7 @@ export class BranchHardwarePage {
   });
 
   getHardware(){
-    if(this.clientId()>0 && this.branchId()>0) {
+    if(this.clientId() > 0 && this.branchId() > 0) {
       this.getHardwareDataByBranchId(this.clientId(), this.branchId());
     } else {
       this.getAllHardwareData();
@@ -105,6 +100,7 @@ export class BranchHardwarePage {
   getAllHardwareData(){
     console.log("GETTING ALL HARDWARE")
   }
+
   getHardwareDataByBranchId(clientId : number, branchId : number) {
     this.branchService.getHardwareTableFromBranch(clientId, branchId).subscribe({
       next: (data) => {

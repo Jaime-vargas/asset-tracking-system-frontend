@@ -27,15 +27,32 @@ import {RouteContextService} from '../../services/route-context.service';
     NzFlexDirective,
     NgOptimizedImage,
     NzEmptyComponent,
-    DasboardCardComponent
+    DasboardCardComponent,
+    NzTagComponent,
+    RouterLink
   ],
   templateUrl: './hardware-page.html',
   styleUrl: './hardware-page.css',
 })
-export class HardwarePage {
+export class HardwarePage implements OnInit {
 
+  route: ActivatedRoute = inject(ActivatedRoute);
+  routeContext = inject(RouteContextService)
   constructor(private hardwareService: HardwareService) {
-    this.getHardwareDetail();
+
+  }
+  clientId = computed(() =>
+    this.routeContext.clientId() ?? 0);
+  branchId = computed(() =>
+    this.routeContext.branchId() ?? 0);
+  hardwareId = computed(() =>
+    this.routeContext.hardwareId() ?? 0);
+
+  ngOnInit() {
+    this.route.params.subscribe(() => {
+      this.routeContext.setFromRoute(this.route);
+      this.getHardwareDetail();
+    });
   }
 
   defaultCameraImage: string = '/defaultCamera.webp';
@@ -74,7 +91,7 @@ export class HardwarePage {
 
 
   getHardwareDetail() {
-    return this.hardwareService.getHardwareDetail(1,1,3).subscribe({
+    return this.hardwareService.getHardwareDetail(this.clientId(),this.branchId(),this.hardwareId()).subscribe({
       next: data => {
           return this.hardwareDetailData.set(data);
       }
