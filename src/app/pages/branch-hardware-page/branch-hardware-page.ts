@@ -16,7 +16,7 @@ import {RouteContextService} from '../../services/route-context.service';
 import {UtilityService} from '../../services/utility.service';
 
 @Component({
-  selector: 'app-branch-hardware-page',
+  selector: 'app-branch-device-page',
   imports: [
     NzDividerComponent,
     DasboardBoxComponent,

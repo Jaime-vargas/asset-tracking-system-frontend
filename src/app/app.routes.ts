@@ -3,6 +3,7 @@ import {DashboardPage} from './pages/dashboard-page/dashboard-page';
 import {ClientsPage} from './pages/clients-page/clients-page';
 import {ClientBranchesPage} from './pages/client-branches-page/client-branches-page';
 import {BranchHardwarePage} from './pages/branch-hardware-page/branch-hardware-page';
+import {DevicePage} from './pages/device-page/device-page';
 import {HardwarePage} from './pages/hardware-page/hardware-page';
 
 export const routes: Routes = [
@@ -17,6 +18,6 @@ export const routes: Routes = [
   },
   {
     path: 'clients/:clientId/:clientSlug/branches/:branchId/:branchSlug/hardware/:hardwareId/:hardwareSlug',
-    component: HardwarePage
+    component: DevicePage
   }
 ];
