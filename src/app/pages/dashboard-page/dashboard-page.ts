@@ -65,17 +65,4 @@ export class DashboardPage {
       }
     })
   }
-
-  //COLOR TAGS
-  priorityColorTag(priority: string){
-      if(priority === 'HIGH') return '#c72e30';
-      if (priority === 'MEDIUM')return '#ec8a42';
-      if (priority === 'LOW')return '#428d5b';
-      else return '#CCC';
-  }
-  statusColorTag(status: string){
-    if(status === 'OVERDUE') return '#c72e30';
-    if (status === 'ACTIVE')return '#ec8a42';
-    else return '#CCC';
-  }
 }
