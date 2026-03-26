@@ -39,8 +39,9 @@ export class ClientsPage {
   constructor(private clientService: ClientService, protected utilityService: UtilityService) {
     this.getClients()
   }
+
   clientsData = signal<ClientTableDto[] >([]);
-  clients = computed(() => {
+  clientsView = computed(() => {
     const now = new Date();
     return this.clientsData().map(client => {
       const totalReports = client.reportsActive.length;
@@ -54,10 +55,11 @@ export class ClientsPage {
       };
     });
   });
+
   // DATA FILTER
   clientNameFilter = signal<string>('');
-  clientsTable = computed(() => {
-    return this.clients().filter(client => {
+  filteredClients = computed(() => {
+    return this.clientsView().filter(client => {
       return client.name.toLowerCase().includes(this.clientNameFilter().toLowerCase());
     })
   })

@@ -12,12 +12,12 @@
 
 <app-dasboard-box-component>
   <div body>
-    <nz-table #tableData nzSize="default" [nzScroll]="{ x: 'max-content' }" [nzData]="clientsTable()" >
+    <nz-table #tableData nzSize="default" [nzScroll]="{ x: 'max-content' }" [nzData]="filteredClients()" >
       <colgroup>
-        <col style="width: 200px" />
+        <col style="width: 150px" />
         <col style="width: 100px" />
         <col style="width: 100px" />
-        <col style="width: 100px" />
+        <col style="width: 150px" />
         <col style="width: 210px" />
       </colgroup>
       <thead>
@@ -35,7 +35,7 @@
           <tr>
             <td>{{client.name}}</td>
             <td><nz-icon nzType="shop" nzTheme="fill" class="bg-green table-icon" />{{client.branches}}</td>
-            <td><nz-icon nzType="video-camera" nzTheme="fill" class="bg-green table-icon"  />{{client.totalHardware}}</td>
+            <td><nz-icon nzType="video-camera" nzTheme="fill" class="bg-green table-icon" />{{client.totalHardware}}</td>
             <td>
               @if (client.reportsActive > 0){
               <nz-tag [nzColor]="'#ec8a42'">{{client.reportsActive}} ACTIVE</nz-tag>
@@ -50,7 +50,7 @@
         }
       </tbody>
       } @else {
-        <td colspan="8">
+        <td colspan="5">
           <nz-empty nzNotFoundImage="simple"></nz-empty>
         </td>
       }
