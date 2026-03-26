@@ -14,11 +14,14 @@
       <nz-icon nzType="apartment" nzTheme="outline"></nz-icon>
       <span>Clients</span>
     </li>
-    <li nz-menu-item routerLink="/hardware" [class.ant-menu-item-selected]="router.url.includes('/hardware')">
+    <li nz-menu-item routerLink="/hardware" [class.ant-menu-item-selected]="
+    router.url.includes('/hardware') &&
+    !router.url.includes('/reports')">
       <nz-icon nzType="laptop" nzTheme="outline"></nz-icon>
       <span>Hardware</span>
     </li>
-    <li nz-menu-item routerLink="/reports" routerLinkActive="ant-menu-item-selected">
+    <li nz-menu-item routerLink="/reports" [class.ant-menu-item-selected]="
+      router.url.includes('/reports')" >
       <nz-icon nzType="file-exclamation" nzTheme="outline"></nz-icon>
       <span>Reports</span>
     </li>

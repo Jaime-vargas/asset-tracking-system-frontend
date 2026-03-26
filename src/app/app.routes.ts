@@ -20,5 +20,9 @@ export const routes: Routes = [
   {
     path: 'clients/:clientId/:clientSlug/branches/:branchId/:branchSlug/hardware/:hardwareId/:hardwareSlug',
     component: DevicePage
+  },
+  {
+    path: 'clients/:clientId/:clientSlug/branches/:branchId/:branchSlug/hardware/:hardwareId/:hardwareSlug/reports',
+    component: HardwareReportsPage
   }
 ];

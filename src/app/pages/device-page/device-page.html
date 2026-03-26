@@ -103,7 +103,9 @@
               </div>
             </app-dasboard-card-component>
           }
-          <button nz-button nzBlock> View All Reports </button>
+          <button nz-button nzBlock [routerLink]="['/clients',routeContext.clientId(), routeContext.clientSlug(),
+                        'branches',routeContext.branchId(), routeContext.branchSlug(),
+                        'hardware', routeContext.hardwareId(), routeContext.hardwareSlug(),'reports']" > View All Reports </button>
         }
       </div>
     </app-dasboard-box-component>
