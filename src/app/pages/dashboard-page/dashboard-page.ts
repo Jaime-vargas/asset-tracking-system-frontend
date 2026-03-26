@@ -15,10 +15,12 @@ import {DashboardDataDto} from '../../interfaces/dashboard-data.dto';
 import {Observable} from 'rxjs';
 import {RouterLink} from '@angular/router';
 import {UtilityService} from '../../services/utility.service';
+import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
+import {StatusTagsComponent} from '../../components/status-tags-component/status-tags-component';
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [DasboardCardComponent, DasboardGreyCardComponent, DasboardBoxComponent, NzTypographyComponent, NzDividerComponent, NzFlexDirective, NzIconModule, NzTableComponent, NzGridModule, NzButtonComponent, NzThMeasureDirective, NzCellBreakWordDirective, NzTagComponent, DasboardGreyCardComponent, RouterLink],
+  imports: [DasboardCardComponent, DasboardGreyCardComponent, DasboardBoxComponent, NzTypographyComponent, NzDividerComponent, NzFlexDirective, NzIconModule, NzTableComponent, NzGridModule, NzButtonComponent, NzThMeasureDirective, NzCellBreakWordDirective, NzTagComponent, DasboardGreyCardComponent, RouterLink, PriorityTagsComponent, StatusTagsComponent],
   templateUrl: './dashboard-page.html',
   styleUrl: './dashboard-page.css',
 })
@@ -27,8 +29,10 @@ export class DashboardPage {
   constructor(private dashboardService:DashboardService, protected utilityService: UtilityService) {
     this.getDashboardData();
   }
-  // DASHBOARD DATA
+
   private dashboardData = signal<DashboardDataDto | null>(null);
+
+  // TOP CARDS
   public openReports = computed(() =>
     this.dashboardData()?.openReports ?? 0);
   public overdueReports = computed(() =>
@@ -37,19 +41,19 @@ export class DashboardPage {
     this.dashboardData()?.totalHardware ?? 0);
   public totalClients = computed(() =>
     this.dashboardData()?.totalClients ?? 0);
+  // RECENT ACTIVE REPORTS
   public recentReports = computed(() => {
-    const now = new Date();
-    return this.dashboardData()?.recentReports.map(rep => {
-      const date = new Date(rep.dueDate);
+    return this.dashboardData()?.recentReports.map(report   => {
       return {
-        ...rep,
-        dueDate: date.toLocaleDateString(),
-        status: date < now ? "OVERDUE" : "ACTIVE"
+        ...report,
+        dueDate: new Date(report.dueDate),
       };
     }) ?? [];
   });
+  // QUICK ACCESS CLIENTS
   public clients = computed(() =>
     this.dashboardData()?.clients ?? []);
+  // HARDWARE OVERVIEW
   public totalCameras = computed(() =>
     this.dashboardData()?.totalCameras ?? 0);
   public totalSwitches = computed(() =>
@@ -57,7 +61,7 @@ export class DashboardPage {
   public totalOtherHardware = computed(() =>
     this.dashboardData()?.totalOtherHardware ?? 0);
 
-
+  // SERVICE DATA REQUEST
   getDashboardData(){
     this.dashboardService.getDashboardData().subscribe({
       next: data => {

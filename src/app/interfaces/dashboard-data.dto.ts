@@ -1,5 +1,5 @@
 
-import {ReportTableDto} from "./report-table.dto";
+import {ReportDashboardDto} from "./report-dashboard.dto";
 import {ClientDashboardDto} from './client-dashboard.dto';
 
 export interface DashboardDataDto {
@@ -7,7 +7,7 @@ export interface DashboardDataDto {
   overdueReports: number;
   totalHardware: number;
   totalClients: number;
-  recentReports: ReportTableDto[];
+  recentReports: ReportDashboardDto[];
   clients: ClientDashboardDto[];
   totalCameras: number;
   totalSwitches: number;

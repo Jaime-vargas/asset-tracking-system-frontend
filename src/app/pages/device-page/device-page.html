@@ -6,7 +6,7 @@
 <div nz-flex nzVertical nzGap="middle">
   <app-dasboard-box-component>
     <div body nz-flex nzJustify="space-between">
-      <h3 nz-typography class="title">Entrance Camera</h3>
+      <h3 nz-typography class="title">{{ hardwareDetail()?.name }}</h3>
       <button nz-button nzType="primary"><nz-icon nzType="edit" nzTheme="fill" />Edit Hardware</button>
       <ng-content select="[header]"></ng-content>
     </div>

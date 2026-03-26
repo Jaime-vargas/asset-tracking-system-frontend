@@ -7,13 +7,14 @@ import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 'ng-zorro-antd/input';
+import { NzSelectModule } from 'ng-zorro-antd/select'
 import {NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
 import {NzTagComponent} from 'ng-zorro-antd/tag';
 import {HardwareTableDto} from '../../interfaces/hardware-table.dto';
-import {BranchService} from '../../services/branch.service';
 import {UtilityService} from '../../services/utility.service';
 import {HardwareService} from '../../services/hardware.service';
 import {RouterLink} from '@angular/router';
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
 
 @Component({
   selector: 'app-hardware-page',
@@ -28,10 +29,13 @@ import {RouterLink} from '@angular/router';
     NzInputDirective,
     NzInputPrefixDirective,
     NzInputWrapperComponent,
+    NzSelectModule,
     NzTableComponent,
     NzTagComponent,
     NzThMeasureDirective,
-    RouterLink
+    RouterLink,
+    NzSelectComponent,
+    NzOptionComponent
   ],
   templateUrl: './hardware-page.html',
   styleUrl: './hardware-page.css',
@@ -60,6 +64,12 @@ export class HardwarePage {
     })
   });
   // TABLE INPUT FILTERS
+  branchList = computed(() =>
+    new Set(this.hardware().map((hardwareTable) => {
+      return hardwareTable.branchName
+    }))
+  )
+  branchFilter = signal("");
   typeFilter = signal<string>("");
   nameFilter = signal<string>("");
   modelFilter = signal<string>("");
@@ -70,6 +80,7 @@ export class HardwarePage {
   hardwareTable = computed(() => {
     return this.hardware().filter(hardware => {
       return (
+        (!this.branchFilter() || hardware.branchName === this.branchFilter()) &&
         hardware.type.toLowerCase().includes(this.typeFilter().toLowerCase()) &&
         hardware.name.toLowerCase().includes(this.nameFilter().toLowerCase()) &&
         hardware.model.toLowerCase().includes(this.modelFilter().toLowerCase()) &&

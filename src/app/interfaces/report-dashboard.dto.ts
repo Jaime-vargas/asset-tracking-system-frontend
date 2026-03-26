@@ -1,5 +1,5 @@
 
-export interface ReportTableDto {
+export interface ReportDashboardDto {
   id: number;
   title: string;
   priority: string;

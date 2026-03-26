@@ -1,6 +1,6 @@
 <h2 nz-typography>Dashboard</h2>
 <nz-divider></nz-divider>
-<!-- Dashboard Cards -->
+<!-- TOP CARDS -->
 <div nz-flex nzJustify="flex-start" nzGap="large">
 
 <app-dasboard-card-component [cardTitle]="'Open Reports'">
@@ -24,100 +24,101 @@
   </div>
 </app-dasboard-card-component>
 </div>
-
 <nz-divider></nz-divider>
-
 <div nz-flex nzJustify="flex-start" nzGap="large" nzWrap="wrap">
-  <!-- Table Recent Active Reports -->
+  <!-- Table RECENT ACTIVE REPORTS -->
   <app-dasboard-box-component [boxTitle]="'Recent Active Reports'">
-  <div body>
-    <nz-table #dashboardTable [nzShowPagination]="false" nzSize="default" [nzData]="recentReports()" [nzScroll]="{ x: 'max-content' }" >
-      <colgroup>
-        <col style="width: 50px" />
-        <col style="width: 200px" />
-        <col style="width: 100px" />
-        <col style="width: 140px" />
-        <col style="width: 120px" />
-      </colgroup>
-      <thead>
-      <tr>
-        <th>ID</th>
-        <th>Title</th>
-        <th>Priority</th>
-        <th>Due Date</th>
-        <th>Status</th>
-      </tr>
-      </thead>
-      <tbody>
-        @for (report of dashboardTable.data; track report){
-          <tr>
-            <td>#{{report.id}}</td>
-            <td>{{report.title}}</td>
-            <td><nz-tag [nzColor]="priorityColorTag(report.priority)">{{report.priority}}</nz-tag></td>
-            <td>{{report.dueDate}}</td>
-            <td><nz-tag [nzColor]="statusColorTag(report.status)">{{report.status}}</nz-tag></td>
-          </tr>
-        }
-      </tbody>
-    </nz-table>
-  </div>
+    <div body>
+      <nz-table #tableData [nzShowPagination]="false" nzSize="default" [nzData]="recentReports()" [nzScroll]="{ x: 'max-content' }" >
+        <colgroup>
+          <col style="width: 50px" />
+          <col style="width: 200px" />
+          <col style="width: 100px" />
+          <col style="width: 140px" />
+          <col style="width: 120px" />
+        </colgroup>
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Priority</th>
+          <th>Due Date</th>
+          <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+          @for (report of tableData.data; track report){
+            <tr>
+              <td>#{{report.id}}</td>
+              <td>{{report.title}}</td>
+              <td><app-priority-tags-component [priority]="report.priority"></app-priority-tags-component></td>
+              <td>{{report.dueDate.toDateString()}}</td>
+              <td><app-status-tags-component [dueDate]="report.dueDate"></app-status-tags-component> </td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    </div>
     <div footer>
       <nz-divider></nz-divider>
       <button nz-button  nzType="text" class="bg-blue"> View All Reports <nz-icon nzType="right" /></button>
     </div>
   </app-dasboard-box-component>
-  <!-- Quick Access -->
+  <!-- QUICK ACCESS CLIENTS -->
   <app-dasboard-box-component [boxTitle]="'Quick Access'" style="width: 560px">
     <div body>
       <div nz-flex nzWrap="wrap" nzGap="middle">
         @for (client of clients(); track client.id){
             <app-dasboard-card-component [cardTitle]="client.name">
               <div body>
-                <button nz-button nzType="primary" [routerLink]="['/clients', client.id, this.utilityService.slugify(client.name)]" > View Branches <nz-icon nzType="right" /></button>
+                <button nz-button nzType="primary"
+                        [routerLink]="['/clients', client.id, this.utilityService.slugify(client.name)]" >
+                  View Branches
+                  <nz-icon nzType="right" /></button>
               </div>
             </app-dasboard-card-component>
         }
       </div>
     </div>
   </app-dasboard-box-component>
-  <!-- Hardware Overview -->
+  <!-- HARDWARE OVERVIEW -->
   <app-dasboard-box-component [boxTitle]="'Hardware Overview'">
-    <div body>
-      <div nz-row nzGutter="16">
-        <div nz-col nzSpan="8">
-          <app-dasboard-grey-card-component>
-            <div body nz-flex nzGap="middle" class="hwMetric" nzAlign="flex-start">
-              <nz-icon nzType="video-camera" nzTheme="fill"></nz-icon>
-              <div nz-flex nzVertical nzGap="middle">
-                <span>Cameras</span>
-                <span class="bg-green bold-text">{{ totalCameras() }}</span>
+      <div body>
+        <div nz-row nzGutter="16">
+          <div nz-col nzSpan="8">
+            <app-dasboard-grey-card-component>
+              <div body nz-flex nzGap="middle" class="hwMetric" nzAlign="flex-start">
+                <nz-icon nzType="video-camera" nzTheme="fill"></nz-icon>
+                <div nz-flex nzVertical nzGap="middle">
+                  <span>Cameras</span>
+                  <span class="bg-green bold-text">{{ totalCameras() }}</span>
+                </div>
               </div>
-            </div>
-          </app-dasboard-grey-card-component>
-        </div>
-        <div nz-col nzSpan="8">
-          <app-dasboard-grey-card-component>
-            <div body nz-flex nzGap="middle" class="hwMetric" nzAlign="flex-start">
-              <nz-icon nzType="video-camera" nzTheme="fill"></nz-icon>
-              <div nz-flex nzVertical nzGap="middle">
-                <span>Switches</span>
-                <span class="bg-green bold-text">{{ totalSwitches() }}</span>
+            </app-dasboard-grey-card-component>
+          </div>
+          <div nz-col nzSpan="8">
+            <app-dasboard-grey-card-component>
+              <div body nz-flex nzGap="middle" class="hwMetric" nzAlign="flex-start">
+                <nz-icon nzType="video-camera" nzTheme="fill"></nz-icon>
+                <div nz-flex nzVertical nzGap="middle">
+                  <span>Switches</span>
+                  <span class="bg-green bold-text">{{ totalSwitches() }}</span>
+                </div>
               </div>
-            </div>
-          </app-dasboard-grey-card-component>
-        </div>
-        <div nz-col nzSpan="8">
-          <app-dasboard-grey-card-component>
-            <div body nz-flex nzGap="middle" class="hwMetric" nzAlign="flex-start">
-              <nz-icon nzType="video-camera" nzTheme="fill"></nz-icon>
-              <div nz-flex nzVertical nzGap="middle">
-                <span>Other Devices</span>
-                <span class="bg-green bold-text">{{ totalOtherHardware() }}</span>
+            </app-dasboard-grey-card-component>
+          </div>
+          <div nz-col nzSpan="8">
+            <app-dasboard-grey-card-component>
+              <div body nz-flex nzGap="middle" class="hwMetric" nzAlign="flex-start">
+                <nz-icon nzType="video-camera" nzTheme="fill"></nz-icon>
+                <div nz-flex nzVertical nzGap="middle">
+                  <span>Other Devices</span>
+                  <span class="bg-green bold-text">{{ totalOtherHardware() }}</span>
+                </div>
               </div>
-            </div>
-          </app-dasboard-grey-card-component>
+            </app-dasboard-grey-card-component>
+          </div>
         </div>
       </div>
-    </div>
-  </app-dasboard-box-component>
+    </app-dasboard-box-component>
 </div>
