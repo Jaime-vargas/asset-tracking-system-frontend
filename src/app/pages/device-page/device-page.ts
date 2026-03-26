@@ -91,7 +91,7 @@ export class DevicePage implements OnInit {
 
 
   getHardwareDetail() {
-    return this.hardwareService.getHardwareDetail(this.clientId(),this.branchId(),this.hardwareId()).subscribe({
+    return this.hardwareService.getHardwareDetail(this.hardwareId()).subscribe({
       next: data => {
           return this.hardwareDetailData.set(data);
       }

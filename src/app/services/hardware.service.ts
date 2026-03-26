@@ -1,10 +1,9 @@
 import {Injectable} from '@angular/core';
 import {ApiUrlBaseService} from './api-url-base.service';
 import {Observable} from 'rxjs';
-import {ClientTableDto} from '../interfaces/client-table.dto';
-import {BranchTableDto} from '../interfaces/branch-table.dto';
 import {HardwareDetailDto} from '../interfaces/hardware-detail.dto';
 import {HardwareTableDto} from '../interfaces/hardware-table.dto';
+import {ReportTableDto} from '../interfaces/report-table.dto';
 
 @Injectable({providedIn: 'root'})
 export class HardwareService{
@@ -13,10 +12,15 @@ export class HardwareService{
   }
 
   getAllHardware(): Observable<HardwareTableDto[]> {
-    return this.api.get(`clients/0/branches/0/hardware/test`);
+    return this.api.get(`hardware`);
   }
 
-  getHardwareDetail(clientId: number, branchId: number, hardwareID: number): Observable<HardwareDetailDto> {
-    return this.api.get(`clients/${clientId}/branches/${branchId}/hardware/${hardwareID}`);
+  getHardwareDetail(hardwareID: number): Observable<HardwareDetailDto> {
+    return this.api.get(`hardware/${hardwareID}`);
   }
+
+  getHardwareReports(hardwareID: number): Observable<ReportTableDto[]>{
+    return this.api.get(`hardware/${hardwareID}/reports`);
+  }
+
 }

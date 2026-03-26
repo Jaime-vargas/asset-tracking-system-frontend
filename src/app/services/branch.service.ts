@@ -8,8 +8,7 @@ export class BranchService {
   constructor(private api: ApiUrlBaseService) {
   }
 
-  getHardwareTableFromBranch(clientId:number, branchId:number): Observable<HardwareTableDto[]>{
-    return this.api.get(`clients/${clientId}/branches/${branchId}/hardware`);
+  getHardwareTableFromBranch(branchId:number): Observable<HardwareTableDto[]>{
+    return this.api.get(`branches/${branchId}/hardware`);
   }
-
 }

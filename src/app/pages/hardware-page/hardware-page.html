@@ -84,7 +84,9 @@
               </td>
               <td>{{hardware.lastMaintenanceDate}}</td>
               <td><button nz-button nzType="primary"
-                          >View<nz-icon nzType="right" /></button>
+                          [routerLink]="['/clients',hardware.clientId, utilityService.slugify(hardware.clientName),
+                        'branches',hardware.branchId, utilityService.slugify(hardware.branchName),
+                        'hardware', hardware.id, utilityService.slugify(hardware.name),]">View<nz-icon nzType="right" /></button>
               </td>
             </tr>
           }

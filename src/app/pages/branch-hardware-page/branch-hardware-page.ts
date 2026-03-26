@@ -44,7 +44,7 @@ export class BranchHardwarePage {
   constructor(private branchService: BranchService,
               protected utilityService: UtilityService) {
     this.routeContext.setFromRoute(this.route);
-    this.getHardware();
+    this.getHardwareDataByBranchId(this.branchId());
   }
   clientId = computed(() =>
     this.routeContext.clientId() ?? 0);
@@ -89,20 +89,8 @@ export class BranchHardwarePage {
     });
   });
 
-  getHardware(){
-    if(this.clientId() > 0 && this.branchId() > 0) {
-      this.getHardwareDataByBranchId(this.clientId(), this.branchId());
-    } else {
-      this.getAllHardwareData();
-    }
-  }
-
-  getAllHardwareData(){
-    console.log("GETTING ALL HARDWARE")
-  }
-
-  getHardwareDataByBranchId(clientId : number, branchId : number) {
-    this.branchService.getHardwareTableFromBranch(clientId, branchId).subscribe({
+  getHardwareDataByBranchId(branchId : number) {
+    this.branchService.getHardwareTableFromBranch(branchId).subscribe({
       next: (data) => {
         this.hardwareData.set(data);
       }

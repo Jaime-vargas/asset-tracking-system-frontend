@@ -13,6 +13,7 @@ import {HardwareTableDto} from '../../interfaces/hardware-table.dto';
 import {BranchService} from '../../services/branch.service';
 import {UtilityService} from '../../services/utility.service';
 import {HardwareService} from '../../services/hardware.service';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-hardware-page',
@@ -29,7 +30,8 @@ import {HardwareService} from '../../services/hardware.service';
     NzInputWrapperComponent,
     NzTableComponent,
     NzTagComponent,
-    NzThMeasureDirective
+    NzThMeasureDirective,
+    RouterLink
   ],
   templateUrl: './hardware-page.html',
   styleUrl: './hardware-page.css',

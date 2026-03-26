@@ -9,6 +9,8 @@ export interface HardwareTableDto{
   location: string;
   lastMaintenanceDate: string;
   reportsActive: ReportCountDTO[];
+  clientId: number;
   clientName: string;
+  branchId: number;
   branchName: string;
 }

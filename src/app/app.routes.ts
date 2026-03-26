@@ -5,6 +5,7 @@ import {ClientBranchesPage} from './pages/client-branches-page/client-branches-p
 import {BranchHardwarePage} from './pages/branch-hardware-page/branch-hardware-page';
 import {DevicePage} from './pages/device-page/device-page';
 import {HardwarePage} from './pages/hardware-page/hardware-page';
+import {HardwareReportsPage} from './pages/hardware-reports-page/hardware-reports-page';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
