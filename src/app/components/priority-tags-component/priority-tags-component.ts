@@ -16,10 +16,10 @@ export class PriorityTagsComponent {
 
   priority = input.required<string>();
   tagColor = computed(() => {
-    if (this.priority() === 'HIGH') return this.utilityService.tagColors.red;
-    if (this.priority() === 'MEDIUM') return this.utilityService.tagColors.yellow;
-    if (this.priority() === 'LOW') return this.utilityService.tagColors.green;
-    return this.utilityService.tagColors.gray;
+    if (this.priority() === 'HIGH') return this.utilityService.baseColors.red;
+    if (this.priority() === 'MEDIUM') return this.utilityService.baseColors.yellow;
+    if (this.priority() === 'LOW') return this.utilityService.baseColors.green;
+    return this.utilityService.baseColors.gray;
   });
 }
 
