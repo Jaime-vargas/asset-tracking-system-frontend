@@ -1,7 +1,9 @@
 export interface ReportTableDto{
   id: number;
   title: string;
+  clientId: number;
   clientName: string;
+  branchId: number;
   branchName: string;
   hardwareName: string;
   priority: string;

@@ -40,18 +40,18 @@
 <!-- HARDWARE TABLE -->
 <app-dasboard-box-component>
   <div body>
-    <nz-table #tableData nzSize="default" [nzScroll]="{ x: 'max-content' }" [nzData]="hardwareTable()" >
+    <nz-table #tableData nzSize="default" [nzScroll]="{ x: 'max-content' }" [nzData]="filteredHardware()" >
       <colgroup>
-        <col style="width: 80px" />
-        <col style="width: 80px" />
-        <col style="width: 80px" />
-        <col style="width: 100px" />
-        <col style="width: 150px" />
+        <col style="width: 120px" />
         <col style="width: 120px" />
         <col style="width: 100px" />
         <col style="width: 150px" />
-        <col style="width: 140px" />
-        <col style="width: 140px" />
+        <col style="width: 180px" />
+        <col style="width: 120px" />
+        <col style="width: 120px" />
+        <col style="width: 160px" />
+        <col style="width: 150px" />
+        <col style="width: 120px" />
       </colgroup>
       <thead>
       <tr>
@@ -100,7 +100,7 @@
           }
         </tbody>
       } @else {
-        <td colspan="8">
+        <td colspan="10">
           <nz-empty nzNotFoundImage="simple"></nz-empty>
         </td>
       }

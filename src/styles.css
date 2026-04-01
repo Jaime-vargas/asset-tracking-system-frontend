@@ -1,3 +1,30 @@
+.mainframe {
+  min-width: 1280px;
+  background: #F4F4F4 !important;
+  height: 100dvh;
+  overflow: hidden;
+}
+.contentFrame{
+  padding: 24px;
+  overflow: hidden;
+  height: 100%;
+}
+.contentPage{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.contentBody{
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+nz-breadcrumb-item{
+  font-size: 30px;
+}
+
+
 .bg-white {
   background-color: #fff;
   border-radius: 10px;

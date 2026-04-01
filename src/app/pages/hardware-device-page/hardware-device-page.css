@@ -3,13 +3,18 @@
   align-self: stretch;
 }
 
-span {
-  color: #535d71;
+.recentReportCard{
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.recentReportCard:hover {
+  transform: translateY(-3px);
 }
 
 .value{
   font-weight: bold;
 }
+
 .reportDate{
   font-size: 16px;
   font-weight: bold;

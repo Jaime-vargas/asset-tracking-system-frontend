@@ -1,16 +1,5 @@
-.mainframe {
-  display: flex;
-  background: #F4F4F4 !important;
-  width: 100%;
-  min-width: 1280px;
-  height: 100vh;
-  min-height: 720px;
-}
-.content{
-  flex:1;
-  padding: 24px;
-  min-width:0;
-  overflow: auto;
-}
+
+
+
 
 
