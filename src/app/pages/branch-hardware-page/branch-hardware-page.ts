@@ -61,18 +61,11 @@ export class BranchHardwarePage {
 
   // TABLE DATA
   hardwareData = signal<HardwareTableDto[]>([]);
-  hardware = computed(()=> {
-    const now = new Date(new Date());
+  hardwareView = computed(()=> {
     return this.hardwareData().map((hardware) => {
-      const date = new Date(hardware.lastMaintenanceDate);
-      const totalReports = hardware.reportsActive.length;
-      const overdueReports = hardware.reportsActive.filter(report =>
-      new Date(report.dueDate) < now).length
       return {
         ...hardware,
-        lastMaintenanceDate: date.toLocaleDateString('en-CA'),
-        reportsActive: totalReports - overdueReports,
-        overdueReports,
+        lastMaintenanceDate: new Date(hardware.lastMaintenanceDate),
       };
     })
   });
@@ -84,15 +77,15 @@ export class BranchHardwarePage {
   locationFilter = signal<string>("");
   lastMaintenanceFilter = signal<string>("");
   // TABLE FILTER
-  hardwareTable = computed(() => {
-    return this.hardware().filter(hardware => {
+  filteredHardware = computed(() => {
+    return this.hardwareView().filter(hardware => {
       return (
         hardware.type.toLowerCase().includes(this.typeFilter().toLowerCase()) &&
         hardware.name.toLowerCase().includes(this.nameFilter().toLowerCase()) &&
         hardware.model.toLowerCase().includes(this.modelFilter().toLowerCase()) &&
         hardware.serialNumber.toLowerCase().includes(this.serialNumberFilter().toLowerCase()) &&
         hardware.location.toLowerCase().includes(this.locationFilter().toLowerCase()) &&
-        hardware.lastMaintenanceDate.toLowerCase().includes(this.lastMaintenanceFilter().toLowerCase())
+        hardware.lastMaintenanceDate.toDateString().toLowerCase().includes(this.lastMaintenanceFilter().toLowerCase())
       );
     });
   });

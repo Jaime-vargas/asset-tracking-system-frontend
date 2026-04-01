@@ -53,32 +53,20 @@ export class ClientBranchesPage {
     this.routeContext.setFromRoute(this.route);
     this.getBranches();
   }
-  clientId = computed(() =>
-    this.routeContext.clientId() ?? 0);
+
 
   // TABLE DATA
   branchesData = signal<BranchTableDto[]>([]);
-  branches = computed(() => {
-    const now = new Date();
-    return this.branchesData().map((branch) => {
-      const totalReports = branch.reportsActive.length;
-      const overdueReports = branch.reportsActive.filter(report =>
-        new Date(report.dueDate) < now
-      ).length;
-      return {
-        ...branch,
-        reportsActive: totalReports - overdueReports,
-        overdueReports
-      };
-    })
-  });
+
+  // DATA FILTER
   branchNameFilter = signal<string>('');
-  branchesTable = computed(()=> {
-      return this.branches().filter(branch => {
+  filteredBranches = computed(()=> {
+      return this.branchesData().filter(branch => {
         return branch.name.toLowerCase().includes(this.branchNameFilter().toLowerCase());
       })
   })
 
+  clientId = computed(() => this.routeContext.clientId() ?? 0);
   getBranches() {
     return this.clientService.getBranches(this.clientId()).subscribe({
       next: data => {

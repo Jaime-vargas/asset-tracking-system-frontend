@@ -49,29 +49,23 @@ export class HardwarePage {
               protected utilityService: UtilityService) {
     this.getAllHardwareData()
   }
-// TABLE DATA
+  // TABLE DATA
   hardwareData = signal<HardwareTableDto[]>([]);
-  hardware = computed(()=> {
-    const now = new Date(new Date());
+  hardwareView = computed(()=> {
     return this.hardwareData().map((hardware) => {
-      const date = new Date(hardware.lastMaintenanceDate);
-      const totalReports = hardware.reportsActive.length;
-      const overdueReports = hardware.reportsActive.filter(report =>
-        new Date(report.dueDate) < now).length
       return {
         ...hardware,
-        lastMaintenanceDate: date.toLocaleDateString('en-CA'),
-        reportsActive: totalReports - overdueReports,
-        overdueReports,
+        lastMaintenanceDate: new Date(hardware.lastMaintenanceDate),
       };
     })
   });
+
   // TABLE INPUT FILTERS
-  branchList = computed(() =>
-    new Set(this.hardware().map((hardwareTable) => {
-      return hardwareTable.branchName
+  branchList = computed(() => {
+    return new Set(this.hardwareView().map((hardware) => {
+      return hardware.branchName;
     }))
-  )
+  });
   branchFilter = signal("");
   typeFilter = signal<string>("");
   nameFilter = signal<string>("");
@@ -80,8 +74,8 @@ export class HardwarePage {
   locationFilter = signal<string>("");
   lastMaintenanceFilter = signal<string>("");
   // TABLE FILTER
-  hardwareTable = computed(() => {
-    return this.hardware().filter(hardware => {
+  filteredHardware = computed(() => {
+    return this.hardwareView().filter(hardware => {
       return (
         (!this.branchFilter() || hardware.branchName === this.branchFilter()) &&
         hardware.type.toLowerCase().includes(this.typeFilter().toLowerCase()) &&
@@ -89,7 +83,7 @@ export class HardwarePage {
         hardware.model.toLowerCase().includes(this.modelFilter().toLowerCase()) &&
         hardware.serialNumber.toLowerCase().includes(this.serialNumberFilter().toLowerCase()) &&
         hardware.location.toLowerCase().includes(this.locationFilter().toLowerCase()) &&
-        hardware.lastMaintenanceDate.toLowerCase().includes(this.lastMaintenanceFilter().toLowerCase())
+        hardware.lastMaintenanceDate.toDateString().toLowerCase().includes(this.lastMaintenanceFilter().toLowerCase())
       );
     });
   });
