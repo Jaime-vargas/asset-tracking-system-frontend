@@ -1,7 +1,8 @@
-<div class="mainframe">
-  <app-menu-sidebar-component></app-menu-sidebar-component>
-
-  <div class="content">
+<div class="mainframe" nz-row>
+  <div nz-col nzFlex="0 0 240px">
+    <app-menu-sidebar-component></app-menu-sidebar-component>
+  </div>
+  <div class="contentFrame" nz-col nzFlex="1 0 1040px">
     <router-outlet></router-outlet>
   </div>
 </div>
