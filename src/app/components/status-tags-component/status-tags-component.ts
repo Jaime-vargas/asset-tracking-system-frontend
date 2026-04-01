@@ -27,9 +27,9 @@ export class StatusTagsComponent {
     return "CLOSED"
   });
   tagColor = computed(()=> {
-    if (this.label() === "ACTIVE") return this.utilityService.tagColors.yellow;
-    if (this.label() === "OVERDUE") return this.utilityService.tagColors.red;
-    if (this.label() === "CLOSED") return this.utilityService.tagColors.green;
-    return this.utilityService.tagColors.gray;
+    if (this.label() === "ACTIVE") return this.utilityService.baseColors.yellow;
+    if (this.label() === "OVERDUE") return this.utilityService.baseColors.red;
+    if (this.label() === "CLOSED") return this.utilityService.baseColors.green;
+    return this.utilityService.baseColors.gray;
   })
 }
