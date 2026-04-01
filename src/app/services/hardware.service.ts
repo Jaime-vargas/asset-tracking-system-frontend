@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {ApiUrlBaseService} from './api-url-base.service';
 import {Observable} from 'rxjs';
-import {HardwareDetailDto} from '../interfaces/hardware-detail.dto';
-import {HardwareTableDto} from '../interfaces/hardware-table.dto';
-import {ReportTableDto} from '../interfaces/report-table.dto';
+import {HardwareDetailDto} from '../interfaces/hardware-dto/hardware-detail.dto';
+import {HardwareTableDto} from '../interfaces/hardware-dto/hardware-table.dto';
+import {ReportTableDto} from '../interfaces/report-dto/report-table.dto';
 
 @Injectable({providedIn: 'root'})
 export class HardwareService{

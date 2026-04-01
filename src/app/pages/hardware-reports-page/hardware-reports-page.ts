@@ -4,12 +4,10 @@ import {RouteContextService} from '../../services/route-context.service';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';
 import {NzEmptyComponent} from 'ng-zorro-antd/empty';
-import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
-import {NzTagComponent} from 'ng-zorro-antd/tag';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {HardwareService} from '../../services/hardware.service';
-import {ReportTableDto} from '../../interfaces/report-table.dto';
+import {ReportTableDto} from '../../interfaces/report-dto/report-table.dto';
 import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
 import {StatusTagsComponent} from '../../components/status-tags-component/status-tags-component';
 
@@ -37,6 +35,7 @@ export class HardwareReportsPage {
     this.routeContext.setFromRoute(this.route);
     this.getHardwareReports();
   }
+
 
   reportsData = signal<ReportTableDto[]>([]);
   reportsView = computed(()=>

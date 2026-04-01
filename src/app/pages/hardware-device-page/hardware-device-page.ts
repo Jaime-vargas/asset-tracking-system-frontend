@@ -9,15 +9,18 @@ import {NgOptimizedImage} from '@angular/common';
 import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {DasboardCardComponent} from '../../components/dasboard-card-component/dasboard-card-component';
 import {HardwareService} from '../../services/hardware.service';
-import {HardwareDetailDto} from '../../interfaces/hardware-detail.dto';
-import {computeMsgId} from '@angular/compiler';
+import {HardwareDetailDto} from '../../interfaces/hardware-dto/hardware-detail.dto';
 import {CameraDetailDto} from '../../interfaces/camera-detail.dto';
 import {NzTagComponent} from 'ng-zorro-antd/tag';
+import {NzImageModule } from 'ng-zorro-antd/image';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {RouteContextService} from '../../services/route-context.service';
+import {NzImageDirective} from 'ng-zorro-antd/image';
+import {NzBreadCrumbComponent, NzBreadCrumbItemComponent} from 'ng-zorro-antd/breadcrumb';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 
 @Component({
-  selector: 'app-device-page',
+  selector: 'app-hardware-device-page',
   imports: [
     NzDividerComponent,
     NzTypographyComponent,
@@ -29,12 +32,17 @@ import {RouteContextService} from '../../services/route-context.service';
     NzEmptyComponent,
     DasboardCardComponent,
     NzTagComponent,
-    RouterLink
+    RouterLink,
+    NzImageModule,
+    NzBreadCrumbComponent,
+    NzBreadCrumbItemComponent,
+    NzRowDirective,
+    NzColDirective
   ],
-  templateUrl: './device-page.html',
-  styleUrl: './device-page.css',
+  templateUrl: './hardware-device-page.html',
+  styleUrl: './hardware-device-page.css'
 })
-export class DevicePage implements OnInit {
+export class HardwareDevicePage implements OnInit {
 
   route: ActivatedRoute = inject(ActivatedRoute);
   routeContext = inject(RouteContextService)

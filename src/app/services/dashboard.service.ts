@@ -3,7 +3,7 @@ import {ApiUrlBaseService} from './api-url-base.service';
 import {DashboardDataDto} from '../interfaces/dashboard-data.dto';
 import {Observable} from 'rxjs';
 import {BranchTableDto} from '../interfaces/branch-table.dto';
-import {HardwareTableDto} from '../interfaces/hardware-table.dto';
+import {HardwareTableDto} from '../interfaces/hardware-dto/hardware-table.dto';
 
 @Injectable({providedIn: 'root'})
 export class DashboardService{

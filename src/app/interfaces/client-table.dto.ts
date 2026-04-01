@@ -1,4 +1,4 @@
-import {ReportCountDTO} from './report-count.dto';
+import {ReportCountDTO} from './report-dto/report-count.dto';
 
 export interface ClientTableDto {
   id: number;

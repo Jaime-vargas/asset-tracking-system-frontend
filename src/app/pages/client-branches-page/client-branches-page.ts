@@ -15,6 +15,9 @@ import {FormsModule} from '@angular/forms';
 import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 'ng-zorro-antd/input';
 import {UtilityService} from '../../services/utility.service';
 import {RouteContextService} from '../../services/route-context.service';
+import {ReportCountTagsComponent} from '../../components/report-count-tags-component/report-count-tags-component';
+import {NzBreadCrumbComponent, NzBreadCrumbItemComponent} from 'ng-zorro-antd/breadcrumb';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 
 @Component({
   selector: 'app-client-branches-page',
@@ -32,7 +35,12 @@ import {RouteContextService} from '../../services/route-context.service';
     NzInputDirective,
     NzInputPrefixDirective,
     NzInputWrapperComponent,
-    RouterLink
+    RouterLink,
+    ReportCountTagsComponent,
+    NzBreadCrumbComponent,
+    NzBreadCrumbItemComponent,
+    NzRowDirective,
+    NzColDirective
   ],
   templateUrl: './client-branches-page.html',
   styleUrl: './client-branches-page.css',

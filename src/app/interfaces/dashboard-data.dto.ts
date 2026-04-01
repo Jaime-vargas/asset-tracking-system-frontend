@@ -1,5 +1,5 @@
 
-import {ReportDashboardDto} from "./report-dashboard.dto";
+import {ReportDashboardDto} from "./report-dto/report-dashboard.dto";
 import {ClientDashboardDto} from './client-dashboard.dto';
 
 export interface DashboardDataDto {

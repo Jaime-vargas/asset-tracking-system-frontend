@@ -3,9 +3,12 @@ import {DashboardPage} from './pages/dashboard-page/dashboard-page';
 import {ClientsPage} from './pages/clients-page/clients-page';
 import {ClientBranchesPage} from './pages/client-branches-page/client-branches-page';
 import {BranchHardwarePage} from './pages/branch-hardware-page/branch-hardware-page';
-import {DevicePage} from './pages/device-page/device-page';
+import {HardwareDevicePage} from './pages/hardware-device-page/hardware-device-page';
 import {HardwarePage} from './pages/hardware-page/hardware-page';
 import {HardwareReportsPage} from './pages/hardware-reports-page/hardware-reports-page';
+import {ReportsPage} from './pages/reports-page/reports-page';
+import {ReportDetailPage} from './pages/report-detail-page/report-detail-page';
+import {UsersPage} from './pages/users-page/users-page';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },

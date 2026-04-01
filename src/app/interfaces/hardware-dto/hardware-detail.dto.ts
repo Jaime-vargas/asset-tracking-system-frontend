@@ -1,4 +1,4 @@
-import {ReportHistoryDto} from './report-history.dto';
+import {ReportHistoryDto} from '../report-dto/report-history.dto';
 
 export interface HardwareDetailDto {
   id: number;

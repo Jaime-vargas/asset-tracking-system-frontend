@@ -11,12 +11,15 @@ import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 
 import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
 import {NzTagComponent} from 'ng-zorro-antd/tag';
-import {HardwareTableDto} from '../../interfaces/hardware-table.dto';
+import {HardwareTableDto} from '../../interfaces/hardware-dto/hardware-table.dto';
 import {RouteContextService} from '../../services/route-context.service';
 import {UtilityService} from '../../services/utility.service';
+import {ReportCountTagsComponent} from '../../components/report-count-tags-component/report-count-tags-component';
+import {NzBreadCrumbComponent, NzBreadCrumbItemComponent} from 'ng-zorro-antd/breadcrumb';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 
 @Component({
-  selector: 'app-branch-device-page',
+  selector: 'app-branch-hardware-device-page',
   imports: [
     NzDividerComponent,
     DasboardBoxComponent,
@@ -31,7 +34,12 @@ import {UtilityService} from '../../services/utility.service';
     NzTableComponent,
     NzTagComponent,
     NzThMeasureDirective,
-    RouterLink
+    RouterLink,
+    ReportCountTagsComponent,
+    NzBreadCrumbComponent,
+    NzBreadCrumbItemComponent,
+    NzRowDirective,
+    NzColDirective
   ],
   templateUrl: './branch-hardware-page.html',
   styleUrl: './branch-hardware-page.css',

@@ -10,11 +10,13 @@ import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 
 import { NzSelectModule } from 'ng-zorro-antd/select'
 import {NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
 import {NzTagComponent} from 'ng-zorro-antd/tag';
-import {HardwareTableDto} from '../../interfaces/hardware-table.dto';
+import {HardwareTableDto} from '../../interfaces/hardware-dto/hardware-table.dto';
 import {UtilityService} from '../../services/utility.service';
 import {HardwareService} from '../../services/hardware.service';
 import {RouterLink} from '@angular/router';
 import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {ne_NP} from 'ng-zorro-antd/i18n';
+import {ReportCountTagsComponent} from '../../components/report-count-tags-component/report-count-tags-component';
 
 @Component({
   selector: 'app-hardware-page',
@@ -35,7 +37,8 @@ import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
     NzThMeasureDirective,
     RouterLink,
     NzSelectComponent,
-    NzOptionComponent
+    NzOptionComponent,
+    ReportCountTagsComponent
   ],
   templateUrl: './hardware-page.html',
   styleUrl: './hardware-page.css',

@@ -1,4 +1,4 @@
-import {HardwareDetailDto} from './hardware-detail.dto';
+import {HardwareDetailDto} from './hardware-dto/hardware-detail.dto';
 
 export interface CameraDetailDto extends HardwareDetailDto {
   cameraId: string;

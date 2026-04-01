@@ -13,6 +13,9 @@ import {NzFlexDirective} from 'ng-zorro-antd/flex';
 import {RouterLink} from '@angular/router';
 import {UtilityService} from '../../services/utility.service';
 import {NzEmptyComponent} from 'ng-zorro-antd/empty';
+import {ReportCountTagsComponent} from '../../components/report-count-tags-component/report-count-tags-component';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 
 
 @Component({
@@ -30,7 +33,11 @@ import {NzEmptyComponent} from 'ng-zorro-antd/empty';
     NzIconModule,
     NzFlexDirective,
     RouterLink,
-    NzEmptyComponent
+    NzEmptyComponent,
+    ReportCountTagsComponent,
+    NzRowDirective,
+    NzColDirective,
+    NzTypographyComponent
   ],
   templateUrl: './clients-page.html',
   styleUrl: './clients-page.css',
