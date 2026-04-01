@@ -1,61 +1,83 @@
-<button nz-button nzType="text" class="headerButton" [routerLink]="'/clients'" >Clients</button><span class="divider">/</span>
-<button nz-button nzType="text" class="headerButton" >{{routeContext.clientSlug()}}</button>
-
-<nz-divider></nz-divider>
-<app-dasboard-box-component style="margin: 0 10px 0 0">
-  <div body nz-flex nzGap="middle">
-    <nz-input-wrapper nzAllowClear >
-      <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-      <input nz-input [ngModel]="branchNameFilter()" (ngModelChange)="branchNameFilter.set($event)" placeholder=" Search branches..." />
-    </nz-input-wrapper>
-    <button nz-button nzType="primary"><nz-icon nzType="plus" nzTheme="outline" />Add Branch</button>
-  </div>
-</app-dasboard-box-component>
-<app-dasboard-box-component>
-  <div body>
-    <nz-table #tableData nzSize="default" [nzScroll]="{ x: 'max-content' }" [nzData]="branchesTable()" >
-      <colgroup>
-        <col style="width: 200px" />
-        <col style="width: 100px" />
-        <col style="width: 100px" />
-        <col style="width: 140px" />
-      </colgroup>
-      <thead>
-      <tr>
-        <th>Name</th>
-        <th>Hardware</th>
-        <th>Reports</th>
-        <th>Actions</th>
-      </tr>
-      </thead>
-      @if (tableData.data.length > 0) {
-      <tbody>
-        @for (branch of tableData.data; track branch.id){
-          <tr>
-            <td>{{branch.name}}</td>
-            <td><nz-icon nzType="video-camera" nzTheme="fill" class="bg-green table-icon"  />{{branch.totalHardware}}</td>
-            <td>
-              @if (branch.reportsActive > 0){
-                <nz-tag [nzColor]="'#ec8a42'">{{branch.reportsActive}} ACTIVE</nz-tag>
+<div class="contentPage">
+  <nz-breadcrumb>
+    <nz-breadcrumb-item>
+      <a class="breadcrumb" [routerLink]="'/clients'">Clients</a>
+    </nz-breadcrumb-item>
+    <nz-breadcrumb-item>{{routeContext.clientSlug()}}</nz-breadcrumb-item>
+  </nz-breadcrumb>
+  <nz-divider></nz-divider>
+  <div class="contentBody">
+    <div nz-row [nzGutter]="[10,10]">
+      <div nz-col nzSpan="24">
+        <app-dasboard-box-component>
+          <div body nz-flex nzGap="middle">
+            <nz-input-wrapper nzAllowClear>
+              <nz-icon nzInputPrefix nzType="search" nzTheme="outline"/>
+              <input nz-input [ngModel]="branchNameFilter()" (ngModelChange)="branchNameFilter.set($event)"
+                     placeholder=" Search branches..."/>
+            </nz-input-wrapper>
+            <button nz-button nzType="primary">
+              <nz-icon nzType="plus" nzTheme="outline"/>
+              Add Branch
+            </button>
+          </div>
+        </app-dasboard-box-component>
+      </div>
+      <div nz-col nzSpan="24">
+        <app-dasboard-box-component>
+          <div body>
+            <nz-table #tableData nzSize="default" [nzScroll]="{ x: 'max-content' }" [nzData]="filteredBranches()">
+              <colgroup>
+                <col style="width: 150px"/>
+                <col style="width: 100px"/>
+                <col style="width: 150px"/>
+                <col style="width: 100px"/>
+              </colgroup>
+              <thead>
+              <tr>
+                <th>Name</th>
+                <th>Hardware</th>
+                <th>Reports</th>
+                <th>Actions</th>
+              </tr>
+              </thead>
+              @if (tableData.data.length > 0) {
+                <tbody>
+                  @for (branch of tableData.data; track branch.id) {
+                    <tr>
+                      <td>{{ branch.name }}</td>
+                      <td>
+                        <nz-icon nzType="video-camera" nzTheme="fill" class="bg-green table-icon"/>
+                        {{ branch.totalHardware }}
+                      </td>
+                      <td>
+                        <app-report-count-tags-component
+                          [reports]="branch.reportsActive"></app-report-count-tags-component>
+                      </td>
+                      <td>
+                        <button nz-button nzType="primary"
+                                [routerLink]="['/clients',routeContext.clientId(), routeContext.clientSlug(),
+                                'branches',branch.id,utilityService.slugify(branch.name),
+                                'hardware']">Manage
+                          <nz-icon nzType="right"/>
+                        </button>
+                        <button class="edit-button" nz-button nzType="default">
+                          <nz-icon nzType="edit" nzTheme="fill"/>
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
               } @else {
-                <nz-tag class="black-font" [nzColor]="'#f4f4f4'">{{branch.reportsActive}}</nz-tag>
-              } @if (branch.overdueReports > 0){
-              <nz-tag [nzColor]="'#c72e30'">{{branch.overdueReports}} OVERDUE</nz-tag>
-            }
-            </td>
-            <td><button nz-button nzType="primary"
-                        [routerLink]="['/clients',routeContext.clientId(), routeContext.clientSlug(),
-                        'branches',branch.id,utilityService.slugify(branch.name),
-                        'hardware']" >Manage<nz-icon nzType="right" /></button>
-              <button class="edit-button" nz-button nzType="default"><nz-icon nzType="edit" nzTheme="fill" />Edit</button> </td>
-          </tr>
-        }
-      </tbody>
-      } @else {
-        <td colspan="5">
-          <nz-empty nzNotFoundImage="simple"></nz-empty>
-        </td>
-      }
-    </nz-table>
+                <td colspan="5">
+                  <nz-empty nzNotFoundImage="simple"></nz-empty>
+                </td>
+              }
+            </nz-table>
+          </div>
+        </app-dasboard-box-component>
+      </div>
+    </div>
   </div>
-</app-dasboard-box-component>
+</div>

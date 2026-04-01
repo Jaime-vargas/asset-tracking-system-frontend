@@ -81,16 +81,8 @@
               <td>{{hardware.model}}</td>
               <td>{{hardware.serialNumber}}</td>
               <td>{{hardware.location}}</td>
-              <td>
-                @if (hardware.reportsActive > 0){
-                  <nz-tag [nzColor]="'#ec8a42'">{{hardware.reportsActive}} ACTIVE</nz-tag>
-                } @else {
-                  <nz-tag class="black-font" [nzColor]="'#f4f4f4'">{{hardware.reportsActive}}</nz-tag>
-                } @if (hardware.overdueReports > 0){
-                <nz-tag [nzColor]="'#c72e30'">{{hardware.overdueReports}} OVERDUE</nz-tag>
-              }
-              </td>
-              <td>{{hardware.lastMaintenanceDate}}</td>
+              <td><app-report-count-tags-component [reports]="hardware.reportsActive"></app-report-count-tags-component> </td>
+              <td>{{hardware.lastMaintenanceDate.toDateString()}}</td>
               <td><button nz-button nzType="primary"
                           [routerLink]="['/clients',hardware.clientId, utilityService.slugify(hardware.clientName),
                         'branches',hardware.branchId, utilityService.slugify(hardware.branchName),

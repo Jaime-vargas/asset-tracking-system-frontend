@@ -30,7 +30,17 @@ export class DashboardPage {
     this.getDashboardData();
   }
 
-  private dashboardData = signal<DashboardDataDto | null>(null);
+  private dashboardData = signal<DashboardDataDto | undefined>(undefined);
+  protected topCardsView = computed(() => {
+    const topCards = this.dashboardData();
+    if (!topCards) return [];
+    return [
+      {label: "Open Reports", value: topCards.openReports, color: this.utilityService.baseColors.yellow},
+      {label: "Overdue Reports", value: topCards.overdueReports, color: this.utilityService.baseColors.red},
+      {label: "Total hardware", value: topCards.totalHardware, color: this.utilityService.baseColors.blue},
+      {label: "Active Clients", value: topCards.totalClients, color: this.utilityService.baseColors.green},
+    ]
+  })
 
   // TOP CARDS
   public openReports = computed(() =>

@@ -41,7 +41,11 @@
               <td>{{report.createdDate.toDateString()}}</td>
               <td>{{report.dueDate.toDateString()}}</td>
               <td><app-status-tags-component [dueDate]="report.dueDate" [status]="report.status"></app-status-tags-component></td>
-              <td><button nz-button nzType="primary" >View</button></td>
+              <td><button nz-button nzType="primary"
+              [routerLink]="['/clients',report.clientId,report.clientName,
+                'branches',report.branchId,report.branchName,
+                'hardware',report.hardwareId,report.hardwareName,
+                'reports',report.id]">View</button></td>
             </tr>
           }
         </tbody>

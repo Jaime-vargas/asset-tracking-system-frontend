@@ -48,25 +48,11 @@ export class ClientsPage {
   }
 
   clientsData = signal<ClientTableDto[] >([]);
-  clientsView = computed(() => {
-    const now = new Date();
-    return this.clientsData().map(client => {
-      const totalReports = client.reportsActive.length;
-      const overdueReports = client.reportsActive.filter(report =>
-        new Date(report.dueDate) < now
-      ).length;
-      return {
-        ...client,
-        reportsActive: totalReports - overdueReports,
-        overdueReports
-      };
-    });
-  });
 
   // DATA FILTER
   clientNameFilter = signal<string>('');
   filteredClients = computed(() => {
-    return this.clientsView().filter(client => {
+    return this.clientsData().filter(client => {
       return client.name.toLowerCase().includes(this.clientNameFilter().toLowerCase());
     })
   })
