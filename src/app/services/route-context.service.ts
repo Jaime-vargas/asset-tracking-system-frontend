@@ -10,6 +10,7 @@ export class RouteContextService {
   branchSlug = signal<string | null>(null);
   hardwareId = signal<number | null>(null);
   hardwareSlug = signal<string | null>(null);
+  reportId = signal<number | null>(null);
 
   setFromRoute(route: ActivatedRoute){
     const params = route.snapshot.params;
@@ -20,5 +21,6 @@ export class RouteContextService {
     this.branchSlug.set(params['branchSlug'] ?? null);
     this.hardwareId.set(params['hardwareId'] ? Number(params['hardwareId']) : null);
     this.hardwareSlug.set(params['hardwareSlug'] ?? null);
+    this.reportId.set(params['reportId'] ? Number(params['reportId']) : null);
   }
 }

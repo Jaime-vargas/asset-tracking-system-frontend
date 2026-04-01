@@ -1,1 +1,60 @@
-<p>reports-page works!</p>
+<button nz-button nzType="text" class="headerButton">All Reports</button>
+<nz-divider></nz-divider>
+<!-- TABLE OF ALL REPORTS BY HARDWARE ID -->
+<app-dasboard-box-component>
+  <div body>
+    <nz-table #tableData nzSize="default" [nzScroll]="{ x: 'max-content' }" [nzData]="filteredReports()" >
+      <colgroup>
+        <col style="width: 50px" />
+        <col style="width: 120px" />
+        <col style="width: 120px" />
+        <col style="width: 120px" />
+        <col style="width: 120px" />
+        <col style="width: 80px" />
+        <col style="width: 130px" />
+        <col style="width: 130px" />
+        <col style="width: 80px" />
+        <col style="width: 80px" />
+      </colgroup>
+      <thead>
+      <tr>
+        <th>#ID</th>
+        <th>Title</th>
+        <th>Client</th>
+        <th>Sucursal</th>
+        <th>Hardware</th>
+        <th>Priority</th>
+        <th>Created</th>
+        <th>Due Date</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </thead>
+      @if (tableData.data.length > 0) {
+        <tbody>
+          @for (report of tableData.data; track report.id){
+            <tr>
+              <td>#{{report.id}}</td>
+              <td>{{report.title}}</td>
+              <td>{{report.clientName}}</td>
+              <td>{{report.branchName}}</td>
+              <td>{{report.hardwareName}}</td>
+              <td><app-priority-tags-component [priority]="report.priority"></app-priority-tags-component></td>
+              <td>{{report.createdDate.toDateString()}}</td>
+              <td>{{report.dueDate.toDateString()}}</td>
+              <td><app-status-tags-component [dueDate]="report.dueDate" [status]="report.status"></app-status-tags-component></td>
+              <td><button nz-button nzType="primary"
+                          [routerLink]="['/clients',report.clientId,report.clientName,
+                'branches',report.branchId,report.branchName,
+                'hardware',report.hardwareId,report.hardwareName,
+                'reports',report.id]">View</button></td>
+            </tr>
+          }
+        </tbody>
+      } @else {
+        <td colspan="8">
+          <nz-empty nzNotFoundImage="simple"></nz-empty>
+        </td>
+      }
+    </nz-table>
+  </div>
+</app-dasboard-box-component>
