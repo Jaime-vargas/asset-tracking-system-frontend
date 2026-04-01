@@ -22,10 +22,16 @@ export const routes: Routes = [
   },
   {
     path: 'clients/:clientId/:clientSlug/branches/:branchId/:branchSlug/hardware/:hardwareId/:hardwareSlug',
-    component: DevicePage
+    component: HardwareDevicePage
   },
   {
     path: 'clients/:clientId/:clientSlug/branches/:branchId/:branchSlug/hardware/:hardwareId/:hardwareSlug/reports',
     component: HardwareReportsPage
-  }
+  },
+  { path: 'reports', component: ReportsPage },
+  {
+    path: 'clients/:clientId/:clientSlug/branches/:branchId/:branchSlug/hardware/:hardwareId/:hardwareSlug/reports/:reportId',
+    component: ReportDetailPage
+  },
+  { path: 'users', component: UsersPage },
 ];
