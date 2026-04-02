@@ -1,0 +1,5 @@
+<nz-tag [nzColor]="tagColor()">{{label()}}</nz-tag>
+@if(status() && overdue()){
+  <nz-tag [nzColor]="utilityService.baseColors.red">OVERDUE</nz-tag>
+}
+
