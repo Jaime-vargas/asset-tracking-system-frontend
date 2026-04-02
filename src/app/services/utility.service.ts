@@ -17,7 +17,7 @@ export class UtilityService{
   isValidDate(date: string):string{
     if (date === "N/A"){
       return date
-    }else return new Date(date).toLocaleDateString();
+    }else return new Date(date).toDateString();
   }
 
   slugify(name: string) {

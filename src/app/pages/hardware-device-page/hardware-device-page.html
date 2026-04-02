@@ -16,79 +16,71 @@
 
     <div nz-row [nzGutter]="[10,10]">
       <div nz-col nzSpan="24">
+
         <app-dasboard-box-component>
-          <div body nz-flex nzJustify="space-between">
-            <h3 nz-typography class="title">{{ hardwareDetail()?.name }}</h3>
+          <div body nz-flex nzJustify="space-between" nzAlign="center">
+            <h2 nz-typography class="title">{{ hardwareView()?.name }}</h2>
             <button nz-button nzType="primary"><nz-icon nzType="edit" nzTheme="fill" />Edit Hardware</button>
-            <ng-content select="[header]"></ng-content>
           </div>
         </app-dasboard-box-component>
+
       </div>
-      <div nz-col nzSpan="17" nz-flex nzVertical nzGap="small" nzAlign="stretch">
+      <div nz-col nzSpan="15" nz-flex nzVertical nzGap="small" nzAlign="stretch">
         <!-- GLOBAL HARDWARE DETAILS -->
         <app-dasboard-box-component>
-          <div body >
-            <div nz-flex nzGap="middle" nzAlign="center">
-              <div><img nz-image [nzSrc]="defaultCameraImage"  width="150" height="150" alt="default image camera" class="shadow" style="border-radius: 10px"></div>
-              <nz-divider nzType="vertical" class="vertical-divider" ></nz-divider>
-              <div nz-flex  nzVertical nzGap="small">
-                <div class="row">
-                  <span class="label">Type</span>
-                  <strong class="hInfo">{{ hardwareDetail()?.type }}</strong>
-                </div>
-                <nz-divider nzSize="small"></nz-divider>
-                <div class="row">
-                  <span class="label">Model</span>
-                  <strong class="hInfo">{{ hardwareDetail()?.model }}</strong>
-                </div>
-                <nz-divider nzSize="small"></nz-divider>
-                <div class="row">
-                  <span class="label">Serial Number</span>
-                  <strong class="hInfo">{{ hardwareDetail()?.serialNumber }}</strong>
-                </div>
-                <nz-divider nzSize="small"></nz-divider>
-                <div class="row">
-                  <span class="label">Location</span>
-                  <strong class="hInfo">{{ hardwareDetail()?.location }}</strong>
-                </div>
+          <div body nz-flex nzVertical nzGap="small" >
+            <div nz-row nzAlign="middle">
+              <div nz-col nzFlex="0 0 200px">
+                <div><img nz-image [nzSrc]="defaultCameraImage"  width="200" height="200" alt="default image camera" class="shadow" style="border-radius: 10px"></div>
+              </div>
+              <div nz-col nzFlex="20px" style="height: 200px">
+                <nz-divider nzType="vertical" style="height: 100%" ></nz-divider>
+              </div>
+              <div nz-col nzSpan="10">
+                @for (detail of hardwareView()?.globalDetails; track detail.label){
+                  <div nz-row>
+                    <div nz-col nzSpan="10">
+                      <span class="label">{{ detail.label }}</span>
+                    </div>
+                    <div nz-col nzSpan="14">
+                      <strong class="hInfo">{{ detail.value }}</strong>
+                    </div>
+                  </div>
+                  <div nz-row>
+                    <div nz-col nzSpan="24">
+                      <nz-divider nzSize="small"></nz-divider>
+                    </div>
+                  </div>
+                }
               </div>
             </div>
           </div>
         </app-dasboard-box-component>
-        <!-- DETAILS DEPENDING ON THE TYPE -->
-        @if (hardwareDetail()?.type === "Camera"){
-          <app-dasboard-box-component  [boxTitle]="'Hardware Information'" style="background: #2f5ea8;">
-            <div body nz-flex nzVertical nzGap="small">
-              <div class="row">
-                <span class="label">Camera ID</span>
-                <strong class="hInfo">{{ hardwareDetail()?.cameraId}}</strong>
+
+        <!-- HARDWARE INFORMATION -->
+        <app-dasboard-box-component  [boxTitle]="'Hardware Information'" >
+          <div body nz-flex nzVertical nzGap="small">
+            @for (hInfo of hardwareView()?.hardwareInfo; track hInfo.label){
+              <div nz-row>
+                <div nz-col nzSpan="5">
+                  <span class="label">{{ hInfo.label }}</span>
+                </div>
+                <div nz-col nzSpan="5">
+                  <strong class="hInfo">{{hInfo.value}}</strong>
+                </div>
               </div>
-              <nz-divider nzSize="small"></nz-divider>
-              <div class="row">
-                <span class="label">Name</span>
-                <strong class="hInfo">{{ hardwareDetail()?.name }}</strong>
+              <div nz-row>
+                <div nz-col nzSpan="10">
+                  <nz-divider nzSize="small"></nz-divider>
+                </div>
               </div>
-              <nz-divider nzSize="small"></nz-divider>
-              <div class="row">
-                <span class="label">MAC Address</span>
-                <strong class="hInfo">{{ hardwareDetail()?.macAddress }}</strong>
-              </div>
-              <nz-divider nzSize="small"></nz-divider>
-              <div class="row">
-                <span class="label">IP Address</span>
-                <strong class="hInfo">{{ hardwareDetail()?.ipAddress }}</strong>
-              </div>
-              <nz-divider nzSize="small"></nz-divider>
-              <div class="row">
-                <span class="label">Last Maintenance</span>
-                <strong class="hInfo">{{ lastMaintenanceDate() }}</strong>
-              </div>
-            </div>
-          </app-dasboard-box-component>
-        }
+            }
+          </div>
+        </app-dasboard-box-component>
       </div>
-      <div nz-col nzSpan="7">
-        <!-- HISTORY OF REPORTS -->
+
+      <!-- HISTORY OF REPORTS -->
+      <div nz-col nzSpan="9">
         <app-dasboard-box-component [boxTitle]="'Report History'" style="flex: 1">
           <div body nz-flex nzVertical nzGap="small">
             @if(lastReports()?.length === 0){
@@ -99,22 +91,22 @@
                 'branches',routeContext.branchId(),routeContext.branchSlug(),
                 'hardware',routeContext.hardwareId(),routeContext.hardwareSlug(),
                 'reports',report.id]">
-                  <div body nz-flex nzVertical nzGap="small"  >
-                    <div nz-flex nzGap="small" nzJustify="space-between">
-                      <div nz-flex nzGap="small" >
-                        <nz-tag [nzColor]="report.tag.color">{{ report.tag.label }}</nz-tag>
-                        @if (report.status && report.overdue){
-                          <nz-tag [nzColor]="'#c72e30'">OVERDUE</nz-tag>
-                        }
-                        <span class="reportDate">{{report.dueDate}}</span>
+                  <div body>
+                    <div nz-row [nzGutter]="[0,10]">
+                      <div nz-col nzSpan="12">
+                        <app-double-status-tag-component
+                          [status]="report.status" [dueDate]="report.dueDate"></app-double-status-tag-component>
                       </div>
-                      <nz-icon nzType="right" nzTheme="outline" style="flex:0" />
-                    </div>
-                    <div>
-                      <span style="margin-left: 5px" class="reportTittle"><strong>{{ report.title }}</strong> </span>
-                    </div>
-                    <div>
-                      <span style="margin-left: 5px">Technician: <strong>{{report.reportedBy}}</strong> </span>
+                      <div nz-col nzSpan="12" nz-flex nzJustify="flex-end" style="gap: 3px">
+                        <span class="reportDate">{{report.dueDate.toDateString()}}</span>
+                        <nz-icon nzType="right" nzTheme="outline"/>
+                      </div>
+                      <div nz-col nzSpan="24">
+                        <strong class="reportTittle">{{ report.title }}</strong>
+                      </div>
+                      <div nz-col nzSpan="24">
+                        <span>Technician: <strong>{{report.reportedBy}}</strong> </span>
+                      </div>
                     </div>
                   </div>
                 </app-dasboard-card-component>

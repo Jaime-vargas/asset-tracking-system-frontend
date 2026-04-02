@@ -5,19 +5,19 @@ import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasb
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
-import {NgOptimizedImage} from '@angular/common';
 import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {DasboardCardComponent} from '../../components/dasboard-card-component/dasboard-card-component';
-import {HardwareService} from '../../services/hardware.service';
-import {HardwareDetailDto} from '../../interfaces/hardware-dto/hardware-detail.dto';
-import {CameraDetailDto} from '../../interfaces/camera-detail.dto';
+import {HardwareService} from '../../services/hardware.service'
 import {NzTagComponent} from 'ng-zorro-antd/tag';
 import {NzImageModule } from 'ng-zorro-antd/image';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {RouteContextService} from '../../services/route-context.service';
-import {NzImageDirective} from 'ng-zorro-antd/image';
 import {NzBreadCrumbComponent, NzBreadCrumbItemComponent} from 'ng-zorro-antd/breadcrumb';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {UtilityService} from '../../services/utility.service';
+import {HardwareUnion} from '../../interfaces/hardware-dto/hardware-union';
+import {ReportCountTagsComponent} from '../../components/report-count-tags-component/report-count-tags-component';
+import {DoubleStatusTagComponent} from '../../components/double-status-tag-component/double-status-tag-component';
 
 @Component({
   selector: 'app-hardware-device-page',
@@ -28,7 +28,6 @@ import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
     NzButtonComponent,
     NzIconDirective,
     NzFlexDirective,
-    NgOptimizedImage,
     NzEmptyComponent,
     DasboardCardComponent,
     NzTagComponent,
@@ -37,17 +36,20 @@ import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
     NzBreadCrumbComponent,
     NzBreadCrumbItemComponent,
     NzRowDirective,
-    NzColDirective
+    NzColDirective,
+    ReportCountTagsComponent,
+    DoubleStatusTagComponent
   ],
   templateUrl: './hardware-device-page.html',
   styleUrl: './hardware-device-page.css'
 })
+
 export class HardwareDevicePage implements OnInit {
 
   route: ActivatedRoute = inject(ActivatedRoute);
   routeContext = inject(RouteContextService)
-  constructor(private hardwareService: HardwareService) {
-
+  constructor(private hardwareService: HardwareService,
+              private utilityService: UtilityService) {
   }
   clientId = computed(() =>
     this.routeContext.clientId() ?? 0);
@@ -64,41 +66,45 @@ export class HardwareDevicePage implements OnInit {
   }
 
   defaultCameraImage: string = '/defaultCamera.webp';
-  hardwareDetailData = signal<HardwareDetailDto | undefined>(undefined);
-  // COMPUTED TO ASSIGN TYPES
-  hardwareDetail = computed(() => {
-    const hardware = this.hardwareDetailData();
-    if (hardware?.type === 'Camera') {
-      return hardware as CameraDetailDto;
-    }
-    return null;
-  });
+  hardwareDetailData = signal<HardwareUnion>(undefined);
 
-  lastMaintenanceDate = computed(() =>{
-    const date = new Date(this.hardwareDetail()?.lastMaintenanceDate ?? '');
-    return isNaN(date.getTime()) ? this.hardwareDetail()?.lastMaintenanceDate : date.toLocaleDateString('en-CA');
+  // COMPUTED TO ASSIGN TYPES
+  hardwareView = computed(() => {
+    const hardware = this.hardwareDetailData();
+    if (!hardware) return undefined;
+    const globalDetails = [
+      {label: 'Type', value: hardware.type},
+      {label: 'Name', value: hardware.name },
+      {label: 'Serial Number', value: hardware.serialNumber },
+      {label: 'Location', value: hardware.location},
+    ];
+    const lastMaintenanceDate = {label: 'Last Maintenance Date', value: this.utilityService.isValidDate(hardware.lastMaintenanceDate)};
+    switch (hardware.type) {
+      case ('Camera'):
+        return {...hardware,
+          globalDetails: globalDetails,
+          hardwareInfo: [
+            {label: 'Camera ID', value: hardware.cameraId },
+            {label: 'Mac Address', value: hardware.macAddress },
+            {label: 'IP Address', value: hardware.ipAddress },
+            lastMaintenanceDate
+          ]}
+      default: return undefined;
+    }
   });
+// type, model, serial number, location
 
   lastReports = computed(() => {
-    const now = new Date();
-    return this.hardwareDetail()?.recentActiveReports.map(report => {
+    return this.hardwareView()?.recentActiveReports.map(report => {
       const date = new Date(report.dueDate)
-      const tag = {closed: {label:"CLOSED", color:"#428d5b"},
-                        active: {label:"ACTIVE", color:"#ec8a42"}};
-      const active = report.status ? tag.active : tag.closed;
-      const overdue = date < now;
       return{
         ...report,
-        dueDate: date.toLocaleDateString('en-CA'),
-        overdue: overdue,
-        tag: active
+        dueDate: date
       }
     })
   });
 
-
-
-  getHardwareDetail() {
+  getHardwareDetail(){
     return this.hardwareService.getHardwareDetail(this.hardwareId()).subscribe({
       next: data => {
           return this.hardwareDetailData.set(data);
