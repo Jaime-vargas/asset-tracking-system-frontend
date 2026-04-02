@@ -3,14 +3,14 @@ import {NzTagComponent} from 'ng-zorro-antd/tag';
 import {UtilityService} from '../../services/utility.service';
 
 @Component({
-  selector: 'app-status-tags-component',
+  selector: 'app-single-status-tags-component',
   imports: [
     NzTagComponent
   ],
-  templateUrl: './status-tags-component.html',
-  styleUrl: './status-tags-component.css',
+  templateUrl: './single-status-tags-component.html',
+  styleUrl: './single-status-tags-component.css',
 })
-export class StatusTagsComponent {
+export class SingleStatusTagsComponent {
 
   constructor(private utilityService: UtilityService) {
   }
