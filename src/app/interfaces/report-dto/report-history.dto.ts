@@ -6,3 +6,4 @@ export interface ReportHistoryDto {
   reportedBy: string;
   status: boolean;
 }
+
