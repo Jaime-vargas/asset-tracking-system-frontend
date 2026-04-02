@@ -1,8 +1,3 @@
-.vertical-divider {
-  height: auto;
-  align-self: stretch;
-}
-
 .recentReportCard{
   cursor: pointer;
   transition: all 0.2s ease;
@@ -19,12 +14,7 @@
   font-size: 16px;
   font-weight: bold;
 }
+
 .reportTittle{
   font-size: 16px;
 }
-
-.row {
-  display: grid;
-  grid-template-columns: 180px 1fr;
-}
-
