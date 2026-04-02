@@ -7,7 +7,7 @@ import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasb
 import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
 import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
-import {StatusTagsComponent} from '../../components/status-tags-component/status-tags-component';
+import {SingleStatusTagsComponent} from '../../components/single-status-tags-component/single-status-tags-component';
 import {RouterLink} from '@angular/router';
 
 @Component({
@@ -20,7 +20,7 @@ import {RouterLink} from '@angular/router';
     NzTableComponent,
     NzThMeasureDirective,
     PriorityTagsComponent,
-    StatusTagsComponent,
+    SingleStatusTagsComponent,
     RouterLink
   ],
   templateUrl: './reports-page.html',

@@ -13,7 +13,7 @@
         <div body nz-row>
           <div nz-col nzSpan="16" nz-flex nzAlign="center" nzGap="middle">
             <h3 nz-typography style="margin: 0">Report # {{report.id}}</h3>
-            <app-status-tags-component [status]="report.status" [dueDate]="report.dueDate"></app-status-tags-component>
+            <app-single-status-tags-component [status]="report.status" [dueDate]="report.dueDate"></app-single-status-tags-component>
           </div>
           <div nz-col nzSpan="8" nz-flex nzGap="small" nzJustify="flex-end">
             @if (report.status){
@@ -60,9 +60,9 @@
                     </app-priority-tags-component>
                   }
                   @case ('status'){
-                    <app-status-tags-component [dueDate]="report.dueDate"
+                    <app-single-status-tags-component [dueDate]="report.dueDate"
                     [status]="item.value">
-                    </app-status-tags-component>
+                    </app-single-status-tags-component>
                   }
                   @default {
                     <strong>{{item.value}}</strong>

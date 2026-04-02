@@ -40,7 +40,7 @@
               <td><app-priority-tags-component [priority]="report.priority"></app-priority-tags-component></td>
               <td>{{report.createdDate.toDateString()}}</td>
               <td>{{report.dueDate.toDateString()}}</td>
-              <td><app-status-tags-component [dueDate]="report.dueDate" [status]="report.status"></app-status-tags-component></td>
+              <td><app-single-status-tags-component [dueDate]="report.dueDate" [status]="report.status"></app-single-status-tags-component></td>
               <td><button nz-button nzType="primary"
               [routerLink]="['/clients',report.clientId,report.clientName,
                 'branches',report.branchId,report.branchName,

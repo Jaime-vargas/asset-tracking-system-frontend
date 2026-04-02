@@ -17,7 +17,7 @@ import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 import {NzImageModule } from 'ng-zorro-antd/image';
 import {CarouselComponent} from '../../components/carousel-component/carousel-component';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
-import {StatusTagsComponent} from '../../components/status-tags-component/status-tags-component';
+import {SingleStatusTagsComponent} from '../../components/single-status-tags-component/single-status-tags-component';
 import {UtilityService} from '../../services/utility.service';
 
 // TYPE FOR SWITCH CASE USE INFERRING FROM TYPES
@@ -45,7 +45,7 @@ type ReportDetailItem =
     NzImageModule,
     CarouselComponent,
     NzIconDirective,
-    StatusTagsComponent
+    SingleStatusTagsComponent
   ],
   templateUrl: './report-detail-page.html',
   styleUrl: './report-detail-page.css',

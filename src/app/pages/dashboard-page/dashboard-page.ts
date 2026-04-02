@@ -16,11 +16,11 @@ import {Observable} from 'rxjs';
 import {RouterLink} from '@angular/router';
 import {UtilityService} from '../../services/utility.service';
 import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
-import {StatusTagsComponent} from '../../components/status-tags-component/status-tags-component';
+import {SingleStatusTagsComponent} from '../../components/single-status-tags-component/single-status-tags-component';
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [DasboardCardComponent, DasboardGreyCardComponent, DasboardBoxComponent, NzTypographyComponent, NzDividerComponent, NzFlexDirective, NzIconModule, NzTableComponent, NzGridModule, NzButtonComponent, NzThMeasureDirective, NzCellBreakWordDirective, NzTagComponent, DasboardGreyCardComponent, RouterLink, PriorityTagsComponent, StatusTagsComponent],
+  imports: [DasboardCardComponent, DasboardGreyCardComponent, DasboardBoxComponent, NzTypographyComponent, NzDividerComponent, NzFlexDirective, NzIconModule, NzTableComponent, NzGridModule, NzButtonComponent, NzThMeasureDirective, NzCellBreakWordDirective, NzTagComponent, DasboardGreyCardComponent, RouterLink, PriorityTagsComponent, SingleStatusTagsComponent],
   templateUrl: './dashboard-page.html',
   styleUrl: './dashboard-page.css',
 })

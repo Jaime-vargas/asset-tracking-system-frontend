@@ -9,7 +9,7 @@ import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {HardwareService} from '../../services/hardware.service';
 import {ReportTableDto} from '../../interfaces/report-dto/report-table.dto';
 import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
-import {StatusTagsComponent} from '../../components/status-tags-component/status-tags-component';
+import {SingleStatusTagsComponent} from '../../components/single-status-tags-component/single-status-tags-component';
 
 @Component({
   selector: 'app-hardware-reports-page',
@@ -22,7 +22,7 @@ import {StatusTagsComponent} from '../../components/status-tags-component/status
     NzThMeasureDirective,
     NzDividerComponent,
     PriorityTagsComponent,
-    StatusTagsComponent
+    SingleStatusTagsComponent
   ],
   templateUrl: './hardware-reports-page.html',
   styleUrl: './hardware-reports-page.css',
