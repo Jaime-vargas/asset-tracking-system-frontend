@@ -63,7 +63,6 @@ export class BranchHardwarePage {
   hardwareData = signal<HardwareTableDto[]>([]);
   hardwareView = computed(()=> {
     return this.hardwareData().map((hardware) => {
-      console.log(hardware.id);
       return {
         ...hardware,
         lastMaintenanceDate: new Date(hardware.lastMaintenanceDate),
