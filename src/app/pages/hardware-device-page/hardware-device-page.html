@@ -25,7 +25,7 @@
         </app-dasboard-box-component>
 
       </div>
-      <div nz-col nzSpan="15" nz-flex nzVertical nzGap="small" nzAlign="stretch">
+      <div nz-col nzFlex="1 1 auto" nz-flex nzVertical nzGap="small" nzAlign="stretch">
         <!-- GLOBAL HARDWARE DETAILS -->
         <app-dasboard-box-component>
           <div body nz-flex nzVertical nzGap="small" >
@@ -80,7 +80,7 @@
       </div>
 
       <!-- HISTORY OF REPORTS -->
-      <div nz-col nzSpan="9">
+      <div nz-col nzFlex="380px">
         <app-dasboard-box-component [boxTitle]="'Report History'" style="flex: 1">
           <div body nz-flex nzVertical nzGap="small">
             @if(lastReports()?.length === 0){
