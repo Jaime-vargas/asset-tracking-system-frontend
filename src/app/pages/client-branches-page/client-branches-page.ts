@@ -7,7 +7,6 @@ import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasb
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
-import {NzTagComponent} from 'ng-zorro-antd/tag';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
@@ -26,7 +25,6 @@ import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
     NzButtonComponent,
     NzIconDirective,
     NzTableComponent,
-    NzTagComponent,
     NzThMeasureDirective,
     NzDividerComponent,
     NzEmptyComponent,
