@@ -1,4 +1,4 @@
-import {Component, computed, signal} from '@angular/core';
+import {Component, computed, inject, signal} from '@angular/core';
 import {ReportsService} from '../../services/report.service';
 import {ReportTableDto} from '../../interfaces/report-dto/report-table.dto';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
@@ -8,7 +8,11 @@ import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
 import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
 import {SingleStatusTagsComponent} from '../../components/single-status-tags-component/single-status-tags-component';
-import {RouterLink} from '@angular/router';
+import {ActivatedRoute, RouterLink} from '@angular/router';
+import {NzBreadCrumbComponent, NzBreadCrumbItemComponent} from 'ng-zorro-antd/breadcrumb';
+import {RouteContextService} from '../../services/route-context.service';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 
 @Component({
   selector: 'app-reports-page',
@@ -21,7 +25,12 @@ import {RouterLink} from '@angular/router';
     NzThMeasureDirective,
     PriorityTagsComponent,
     SingleStatusTagsComponent,
-    RouterLink
+    RouterLink,
+    NzBreadCrumbComponent,
+    NzBreadCrumbItemComponent,
+    NzTypographyComponent,
+    NzRowDirective,
+    NzColDirective
   ],
   templateUrl: './reports-page.html',
   styleUrl: './reports-page.css',

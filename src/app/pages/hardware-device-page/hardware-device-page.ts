@@ -41,6 +41,7 @@ import {DoubleStatusTagComponent} from '../../components/double-status-tag-compo
 })
 
 export class HardwareDevicePage {
+
   route: ActivatedRoute = inject(ActivatedRoute);
   routeContext = inject(RouteContextService)
   constructor(private hardwareService: HardwareService,
@@ -50,7 +51,6 @@ export class HardwareDevicePage {
   }
 
   defaultCameraImage: string = '/defaultCamera.webp';
-
   hardwareDetailData = signal<HardwareUnion | undefined>(undefined);
 
   // COMPUTED TO ASSIGN TYPES
@@ -95,9 +95,10 @@ export class HardwareDevicePage {
     })
   });
 
-  hardwareId = this.routeContext.hardwareId() ?? 0;
+  hardwareId = computed(() =>
+    this.routeContext.hardwareId() ?? 0);
   getHardwareDetail(){
-    return this.hardwareService.getHardwareDetail(this.hardwareId).subscribe({
+    return this.hardwareService.getHardwareDetail(this.hardwareId()).subscribe({
       next: data => {
           return this.hardwareDetailData.set(data);
       }

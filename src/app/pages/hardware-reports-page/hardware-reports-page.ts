@@ -29,13 +29,12 @@ import {SingleStatusTagsComponent} from '../../components/single-status-tags-com
 })
 export class HardwareReportsPage {
   route: ActivatedRoute = inject(ActivatedRoute);
-  routeContext = inject(RouteContextService)
+  routeContext: RouteContextService = inject(RouteContextService)
 
   constructor(private hardwareService: HardwareService) {
     this.routeContext.setFromRoute(this.route);
     this.getHardwareReports();
   }
-
 
   reportsData = signal<ReportTableDto[]>([]);
   reportsView = computed(()=>
