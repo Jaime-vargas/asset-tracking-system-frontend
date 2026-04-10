@@ -4,7 +4,7 @@
 <div class="contentBody">
   <div nz-row [nzGutter]="[10,10]">
     <!-- TOP CARDS -->
-    @for (card of topCardsView(); track card.value){
+    @for (card of topCardsView(); track card.label){
       <div nz-col nzSpan="6">
         <app-dasboard-card-component  [cardTitle]="card.label">
           <div body>
