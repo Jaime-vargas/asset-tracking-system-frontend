@@ -45,7 +45,9 @@ type ReportDetailItem =
     NzImageModule,
     CarouselComponent,
     NzIconDirective,
-    SingleStatusTagsComponent
+    SingleStatusTagsComponent,
+    NzBreadCrumbComponent,
+    NzBreadCrumbItemComponent
   ],
   templateUrl: './report-detail-page.html',
   styleUrl: './report-detail-page.css',

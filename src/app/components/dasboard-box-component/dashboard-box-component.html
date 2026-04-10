@@ -1,8 +1,11 @@
-<div class="bg-white shadow fitContent boxComponent" >
+<div class="bg-white shadow fitContent boxComponent" [style.height]="flex() ? '100%' : null">
   @if (boxTitle()){
     <h3 nz-typography class="title">{{boxTitle() }}</h3>
     <nz-divider></nz-divider>
   }
-  <ng-content class="boxBody" select="[body]"></ng-content>
+  <div class="boxBody">
+    <ng-content select="[body]"></ng-content>
+  </div>
+
   <ng-content select="[footer]"></ng-content>
 </div>

@@ -5,9 +5,8 @@
 .boxComponent{
   display: flex;
   flex-direction: column;
-  height: 100%;
 }
 
 .boxBody{
- flex: 1;
+ flex: 1 ;
 }

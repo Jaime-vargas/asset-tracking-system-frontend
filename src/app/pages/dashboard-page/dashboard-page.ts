@@ -31,6 +31,7 @@ export class DashboardPage {
   }
 
   private dashboardData = signal<DashboardDataDto | undefined>(undefined);
+  // TOP CARDS
   protected topCardsView = computed(() => {
     const topCards = this.dashboardData();
     if (!topCards) return [];
@@ -42,15 +43,6 @@ export class DashboardPage {
     ]
   })
 
-  // TOP CARDS
-  public openReports = computed(() =>
-    this.dashboardData()?.openReports ?? 0);
-  public overdueReports = computed(() =>
-    this.dashboardData()?.overdueReports ?? 0);
-  public totalHardware = computed(() =>
-    this.dashboardData()?.totalHardware ?? 0);
-  public totalClients = computed(() =>
-    this.dashboardData()?.totalClients ?? 0);
   // RECENT ACTIVE REPORTS
   public recentReports = computed(() => {
     return this.dashboardData()?.recentReports.map(report   => {

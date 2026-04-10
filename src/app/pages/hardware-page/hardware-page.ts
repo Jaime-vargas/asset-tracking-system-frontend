@@ -17,6 +17,8 @@ import {RouterLink} from '@angular/router';
 import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
 import {ne_NP} from 'ng-zorro-antd/i18n';
 import {ReportCountTagsComponent} from '../../components/report-count-tags-component/report-count-tags-component';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 
 @Component({
   selector: 'app-hardware-page',
@@ -33,12 +35,14 @@ import {ReportCountTagsComponent} from '../../components/report-count-tags-compo
     NzInputWrapperComponent,
     NzSelectModule,
     NzTableComponent,
-    NzTagComponent,
     NzThMeasureDirective,
     RouterLink,
     NzSelectComponent,
     NzOptionComponent,
-    ReportCountTagsComponent
+    ReportCountTagsComponent,
+    NzTypographyComponent,
+    NzRowDirective,
+    NzColDirective
   ],
   templateUrl: './hardware-page.html',
   styleUrl: './hardware-page.css',

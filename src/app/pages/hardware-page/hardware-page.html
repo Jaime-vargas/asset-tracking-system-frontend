@@ -1,101 +1,131 @@
-<button nz-button nzType="text" class="headerButton" >All Hardware</button>
-<nz-divider></nz-divider>
-<app-dasboard-box-component style="margin: 0 10px 0 0">
-  <div body nz-flex nzGap="middle">
-    <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select a client">
-
-    </nz-select>
-    <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select a branch" [ngModel]="branchFilter()" (ngModelChange)="branchFilter.set($event)" >
-      @for (branch of branchList(); track $index){
-        <nz-option [nzLabel]="branch" [nzValue]="branch" />
-      }
-    </nz-select>
-    <nz-input-wrapper nzAllowClear >
-      <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-      <input nz-input [ngModel]="typeFilter()" (ngModelChange)="typeFilter.set($event)"  placeholder=" Search Type..." />
-    </nz-input-wrapper>
-    <nz-input-wrapper nzAllowClear >
-      <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-      <input nz-input [ngModel]="nameFilter()" (ngModelChange)="nameFilter.set($event)"  placeholder=" Search Name..." />
-    </nz-input-wrapper>
-    <nz-input-wrapper nzAllowClear >
-      <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-      <input nz-input [ngModel]="modelFilter()" (ngModelChange)="modelFilter.set($event)"  placeholder=" Search Model..." />
-    </nz-input-wrapper>
-    <nz-input-wrapper nzAllowClear >
-      <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-      <input nz-input [ngModel]="serialNumberFilter()" (ngModelChange)="serialNumberFilter.set($event)"  placeholder=" Search Serial Number..." />
-    </nz-input-wrapper>
-    <nz-input-wrapper nzAllowClear >
-      <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-      <input nz-input [ngModel]="locationFilter()" (ngModelChange)="locationFilter.set($event)" placeholder=" Search Location..." />
-    </nz-input-wrapper>
-    <nz-input-wrapper nzAllowClear >
-      <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-      <input nz-input [ngModel]="lastMaintenanceFilter()" (ngModelChange)="lastMaintenanceFilter.set($event)" placeholder=" Search Last Maintenance..." />
-    </nz-input-wrapper>
-    <button nz-button nzType="primary"><nz-icon nzType="plus" nzTheme="outline" />Add Hardware</button>
-  </div>
-</app-dasboard-box-component>
-<!-- HARDWARE TABLE -->
-<app-dasboard-box-component>
-  <div body>
-    <nz-table #tableData nzSize="default" [nzScroll]="{ x: 'max-content' }" [nzData]="filteredHardware()" >
-      <colgroup>
-        <col style="width: 120px" />
-        <col style="width: 120px" />
-        <col style="width: 100px" />
-        <col style="width: 150px" />
-        <col style="width: 180px" />
-        <col style="width: 120px" />
-        <col style="width: 120px" />
-        <col style="width: 160px" />
-        <col style="width: 150px" />
-        <col style="width: 120px" />
-      </colgroup>
-      <thead>
-      <tr>
-        <th>Client</th>
-        <th>Branch</th>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Model</th>
-        <th>Serial Number</th>
-        <th>Location</th>
-        <th>Reports</th>
-        <th>Last Maintenance</th>
-        <th>Actions</th>
-      </thead>
-      @if (tableData.data.length > 0) {
-        <tbody>
-          @for (hardware of tableData.data; track hardware.id){
-            <tr>
-              <td>{{hardware.clientName}}</td>
-              <td>{{hardware.branchName}}</td>
-              @if (hardware.type === "Camera") {
-                <td><nz-icon nzType="video-camera" nzTheme="fill" class="bg-blue" /> {{hardware.type}}</td>
+<div class="contentPage">
+  <h2 nz-typography>All Hardware</h2>
+  <nz-divider></nz-divider>
+  <div class="contentBody">
+    <div nz-row [nzGutter]="[10,10]">
+      <div nz-col nzSpan="24">
+        <app-dasboard-box-component>
+          <div body nz-row [nzGutter]="[5,5]">
+            <div nz-col nzFlex="1 0 100px">
+              <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select a client">
+                @for (client of clientList(); track $index){
+                  <nz-option [nzLabel]="client" [nzValue]="client" />
+                }
+              </nz-select>
+            </div>
+            <div nz-col nzFlex="1 0 100px">
+              <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select a branch" [ngModel]="branchFilter()" (ngModelChange)="branchFilter.set($event)" >
+                @for (branch of branchList(); track $index){
+                  <nz-option [nzLabel]="branch" [nzValue]="branch" />
+                }
+              </nz-select>
+            </div>
+            <div nz-col nzFlex="1 0 200px">
+              <nz-input-wrapper nzAllowClear >
+                <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+                <input nz-input [ngModel]="typeFilter()" (ngModelChange)="typeFilter.set($event)"  placeholder=" Search Type..." />
+              </nz-input-wrapper>
+            </div>
+            <div nz-col nzFlex="1 0 200px" >
+              <nz-input-wrapper nzAllowClear >
+                <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+                <input nz-input [ngModel]="nameFilter()" (ngModelChange)="nameFilter.set($event)"  placeholder=" Search Name..." />
+              </nz-input-wrapper>
+            </div>
+            <div nz-col nzFlex="1 0 200px" >
+              <nz-input-wrapper nzAllowClear >
+                <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+                <input nz-input [ngModel]="modelFilter()" (ngModelChange)="modelFilter.set($event)"  placeholder=" Search Model..." />
+              </nz-input-wrapper>
+            </div>
+            <div nz-col nzFlex="1 0 200px" >
+              <nz-input-wrapper nzAllowClear >
+                <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+                <input nz-input [ngModel]="serialNumberFilter()" (ngModelChange)="serialNumberFilter.set($event)"  placeholder=" Search Serial Number..." />
+              </nz-input-wrapper>
+            </div>
+            <div nz-col nzFlex="1 0 200px" >
+              <nz-input-wrapper nzAllowClear >
+                <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+                <input nz-input [ngModel]="locationFilter()" (ngModelChange)="locationFilter.set($event)" placeholder=" Search Location..." />
+              </nz-input-wrapper>
+            </div>
+            <div nz-col nzFlex="1 0 200px" >
+              <nz-input-wrapper nzAllowClear >
+                <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+                <input nz-input [ngModel]="lastMaintenanceFilter()" (ngModelChange)="lastMaintenanceFilter.set($event)" placeholder=" Search Last Maintenance..." />
+              </nz-input-wrapper>
+            </div>
+            <div nz-col nzFlex="1 0 200px" >
+              <button nz-button nzType="primary"><nz-icon nzType="plus" nzTheme="outline" />Add Hardware</button>
+            </div>
+          </div>
+        </app-dasboard-box-component>
+      </div>
+      <!-- HARDWARE TABLE -->
+      <div nz-col nzSpan="24">
+        <app-dasboard-box-component >
+          <div body>
+            <nz-table #tableData nzSize="default" [nzScroll]="{ x: 'max-content' }" [nzData]="filteredHardware()" >
+              <colgroup>
+                <col style="width: 120px" />
+                <col style="width: 120px" />
+                <col style="width: 100px" />
+                <col style="width: 150px" />
+                <col style="width: 180px" />
+                <col style="width: 120px" />
+                <col style="width: 120px" />
+                <col style="width: 160px" />
+                <col style="width: 150px" />
+                <col style="width: 120px" />
+              </colgroup>
+              <thead>
+              <tr>
+                <th>Client</th>
+                <th>Branch</th>
+                <th>Type</th>
+                <th>Name</th>
+                <th>Model</th>
+                <th>Serial Number</th>
+                <th>Location</th>
+                <th>Reports</th>
+                <th>Last Maintenance</th>
+                <th>Actions</th>
+              </thead>
+              @if (tableData.data.length > 0) {
+                <tbody>
+                  @for (hardware of tableData.data; track hardware.id){
+                    <tr>
+                      <td>{{hardware.clientName}}</td>
+                      <td>{{hardware.branchName}}</td>
+                      @if (hardware.type === "Camera") {
+                        <td><nz-icon nzType="video-camera" nzTheme="fill" class="bg-blue" /> {{hardware.type}}</td>
+                      } @else {
+                        <td>{{hardware.type}}</td>
+                      }
+                      <td>{{hardware.name}}</td>
+                      <td>{{hardware.model}}</td>
+                      <td>{{hardware.serialNumber}}</td>
+                      <td>{{hardware.location}}</td>
+                      <td><app-report-count-tags-component [reports]="hardware.reportsActive"></app-report-count-tags-component> </td>
+                      <td>{{hardware.lastMaintenanceDate.toDateString()}}</td>
+                      <td><button nz-button nzType="primary"
+                                  [routerLink]="['/clients',hardware.clientId, utilityService.slugify(hardware.clientName),
+                                'branches',hardware.branchId, utilityService.slugify(hardware.branchName),
+                                'hardware', hardware.id, utilityService.slugify(hardware.name),]">View<nz-icon nzType="right" /></button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
               } @else {
-                <td>{{hardware.type}}</td>
+                <td colspan="10">
+                  <nz-empty nzNotFoundImage="simple"></nz-empty>
+                </td>
               }
-              <td>{{hardware.name}}</td>
-              <td>{{hardware.model}}</td>
-              <td>{{hardware.serialNumber}}</td>
-              <td>{{hardware.location}}</td>
-              <td><app-report-count-tags-component [reports]="hardware.reportsActive"></app-report-count-tags-component> </td>
-              <td>{{hardware.lastMaintenanceDate.toDateString()}}</td>
-              <td><button nz-button nzType="primary"
-                          [routerLink]="['/clients',hardware.clientId, utilityService.slugify(hardware.clientName),
-                        'branches',hardware.branchId, utilityService.slugify(hardware.branchName),
-                        'hardware', hardware.id, utilityService.slugify(hardware.name),]">View<nz-icon nzType="right" /></button>
-              </td>
-            </tr>
-          }
-        </tbody>
-      } @else {
-        <td colspan="10">
-          <nz-empty nzNotFoundImage="simple"></nz-empty>
-        </td>
-      }
-    </nz-table>
+            </nz-table>
+          </div>
+        </app-dasboard-box-component>
+      </div>
+    </div>
   </div>
-</app-dasboard-box-component>
+</div>

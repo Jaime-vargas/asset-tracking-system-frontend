@@ -57,7 +57,7 @@
     </div>
     <!-- QUICK ACCESS CLIENTS -->
     <div nz-col nzSpan="12">
-      <app-dasboard-box-component  [boxTitle]="'Quick Access'" >
+      <app-dasboard-box-component  [boxTitle]="'Quick Access'" [flex]="true" >
         <div body>
           <div nz-row [nzGutter]="[10,10]" >
             @for (client of clients(); track client.id){
@@ -78,7 +78,7 @@
     </div>
     <!-- HARDWARE OVERVIEW -->
     <div nz-col nzSpan="24">
-      <app-dasboard-box-component [boxTitle]="'Hardware Overview'">
+      <app-dasboard-box-component [boxTitle]="'Hardware Overview'" [flex]="true">
         <div body>
           <div nz-row nzGutter="10" >
             <app-dasboard-grey-card-component nz-col nzSpan="8">
