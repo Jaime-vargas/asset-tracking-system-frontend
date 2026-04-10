@@ -65,6 +65,13 @@ export class HardwarePage {
   });
 
   // TABLE INPUT FILTERS
+
+  clientList = computed(()=> {
+    return new Set(this.hardwareData().map((hardware) => {
+      return hardware.clientName;
+    }))
+  });
+
   branchList = computed(() => {
     return new Set(this.hardwareView().map((hardware) => {
       return hardware.branchName;
