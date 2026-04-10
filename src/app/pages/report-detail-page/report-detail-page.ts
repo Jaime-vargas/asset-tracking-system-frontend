@@ -19,6 +19,7 @@ import {CarouselComponent} from '../../components/carousel-component/carousel-co
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {SingleStatusTagsComponent} from '../../components/single-status-tags-component/single-status-tags-component';
 import {UtilityService} from '../../services/utility.service';
+import {NzBreadCrumbComponent, NzBreadCrumbItemComponent} from 'ng-zorro-antd/breadcrumb';
 
 // TYPE FOR SWITCH CASE USE INFERRING FROM TYPES
 type ReportDetailItem =
