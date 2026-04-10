@@ -20,6 +20,11 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {SingleStatusTagsComponent} from '../../components/single-status-tags-component/single-status-tags-component';
 import {UtilityService} from '../../services/utility.service';
 import {NzBreadCrumbComponent, NzBreadCrumbItemComponent} from 'ng-zorro-antd/breadcrumb';
+import {CommentService} from '../../services/comment.service';
+import {CommentDto} from '../../interfaces/comment.dto';
+import {CommentRequestDTO} from '../../interfaces/comment-request.dto';
+import {FormBuilder, FormGroup, NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
+import {NzFormControlComponent, NzFormDirective} from 'ng-zorro-antd/form';
 
 // TYPE FOR SWITCH CASE USE INFERRING FROM TYPES
 type ReportDetailItem =
@@ -48,7 +53,10 @@ type ReportDetailItem =
     NzIconDirective,
     SingleStatusTagsComponent,
     NzBreadCrumbComponent,
-    NzBreadCrumbItemComponent
+    NzBreadCrumbItemComponent,
+    ReactiveFormsModule,
+    NzFormDirective,
+    NzFormControlComponent
   ],
   templateUrl: './report-detail-page.html',
   styleUrl: './report-detail-page.css',
@@ -60,13 +68,12 @@ export class ReportDetailPage {
   route: ActivatedRoute = inject(ActivatedRoute)
   routeContext = inject(RouteContextService)
 
-  constructor(private reportsService: ReportsService, private utilityService: UtilityService) {
+  constructor(private commentService: CommentService, private reportsService: ReportsService, private utilityService: UtilityService) {
     this.routeContext.setFromRoute(this.route);
     this.getReportById();
   }
 
   testImage = ["1","2","3","4","5","6","7","8","9","10"];
-
 
   reportData = signal<ReportDetailDto | undefined>(undefined);
   reportView = computed(() => {
@@ -80,7 +87,6 @@ export class ReportDetailPage {
       dueDate: new Date(report.dueDate)
     }
   });
-
 
   reportDetailsView = computed<ReportDetailItem[]>(() => {
     const report = this.reportData();
@@ -104,12 +110,24 @@ export class ReportDetailPage {
 
   })
 
-
-
-
   reportId = computed(()=>{
     return this.routeContext.reportId() ?? 0
   });
+
+
+  private fb = inject(NonNullableFormBuilder);
+  protected commentForm = this.fb.group({
+    text: ['', [Validators.required, Validators.maxLength(250)]]
+  });
+  buttonLoading = signal(false);
+  submitComment(){
+    this.buttonLoading.set(true);
+    const comment = this.commentForm.getRawValue();
+    this.postComment(comment);
+    this.buttonLoading.set(false);
+    this.commentForm.reset();
+  }
+
   getReportById(){
     this.reportsService.getReportById(this.reportId()).subscribe({
       next: data => {
@@ -118,5 +136,11 @@ export class ReportDetailPage {
     })
   }
 
-  protected readonly Boolean = Boolean;
+  postComment(comment: CommentRequestDTO) {
+    this.commentService.postComment(this.reportId(), comment).subscribe({
+      next: data => {
+        this.getReportById();
+      }
+    })
+  }
 }

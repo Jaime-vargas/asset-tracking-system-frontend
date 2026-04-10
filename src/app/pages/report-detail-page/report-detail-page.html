@@ -137,10 +137,18 @@
                 }
               </div>
             </div>
-            <div footer nz-flex nzGap="middle" nzAlign="center">
-              <textarea nz-input placeholder="Write a comment" cdkTextareaAutosize></textarea>
-              <button nz-button nzType="primary">Send</button>
-            </div>
+            @if (report.status){
+              <div footer nz-flex nzGap="middle" nzAlign="center" >
+                <form nz-form [formGroup]="commentForm" (ngSubmit)="submitComment()" nzLayout="inline" nzSize="large" style="display: flex; flex: 1; gap: 12px; align-items: flex-start;">
+                  <nz-form-item style="flex: 1; margin-bottom: 0;">
+                    <nz-form-control nzHasFeedback nzErrorTip="Comment cannot be empty">
+                      <textarea nz-input formControlName="text" placeholder="Write a comment" cdkTextareaAutosize maxlength="250"></textarea>
+                    </nz-form-control>
+                  </nz-form-item>
+                  <button nz-button nzType="primary" type="submit" [disabled]="commentForm.invalid" [nzLoading]="buttonLoading()">Send</button>
+                </form>
+              </div>
+            }
           </app-dasboard-box-component>
         </div>
 
