@@ -16,6 +16,7 @@ import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {UtilityService} from '../../services/utility.service';
 import {HardwareUnion} from '../../interfaces/hardware-dto/hardware-union';
 import {DoubleStatusTagComponent} from '../../components/double-status-tag-component/double-status-tag-component';
+import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
 
 @Component({
   selector: 'app-hardware-device-page',
@@ -34,7 +35,8 @@ import {DoubleStatusTagComponent} from '../../components/double-status-tag-compo
     NzBreadCrumbItemComponent,
     NzRowDirective,
     NzColDirective,
-    DoubleStatusTagComponent
+    DoubleStatusTagComponent,
+    PriorityTagsComponent
   ],
   templateUrl: './hardware-device-page.html',
   styleUrl: './hardware-device-page.css'

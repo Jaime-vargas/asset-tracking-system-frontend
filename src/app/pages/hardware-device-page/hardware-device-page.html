@@ -87,7 +87,7 @@
       </div>
 
       <!-- HISTORY OF REPORTS -->
-      <div nz-col nzFlex="380px">
+      <div nz-col nzFlex="400px">
         <app-dasboard-box-component [boxTitle]="'Report History'" [flex]="true">
           <div body nz-flex nzVertical nzGap="small">
             @if(lastReports()?.length === 0){
@@ -104,12 +104,15 @@
                         <app-double-status-tag-component
                           [status]="report.status" [dueDate]="report.dueDate"></app-double-status-tag-component>
                       </div>
-                      <div nz-col nzSpan="12" nz-flex nzJustify="flex-end" style="gap: 3px">
+                      <div nz-col nzSpan="12" nz-flex nzJustify="flex-end" style="gap: 5px">
                         <span class="reportDate">{{report.dueDate.toDateString()}}</span>
                         <nz-icon nzType="right" nzTheme="outline"/>
                       </div>
                       <div nz-col nzSpan="24">
-                        <strong class="reportTittle">{{ report.title }}</strong>
+                        <div nz-flex nzGap="small">
+                          <app-priority-tags-component [priority]="report.priority"></app-priority-tags-component>
+                          <strong class="reportTittle">{{ report.title }}</strong>
+                        </div>
                       </div>
                       <div nz-col nzSpan="24">
                         <span>Technician: <strong>{{report.reportedBy}}</strong> </span>

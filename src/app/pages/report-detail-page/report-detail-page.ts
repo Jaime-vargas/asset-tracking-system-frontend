@@ -12,7 +12,7 @@ import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
 import {NzAvatarComponent} from 'ng-zorro-antd/avatar';
 import {DatePipe} from '@angular/common';
-import {NzInputDirective} from 'ng-zorro-antd/input';
+import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 'ng-zorro-antd/input';
 import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 import {NzImageModule } from 'ng-zorro-antd/image';
 import {CarouselComponent} from '../../components/carousel-component/carousel-component';
@@ -56,12 +56,13 @@ type ReportDetailItem =
     NzBreadCrumbItemComponent,
     ReactiveFormsModule,
     NzFormDirective,
-    NzFormControlComponent
+    NzFormControlComponent,
+    NzInputPrefixDirective,
+    NzInputWrapperComponent
   ],
   templateUrl: './report-detail-page.html',
   styleUrl: './report-detail-page.css',
 })
-
 
 export class ReportDetailPage {
 
