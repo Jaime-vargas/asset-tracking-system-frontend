@@ -13,6 +13,8 @@ import {NzBreadCrumbComponent, NzBreadCrumbItemComponent} from 'ng-zorro-antd/br
 import {RouteContextService} from '../../services/route-context.service';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 'ng-zorro-antd/input';
 
 @Component({
   selector: 'app-reports-page',
@@ -30,7 +32,11 @@ import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
     NzBreadCrumbItemComponent,
     NzTypographyComponent,
     NzRowDirective,
-    NzColDirective
+    NzColDirective,
+    NzIconDirective,
+    NzInputDirective,
+    NzInputPrefixDirective,
+    NzInputWrapperComponent
   ],
   templateUrl: './reports-page.html',
   styleUrl: './reports-page.css',

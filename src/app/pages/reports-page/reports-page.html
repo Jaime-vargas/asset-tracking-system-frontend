@@ -2,7 +2,19 @@
   <h2 nz-typography>All Reports</h2>
   <nz-divider></nz-divider>
   <div class="contentBody">
-    <div nz-row>
+    <div nz-row [nzGutter]="[10,10]">
+      <div nz-col nzSpan="24">
+        <app-dasboard-box-component>
+          <div body>
+            <div nz-col nzFlex="1 0 200px">
+              <nz-input-wrapper nzAllowClear >
+                <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+                <input nz-input placeholder=" Search Type..." />
+              </nz-input-wrapper>
+            </div>
+          </div>
+        </app-dasboard-box-component>
+      </div>
       <div nz-col nzSpan="24">
         <!-- TABLE OF ALL REPORTS BY HARDWARE ID -->
         <app-dasboard-box-component>
