@@ -38,7 +38,7 @@
               <div nz-col nzSpan="8" nz-flex nzGap="small" nzJustify="flex-end">
                 @if (report.status){
                   <button nz-button nzType="primary">Edit Report</button>
-                  <button nz-button nzType="primary" nzDanger>Close Report</button>
+                  <button nz-button nzType="primary" (click)="closeReport(report.id)" nzDanger>Close Report</button>
                 }
               </div>
             </div>

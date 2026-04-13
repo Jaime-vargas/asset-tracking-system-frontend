@@ -111,11 +111,6 @@ export class ReportDetailPage {
 
   })
 
-  reportId = computed(()=>{
-    return this.routeContext.reportId() ?? 0
-  });
-
-
   private fb = inject(NonNullableFormBuilder);
   protected commentForm = this.fb.group({
     text: ['', [Validators.required, Validators.maxLength(250)]]
@@ -129,6 +124,10 @@ export class ReportDetailPage {
     this.commentForm.reset();
   }
 
+  reportId = computed(()=>{
+    return this.routeContext.reportId() ?? 0
+  });
+
   getReportById(){
     this.reportsService.getReportById(this.reportId()).subscribe({
       next: data => {
@@ -137,9 +136,17 @@ export class ReportDetailPage {
     })
   }
 
+  closeReport(reportId: number) {
+    this.reportsService.closeReport(reportId).subscribe({
+      next: () => {
+        this.getReportById();
+      }
+    })
+  }
+
   postComment(comment: CommentRequestDTO) {
     this.commentService.postComment(this.reportId(), comment).subscribe({
-      next: data => {
+      next: () => {
         this.getReportById();
       }
     })

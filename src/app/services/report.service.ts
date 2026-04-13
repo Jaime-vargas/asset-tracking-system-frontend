@@ -17,4 +17,9 @@ export class ReportsService {
   getReportById(reportId: number): Observable<ReportDetailDto>{
     return this.api.get(`reports/${reportId}`);
   }
+
+  closeReport(reportId: number): Observable<void>{
+    return this.api.put(`reports/${reportId}/close`, reportId);
+  }
+
 }
