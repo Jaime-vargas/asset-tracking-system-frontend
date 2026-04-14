@@ -61,14 +61,7 @@ export class BranchHardwarePage {
 
   // TABLE DATA
   hardwareData = signal<HardwareTableDto[]>([]);
-  hardwareView = computed(()=> {
-    return this.hardwareData().map((hardware) => {
-      return {
-        ...hardware,
-        lastMaintenanceDate: new Date(hardware.lastMaintenanceDate),
-      };
-    })
-  });
+
   // TABLE INPUT FILTERS
   typeFilter = signal<string>("");
   nameFilter = signal<string>("");
@@ -78,14 +71,14 @@ export class BranchHardwarePage {
   lastMaintenanceFilter = signal<string>("");
   // TABLE FILTER
   filteredHardware = computed(() => {
-    return this.hardwareView().filter(hardware => {
+    return this.hardwareData().filter(hardware => {
       return (
         hardware.type.toLowerCase().includes(this.typeFilter().toLowerCase()) &&
         hardware.name.toLowerCase().includes(this.nameFilter().toLowerCase()) &&
         hardware.model.toLowerCase().includes(this.modelFilter().toLowerCase()) &&
         hardware.serialNumber.toLowerCase().includes(this.serialNumberFilter().toLowerCase()) &&
         hardware.location.toLowerCase().includes(this.locationFilter().toLowerCase()) &&
-        hardware.lastMaintenanceDate.toDateString().toLowerCase().includes(this.lastMaintenanceFilter().toLowerCase())
+        hardware.lastMaintenanceDate.toLowerCase().includes(this.lastMaintenanceFilter().toLowerCase())
       );
     });
   });

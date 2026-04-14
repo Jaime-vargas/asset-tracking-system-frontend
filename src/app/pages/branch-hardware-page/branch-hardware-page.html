@@ -97,7 +97,7 @@
                       <td>{{hardware.serialNumber}}</td>
                       <td>{{hardware.location}}</td>
                       <td><app-report-count-tags-component [reports]="hardware.reportsActive"></app-report-count-tags-component></td>
-                      <td>{{hardware.lastMaintenanceDate.toDateString()}}</td>
+                      <td>{{utilityService.isValidDate(hardware.lastMaintenanceDate)}}</td>
                       <td><button nz-button nzType="primary"
                                   [routerLink]="['/clients',routeContext.clientId(), routeContext.clientSlug(),
                                 'branches',routeContext.branchId(), routeContext.branchSlug(),
