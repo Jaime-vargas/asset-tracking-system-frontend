@@ -53,22 +53,49 @@
 
         <div nz-col nzSpan="16" >
           <div nz-row [nzGutter]="[10,10]" style="height: 100%">
-            <!-- CAROUSEL -->
-            <div nz-col nzSpan="24" >
-              <app-dasboard-box-component  [flex]="true" >
-                <div body>
-                  <app-carousel-component [images]="testImage"></app-carousel-component>
-                </div>
-              </app-dasboard-box-component>
-            </div>
             <div nz-col nzSpan="24">
               <!-- REPORT DESCRIPTION -->
               <app-dasboard-box-component [boxTitle]="'Report Description'" [flex]="true">
                 <div body>
-                  <span>{{report.reportDetails ?? "no details"}}</span>
+                  <p nz-typography style="font-size: 1.2rem; font-weight: bold">{{report.reportDetails ?? "no details"}}</p>
                 </div>
               </app-dasboard-box-component>
             </div>
+            <!-- CAROUSEL -->
+            <div nz-col nzSpan="24" >
+              <app-dasboard-box-component  [flex]="true" >
+                <div body>
+                  <div nz-row [nzGutter]="[10,10]">
+                    @if (reportPhotos().length > 0){
+                      <div nz-col nzSpan="24">
+                        <app-carousel-component [images]="reportPhotos()"></app-carousel-component>
+                      </div>
+                    } @else {
+                      <div nz-col nzSpan="24">
+                        <nz-empty nzNotFoundImage="simple"></nz-empty>
+                      </div>
+                    }
+                    <div nz-col nzSpan="24" nz-flex nzJustify="flex-end">
+                      <nz-upload [nzShowUploadList]="false"
+                                 [nzAccept]="'image/*'"
+                                 [nzMultiple]="true"
+                                 (nzChange)="handleUploadChange($event)"
+                                 [nzFileList]="fileList()"
+                                 [nzCustomRequest]="customRequest"
+                      >
+                        <button nz-button>
+                          <nz-icon nzType="upload" />
+                          Upload only png
+                        </button>
+                      </nz-upload>
+                    </div>
+
+                  </div>
+
+                </div>
+              </app-dasboard-box-component>
+            </div>
+
           </div>
         </div>
 
