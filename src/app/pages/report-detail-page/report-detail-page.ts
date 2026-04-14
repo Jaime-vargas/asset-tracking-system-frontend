@@ -25,6 +25,11 @@ import {CommentDto} from '../../interfaces/comment.dto';
 import {CommentRequestDTO} from '../../interfaces/comment-request.dto';
 import {FormBuilder, FormGroup, NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NzFormControlComponent, NzFormDirective} from 'ng-zorro-antd/form';
+import {NzUploadChangeParam, NzUploadComponent, NzUploadFile} from 'ng-zorro-antd/upload';
+import {NzEmptyComponent} from 'ng-zorro-antd/empty';
+import {PhotoDto} from '../../interfaces/photo-dto';
+import {tr_TR} from 'ng-zorro-antd/i18n';
+import {Subscription} from 'rxjs';
 
 // TYPE FOR SWITCH CASE USE INFERRING FROM TYPES
 type ReportDetailItem =
@@ -58,7 +63,9 @@ type ReportDetailItem =
     NzFormDirective,
     NzFormControlComponent,
     NzInputPrefixDirective,
-    NzInputWrapperComponent
+    NzInputWrapperComponent,
+    NzUploadComponent,
+    NzEmptyComponent
   ],
   templateUrl: './report-detail-page.html',
   styleUrl: './report-detail-page.css',
@@ -74,8 +81,6 @@ export class ReportDetailPage {
     this.getReportById();
   }
 
-  testImage = ["1","2","3","4","5","6","7","8","9","10"];
-
   reportData = signal<ReportDetailDto | undefined>(undefined);
   reportView = computed(() => {
     const report = this.reportData();
@@ -88,14 +93,13 @@ export class ReportDetailPage {
       dueDate: new Date(report.dueDate)
     }
   });
-
   reportDetailsView = computed<ReportDetailItem[]>(() => {
-    const report = this.reportData();
+    const report = this.reportView();
     if (!report) return [];
     const dueDate = new Date(report.dueDate).toDateString();
     const createdAt = new Date(report.createdAt).toDateString();
-    const updatedAt = this.utilityService.isValidDate(report.updatedAt);
-    const closedAt = this.utilityService.isValidDate(report.closedAt);
+    const updatedAt = this.utilityService.isValidDate(report.updatedAt.toDateString());
+    const closedAt = this.utilityService.isValidDate(report.closedAt.toDateString());
     const isClosed = () =>
       report.status ? { label:"Last Update", value: updatedAt} :
         { label:"Closed At", value: closedAt};
@@ -108,9 +112,14 @@ export class ReportDetailPage {
       {label: "Status", value: report.status, type: "status"},
       {label: isClosed().label, value: isClosed().value, type: "text"},
     ]
-
   })
 
+  // REPORT PHOTOS
+  reportPhotos = computed(() =>
+    this.reportData()?.photos ?? []
+  );
+
+  // FORM AND FUNCTIONS FOR COMMENT SECTION
   private fb = inject(NonNullableFormBuilder);
   protected commentForm = this.fb.group({
     text: ['', [Validators.required, Validators.maxLength(250)]]
@@ -124,10 +133,31 @@ export class ReportDetailPage {
     this.commentForm.reset();
   }
 
+  // FUNCTIONS FOR UPLOADING PHOTOS
+  fileList = signal<NzUploadFile[]>([]);
+  uploadPhotoList = signal<File[]>([]);
+  handleUploadChange(event: NzUploadChangeParam) {
+    const photos = event.fileList.map(photo =>
+      photo.originFileObj).filter((file): file is File => !!file);
+    if(photos.length === 0) return;
+    this.uploadPhotoList.set(photos)
+
+    this.uploadPhoto(this.uploadPhotoList());
+
+    this.uploadPhotoList.set([]);
+    this.fileList.set([]);
+  }
+  customRequest = (item: any): Subscription => {
+    item.onSuccess({}, item.file);
+    return new Subscription();
+  };
+
+
   reportId = computed(()=>{
     return this.routeContext.reportId() ?? 0
   });
 
+  // FUNCTIONS TO GET DATA FROM SERVICE LAYER
   getReportById(){
     this.reportsService.getReportById(this.reportId()).subscribe({
       next: data => {
@@ -149,6 +179,18 @@ export class ReportDetailPage {
       next: () => {
         this.getReportById();
       }
+    })
+  }
+
+  uploadPhoto(photos: File[]) {
+    this.reportsService.uploadPhoto(this.reportId(), photos).subscribe({
+      next: (response) => {
+        console.log('Upload exitoso', response);
+        this.getReportById();
+      },
+      error: (error) => {
+      console.error('Error al subir', error);
+    }
     })
   }
 }
