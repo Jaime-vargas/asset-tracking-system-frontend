@@ -14,7 +14,7 @@
   <nz-divider></nz-divider>
   <div class="contentBody">
 
-    <div nz-row [nzGutter]="[10,10]">
+    <div nz-row [nzGutter]="[10,10]" >
       <div nz-col nzSpan="24">
 
         <app-dasboard-box-component>
@@ -25,7 +25,7 @@
         </app-dasboard-box-component>
 
       </div>
-      <div nz-col nzFlex="1 1 auto">
+      <div nz-col nzSpan="14">
 
         <div nz-row [nzGutter]="[10,10]" style="height: 100%" >
           <!-- GLOBAL HARDWARE DETAILS -->
@@ -87,7 +87,7 @@
       </div>
 
       <!-- HISTORY OF REPORTS -->
-      <div nz-col nzFlex="400px">
+      <div nz-col nzSpan="10">
         <app-dasboard-box-component [boxTitle]="'Report History'" [flex]="true">
           <div body nz-flex nzVertical nzGap="small">
             @if(lastReports()?.length === 0){
