@@ -1,10 +1,11 @@
 import {CommentDto} from '../comment.dto';
+import {PhotoDto} from '../photo-dto';
 
 export interface ReportDetailDto {
   id: number;
   title: string;
   reportDetails: string;
-  photos: string[];
+  photos: PhotoDto[];
   comments: CommentDto[];
   status: boolean;
   hardwareName: string;

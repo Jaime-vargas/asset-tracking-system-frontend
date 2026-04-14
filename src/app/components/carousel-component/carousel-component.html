@@ -9,11 +9,11 @@
   </div>
   <div #carousel style="overflow: hidden" >
     <nz-image-group nz-flex nzGap="small" >
-      @for (image of images(); track image){
+      @for (image of images(); track image.id){
         <img nz-image
-             [nzSrc]="'https://picsum.photos/500/500'"
+             [nzSrc]="image.publicPath"
              [nzFallback]="defaultImgPlaceholder"
-             width="180" height="180" [alt]=""
+             width="180" height="180" [alt]="image.filename"
              class="shadow" style="border-radius: 10px"/>
       }
     </nz-image-group>
