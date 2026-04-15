@@ -30,6 +30,7 @@ import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {PhotoDto} from '../../interfaces/photo-dto';
 import {tr_TR} from 'ng-zorro-antd/i18n';
 import {Subscription} from 'rxjs';
+import {ApiUrlBaseService} from '../../services/api-url-base.service';
 
 // TYPE FOR SWITCH CASE USE INFERRING FROM TYPES
 type ReportDetailItem =
@@ -62,8 +63,6 @@ type ReportDetailItem =
     ReactiveFormsModule,
     NzFormDirective,
     NzFormControlComponent,
-    NzInputPrefixDirective,
-    NzInputWrapperComponent,
     NzUploadComponent,
     NzEmptyComponent
   ],
@@ -76,7 +75,7 @@ export class ReportDetailPage {
   route: ActivatedRoute = inject(ActivatedRoute)
   routeContext = inject(RouteContextService)
 
-  constructor(private commentService: CommentService, private reportsService: ReportsService, private utilityService: UtilityService) {
+  constructor(private apiUrlBaseService: ApiUrlBaseService, private commentService: CommentService, private reportsService: ReportsService, private utilityService: UtilityService) {
     this.routeContext.setFromRoute(this.route);
     this.getReportById();
   }
@@ -115,14 +114,20 @@ export class ReportDetailPage {
   })
 
   // REPORT PHOTOS
-  reportPhotos = computed(() =>
-    this.reportData()?.photos ?? []
-  );
+  reportPhotos = computed(() =>{
+    const reportPhotos = this.reportData()?.photos ?? [];
+    return reportPhotos.map(photo => {
+      return{
+        ...photo,
+        filePath: this.apiUrlBaseService.imageBaseUrl + photo.filePath,
+      }
+    });
+  });
 
   // FORM AND FUNCTIONS FOR COMMENT SECTION
   private fb = inject(NonNullableFormBuilder);
   protected commentForm = this.fb.group({
-    text: ['', [Validators.required, Validators.maxLength(250)]]
+    text: ['', [Validators.required, Validators.maxLength(255)]]
   });
   buttonLoading = signal(false);
   submitComment(){
@@ -134,23 +139,31 @@ export class ReportDetailPage {
   }
 
   // FUNCTIONS FOR UPLOADING PHOTOS
-  fileList = signal<NzUploadFile[]>([]);
-  uploadPhotoList = signal<File[]>([]);
-  handleUploadChange(event: NzUploadChangeParam) {
-    const photos = event.fileList.map(photo =>
-      photo.originFileObj).filter((file): file is File => !!file);
-    if(photos.length === 0) return;
-    this.uploadPhotoList.set(photos)
-
-    this.uploadPhoto(this.uploadPhotoList());
-
-    this.uploadPhotoList.set([]);
-    this.fileList.set([]);
+  uploadUrl(): string {
+    return `${this.apiUrlBaseService.baseUrl}/reports/${this.reportId()}/photos`;
   }
-  customRequest = (item: any): Subscription => {
-    item.onSuccess({}, item.file);
-    return new Subscription();
-  };
+  onUploadChange(event: NzUploadChangeParam): void {
+    const { file, fileList } = event;
+
+    // error backend
+    if (file.status === 'error') {
+      console.error('Error al subir:', file.error);
+      return;
+    }
+
+    // cuando termina cada archivo
+    if (file.status === 'done') {
+      console.log('Archivo subido:', file.name);
+    }
+
+    // cuando TODOS terminaron
+    const allDone = fileList.every(f => f.status === 'done');
+
+    if (allDone && fileList.length > 0) {
+      console.log('Todos los archivos subidos');
+      this.getReportById();
+    }
+  }
 
 
   reportId = computed(()=>{
@@ -184,12 +197,12 @@ export class ReportDetailPage {
 
   uploadPhoto(photos: File[]) {
     this.reportsService.uploadPhoto(this.reportId(), photos).subscribe({
-      next: (response) => {
-        console.log('Upload exitoso', response);
+      next: () => {
+        console.log("Uploaded")
         this.getReportById();
       },
       error: (error) => {
-      console.error('Error al subir', error);
+      console.error('Error al subir', error.message);
     }
     })
   }

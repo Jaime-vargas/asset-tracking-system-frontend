@@ -76,12 +76,11 @@
                       </div>
                     }
                     <div nz-col nzSpan="24" nz-flex nzJustify="flex-end">
-                      <nz-upload [nzShowUploadList]="false"
-                                 [nzAccept]="'image/*'"
+                      <nz-upload [nzAccept]="'image/*'"
                                  [nzMultiple]="true"
-                                 (nzChange)="handleUploadChange($event)"
-                                 [nzFileList]="fileList()"
-                                 [nzCustomRequest]="customRequest"
+                                 [nzName]="'file'"
+                                 [nzShowUploadList]="false"
+                                 [nzAction]="uploadUrl()"
                       >
                         <button nz-button>
                           <nz-icon nzType="upload" />
