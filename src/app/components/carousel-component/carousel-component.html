@@ -11,7 +11,7 @@
     <nz-image-group nz-flex nzGap="small" >
       @for (image of images(); track image.id){
         <img nz-image
-             [nzSrc]="image.publicPath"
+             [nzSrc]="image.filePath"
              [nzFallback]="defaultImgPlaceholder"
              width="180" height="180" [alt]="image.filename"
              class="shadow" style="border-radius: 10px"/>

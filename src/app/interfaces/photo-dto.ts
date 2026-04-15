@@ -2,7 +2,7 @@ export interface PhotoDto{
   id: number;
   filename: string;
   contentType: string;
-  publicPath: string;
+  filePath: string;
   uploadedAt: Date;
   reportId: number;
 }
