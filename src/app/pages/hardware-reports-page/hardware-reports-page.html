@@ -29,22 +29,16 @@
         <app-dasboard-box-component>
           <div body>
             <div nz-row [nzGutter]="[10,10]">
-              <div nz-col nzFlex="1 0 100px">
+              <div nz-col nzFlex="1 0 150px">
                 <nz-input-wrapper nzAllowClear >
                   <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-                  <input nz-input [ngModel]="" (ngModelChange)="''" placeholder=" Search ID..."  type="number"/>
+                  <input nz-input [ngModel]="idFilter()" (ngModelChange)="idFilter.set($event)" placeholder=" Search ID..."  type="number"/>
                 </nz-input-wrapper>
               </div>
               <div nz-col nzFlex="1 0 200px">
                 <nz-input-wrapper nzAllowClear >
                   <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-                  <input nz-input [ngModel]="" (ngModelChange)="''" placeholder=" Search Title..." />
-                </nz-input-wrapper>
-              </div>
-              <div nz-col nzFlex="1 0 200px">
-                <nz-input-wrapper nzAllowClear >
-                  <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-                  <input nz-input [ngModel]="" (ngModelChange)="''" placeholder=" Search Hardware Name..." />
+                  <input nz-input [ngModel]="titleFilter()" (ngModelChange)="titleFilter.set($event)" placeholder=" Search Title..." />
                 </nz-input-wrapper>
               </div>
               <div nz-col nzFlex="1 0 50px">
@@ -57,21 +51,24 @@
               <div nz-col nzFlex="1 0 200px">
                 <nz-input-wrapper nzAllowClear >
                   <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-                  <input nz-input [ngModel]="" (ngModelChange)="''" placeholder="Search Created At" />
+                  <input nz-input [ngModel]="createdAtFilter()" (ngModelChange)="createdAtFilter.set($event)" placeholder="Search Created At" />
                 </nz-input-wrapper>
               </div>
               <div nz-col nzFlex="1 0 200px">
                 <nz-input-wrapper nzAllowClear >
                   <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-                  <input nz-input [ngModel]="" (ngModelChange)="''" placeholder="Search Due Date" />
+                  <input nz-input [ngModel]="dueDateFilter()" (ngModelChange)="dueDateFilter.set($event)" placeholder="Search Due Date" />
                 </nz-input-wrapper>
               </div>
-              <div nz-col nzFlex="1 0 200px">
-                <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Status" [ngModel]="priorityFilter()" (ngModelChange)="priorityFilter.set($event)" >
-                  @for (priority of priorityList(); track $index){
-                    <nz-option [nzLabel]="priority" [nzValue]="priority" />
+              <div nz-col nzFlex="1 0 50px">
+                <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Status" [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)" >
+                  @for (status of statusList(); track $index){
+                    <nz-option [nzLabel]="status" [nzValue]="status" />
                   }
                 </nz-select>
+              </div>
+              <div nz-col nzFlex="1 1 200px" >
+                <button nz-button nzType="primary"><nz-icon nzType="plus" nzTheme="outline" />Add Report</button>
               </div>
             </div>
 
@@ -86,7 +83,6 @@
               <colgroup>
                 <col style="width: 50px" />
                 <col style="width: 150px" />
-                <col style="width: 150px" />
                 <col style="width: 80px" />
                 <col style="width: 150px" />
                 <col style="width: 150px" />
@@ -97,7 +93,6 @@
               <tr>
                 <th>#ID</th>
                 <th>Title</th>
-                <th>Hardware</th>
                 <th>Priority</th>
                 <th>Created At</th>
                 <th>Due Date</th>
@@ -110,16 +105,15 @@
                     <tr>
                       <td>#{{report.id}}</td>
                       <td>{{report.title}}</td>
-                      <td>{{report.hardwareName}}</td>
                       <td><app-priority-tags-component [priority]="report.priority"></app-priority-tags-component></td>
                       <td>{{report.createdDate.toDateString()}}</td>
                       <td>{{report.dueDate.toDateString()}}</td>
-                      <td><app-single-status-tags-component [dueDate]="report.dueDate" [status]="report.status"></app-single-status-tags-component></td>
+                      <td><app-single-status-tags-component [status]="report.status"></app-single-status-tags-component></td>
                       <td><button nz-button nzType="primary"
                                   [routerLink]="['/clients',report.clientId,report.clientName,
                     'branches',report.branchId,report.branchName,
-                    'reports',report.id]">View</but
-                        'hardware',report.hardwareId,report.hardwareName,ton></td>
+                    'hardware',report.hardwareId,report.hardwareName,
+                    'reports',report.id]">View</button></td>
                     </tr>
                   }
                 </tbody>

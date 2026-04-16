@@ -66,31 +66,34 @@ export class HardwareReportsPage {
 
   // FILTERS FOR SEARCH REPORTS
   // LISTS FOR NZ-SELECT
-  priorityList = computed(() => {
-    return new Set(this.reportsView().map((report) => {
+  priorityList = computed(() =>
+    new Set(this.reportsView().map((report) => {
       return report.priority;
     }))
-  });
-
+  );
   statusList = computed(() =>
-    // THIS LOGIC WILL BE DELETED IN ORDER TO ONLY SHOW DATA ON FRONT END AND DO NOT CALCULATE THE STATUS.
-    this.reportsView().map((report) => {
-      if (report.status) {
-        const now = new Date();
-        return report.dueDate > now ? "ACTIVE" : "OVERDUE";
-      }
-      return "CLOSED"
-    })
+    new Set (this.reportsView().map((report) =>{
+      return report.status;
+    }))
   );
 
   // SIGNALS FOR FILTERS
+  idFilter = signal<number | null>(null);
+  titleFilter = signal<string>("");
   priorityFilter = signal("");
+  createdAtFilter = signal<string>("");
+  dueDateFilter = signal<string>("");
   statusFilter = signal("");
   reportsFilter = computed(()=>
-    this.reportsView().filter(report =>{
-      const filter:boolean = !this.priorityFilter();
-      console.log(filter);
-      return (!this.priorityFilter() || report.priority === this.priorityFilter())
+    this.reportsView().filter(report => {
+      return (
+        (this.idFilter() === null || report.id === this.idFilter()) &&
+        report.title.toLowerCase().includes(this.titleFilter().toLowerCase()) &&
+        (!this.priorityFilter() || report.priority === this.priorityFilter()) &&
+        report.createdDate.toDateString().toLowerCase().includes(this.createdAtFilter().toLowerCase()) &&
+        report.dueDate.toDateString().toLowerCase().includes(this.dueDateFilter().toLowerCase()) &&
+        (!this.statusFilter() || report.status === this.statusFilter())
+      );
     })
   );
 
