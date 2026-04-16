@@ -10,5 +10,5 @@ export interface ReportTableDto{
   priority: string;
   createdDate: string;
   dueDate: string;
-  status: boolean;
+  status: string;
 }

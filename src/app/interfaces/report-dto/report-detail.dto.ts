@@ -7,7 +7,7 @@ export interface ReportDetailDto {
   reportDetails: string;
   photos: PhotoDto[];
   comments: CommentDto[];
-  status: boolean;
+  status: string;
   hardwareName: string;
   reportedBy: string;
   createdAt: string;
