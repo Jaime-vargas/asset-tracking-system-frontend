@@ -28,7 +28,6 @@ import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
     DasboardBoxComponent,
     FormsModule,
     NzEmptyComponent,
-    NzFlexDirective,
     NzIconDirective,
     NzInputDirective,
     NzInputPrefixDirective,
