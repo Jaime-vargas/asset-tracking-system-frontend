@@ -142,6 +142,7 @@ export class ReportDetailPage {
   uploadUrl(): string {
     return `${this.apiUrlBaseService.baseUrl}/reports/${this.reportId()}/photos`;
   }
+
   onUploadChange(event: NzUploadChangeParam): void {
     const { file, fileList } = event;
 
@@ -164,7 +165,6 @@ export class ReportDetailPage {
       this.getReportById();
     }
   }
-
 
   reportId = computed(()=>{
     return this.routeContext.reportId() ?? 0

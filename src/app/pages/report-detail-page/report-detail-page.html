@@ -75,22 +75,22 @@
                         <nz-empty nzNotFoundImage="simple"></nz-empty>
                       </div>
                     }
-                    <div nz-col nzSpan="24" nz-flex nzJustify="flex-end">
-                      <nz-upload [nzAccept]="'image/*'"
-                                 [nzMultiple]="true"
-                                 [nzName]="'file'"
-                                 [nzShowUploadList]="false"
-                                 [nzAction]="uploadUrl()"
-                      >
-                        <button nz-button>
-                          <nz-icon nzType="upload" />
-                          Upload only png
-                        </button>
-                      </nz-upload>
-                    </div>
-
+                    @if (report.status){
+                      <div nz-col nzSpan="24" nz-flex nzJustify="flex-end">
+                        <nz-upload [nzAccept]="'image/*'"
+                                   [nzMultiple]="true"
+                                   [nzName]="'file'"
+                                   [nzShowUploadList]="false"
+                                   [nzAction]="uploadUrl()"
+                                   (nzChange)="onUploadChange($event)" >
+                          <button nz-button>
+                            <nz-icon nzType="upload" />
+                            Upload only png
+                          </button>
+                        </nz-upload>
+                      </div>
+                    }
                   </div>
-
                 </div>
               </app-dasboard-box-component>
             </div>
