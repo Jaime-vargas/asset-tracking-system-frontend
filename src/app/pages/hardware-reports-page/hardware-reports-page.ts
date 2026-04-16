@@ -10,6 +10,12 @@ import {HardwareService} from '../../services/hardware.service';
 import {ReportTableDto} from '../../interfaces/report-dto/report-table.dto';
 import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
 import {SingleStatusTagsComponent} from '../../components/single-status-tags-component/single-status-tags-component';
+import {NzBreadCrumbComponent, NzBreadCrumbItemComponent} from 'ng-zorro-antd/breadcrumb';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {FormsModule} from '@angular/forms';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 'ng-zorro-antd/input';
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
 
 @Component({
   selector: 'app-hardware-reports-page',
@@ -22,7 +28,18 @@ import {SingleStatusTagsComponent} from '../../components/single-status-tags-com
     NzThMeasureDirective,
     NzDividerComponent,
     PriorityTagsComponent,
-    SingleStatusTagsComponent
+    SingleStatusTagsComponent,
+    NzBreadCrumbComponent,
+    NzBreadCrumbItemComponent,
+    NzRowDirective,
+    NzColDirective,
+    FormsModule,
+    NzIconDirective,
+    NzInputDirective,
+    NzInputPrefixDirective,
+    NzInputWrapperComponent,
+    NzOptionComponent,
+    NzSelectComponent
   ],
   templateUrl: './hardware-reports-page.html',
   styleUrl: './hardware-reports-page.css',
@@ -47,8 +64,34 @@ export class HardwareReportsPage {
     })
   );
 
-  filteredReports = computed(()=>
-    this.reportsView()
+  // FILTERS FOR SEARCH REPORTS
+  // LISTS FOR NZ-SELECT
+  priorityList = computed(() => {
+    return new Set(this.reportsView().map((report) => {
+      return report.priority;
+    }))
+  });
+
+  statusList = computed(() =>
+    // THIS LOGIC WILL BE DELETED IN ORDER TO ONLY SHOW DATA ON FRONT END AND DO NOT CALCULATE THE STATUS.
+    this.reportsView().map((report) => {
+      if (report.status) {
+        const now = new Date();
+        return report.dueDate > now ? "ACTIVE" : "OVERDUE";
+      }
+      return "CLOSED"
+    })
+  );
+
+  // SIGNALS FOR FILTERS
+  priorityFilter = signal("");
+  statusFilter = signal("");
+  reportsFilter = computed(()=>
+    this.reportsView().filter(report =>{
+      const filter:boolean = !this.priorityFilter();
+      console.log(filter);
+      return (!this.priorityFilter() || report.priority === this.priorityFilter())
+    })
   );
 
   hardwareId = computed(()=> this.routeContext.hardwareId() ?? 0);

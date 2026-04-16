@@ -1,59 +1,137 @@
-<button nz-button nzType="text" class="headerButton" [routerLink]="'/clients'" >Clients</button><span class="divider">/</span>
-<button nz-button nzType="text" class="headerButton" [routerLink]="['/clients', routeContext.clientId(), routeContext.clientSlug()]">{{routeContext.clientSlug()}}</button><span class="divider">/</span>
-<button nz-button nzType="text" class="headerButton" [routerLink]="['/clients', routeContext.clientId(), routeContext.clientSlug(),'branches',routeContext.branchId(),routeContext.branchSlug(),'hardware']">{{routeContext.branchSlug()}}</button><span class="divider">/</span>
-<button nz-button nzType="text" class="headerButton" [routerLink]="['/clients', routeContext.clientId(), routeContext.clientSlug(),'branches',routeContext.branchId(),routeContext.branchSlug(),'hardware',routeContext.hardwareId(), routeContext.hardwareSlug() ]">{{routeContext.hardwareSlug()}}</button><span class="divider">/</span>
-<button nz-button nzType="text" class="headerButton" >reports</button>
-<nz-divider></nz-divider>
+<div class="contentPage">
+  <nz-breadcrumb>
+    <nz-breadcrumb-item>
+      <a class="breadcrumb" [routerLink]="'/clients'">Clients</a>
+    </nz-breadcrumb-item>
+    <nz-breadcrumb-item>
+      <a class="breadcrumb" [routerLink]="['/clients', routeContext.clientId(), routeContext.clientSlug()]">
+        {{routeContext.clientSlug()}}</a>
+    </nz-breadcrumb-item>
+    <nz-breadcrumb-item>
+      <a class="breadcrumb" [routerLink]="['/clients', routeContext.clientId(), routeContext.clientSlug(),'branches',routeContext.branchId(),routeContext.branchSlug(),'hardware']">
+        {{routeContext.branchSlug()}}</a>
+    </nz-breadcrumb-item>
+    <nz-breadcrumb-item>
+      <a class="breadcrumb" [routerLink]="['/clients', routeContext.clientId(), routeContext.clientSlug(),'branches',routeContext.branchId(),routeContext.branchSlug(),'hardware',routeContext.hardwareId(), routeContext.hardwareSlug() ]">
+        {{routeContext.hardwareSlug()}}</a>
+    </nz-breadcrumb-item>
+    <nz-breadcrumb-item>
+      <a class="breadcrumb" [routerLink]="['/clients', routeContext.clientId(), routeContext.clientSlug(),'branches',routeContext.branchId(),routeContext.branchSlug(),'hardware',routeContext.hardwareId(), routeContext.hardwareSlug(), 'reports']">
+        Reports</a>
+    </nz-breadcrumb-item>
+  </nz-breadcrumb>
+  <nz-divider></nz-divider>
+  <div class="contentBody">
+  <!-- TABLE OF ALL REPORTS BY HARDWARE ID -->
+    <div nz-row [nzGutter]="[10,10]">
+      <!-- FILTERS -->
+      <div nz-col nzSpan="24">
+        <app-dasboard-box-component>
+          <div body>
+            <div nz-row [nzGutter]="[10,10]">
+              <div nz-col nzFlex="1 0 100px">
+                <nz-input-wrapper nzAllowClear >
+                  <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+                  <input nz-input [ngModel]="" (ngModelChange)="''" placeholder=" Search ID..."  type="number"/>
+                </nz-input-wrapper>
+              </div>
+              <div nz-col nzFlex="1 0 200px">
+                <nz-input-wrapper nzAllowClear >
+                  <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+                  <input nz-input [ngModel]="" (ngModelChange)="''" placeholder=" Search Title..." />
+                </nz-input-wrapper>
+              </div>
+              <div nz-col nzFlex="1 0 200px">
+                <nz-input-wrapper nzAllowClear >
+                  <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+                  <input nz-input [ngModel]="" (ngModelChange)="''" placeholder=" Search Hardware Name..." />
+                </nz-input-wrapper>
+              </div>
+              <div nz-col nzFlex="1 0 50px">
+                <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Priority" [ngModel]="priorityFilter()" (ngModelChange)="priorityFilter.set($event)" >
+                  @for (priority of priorityList(); track $index){
+                    <nz-option [nzLabel]="priority" [nzValue]="priority" />
+                  }
+                </nz-select>
+              </div>
+              <div nz-col nzFlex="1 0 200px">
+                <nz-input-wrapper nzAllowClear >
+                  <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+                  <input nz-input [ngModel]="" (ngModelChange)="''" placeholder="Search Created At" />
+                </nz-input-wrapper>
+              </div>
+              <div nz-col nzFlex="1 0 200px">
+                <nz-input-wrapper nzAllowClear >
+                  <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+                  <input nz-input [ngModel]="" (ngModelChange)="''" placeholder="Search Due Date" />
+                </nz-input-wrapper>
+              </div>
+              <div nz-col nzFlex="1 0 200px">
+                <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Status" [ngModel]="priorityFilter()" (ngModelChange)="priorityFilter.set($event)" >
+                  @for (priority of priorityList(); track $index){
+                    <nz-option [nzLabel]="priority" [nzValue]="priority" />
+                  }
+                </nz-select>
+              </div>
+            </div>
 
-<!-- TABLE OF ALL REPORTS BY HARDWARE ID -->
-<app-dasboard-box-component>
-  <div body>
-    <nz-table #tableData nzSize="default" [nzScroll]="{ x: 'max-content' }" [nzData]="filteredReports()" >
-      <colgroup>
-        <col style="width: 50px" />
-        <col style="width: 150px" />
-        <col style="width: 150px" />
-        <col style="width: 80px" />
-        <col style="width: 150px" />
-        <col style="width: 150px" />
-        <col style="width: 80px" />
-        <col style="width: 150px" />
-      </colgroup>
-      <thead>
-      <tr>
-        <th>#ID</th>
-        <th>Title</th>
-        <th>Hardware</th>
-        <th>Priority</th>
-        <th>Created</th>
-        <th>Due Date</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </thead>
-      @if (tableData.data.length > 0) {
-        <tbody>
-          @for (report of tableData.data; track report.id){
-            <tr>
-              <td>#{{report.id}}</td>
-              <td>{{report.title}}</td>
-              <td>{{report.hardwareName}}</td>
-              <td><app-priority-tags-component [priority]="report.priority"></app-priority-tags-component></td>
-              <td>{{report.createdDate.toDateString()}}</td>
-              <td>{{report.dueDate.toDateString()}}</td>
-              <td><app-single-status-tags-component [dueDate]="report.dueDate" [status]="report.status"></app-single-status-tags-component></td>
-              <td><button nz-button nzType="primary"
-              [routerLink]="['/clients',report.clientId,report.clientName,
-                'branches',report.branchId,report.branchName,
-                'hardware',report.hardwareId,report.hardwareName,
-                'reports',report.id]">View</button></td>
-            </tr>
-          }
-        </tbody>
-      } @else {
-        <td colspan="8">
-          <nz-empty nzNotFoundImage="simple"></nz-empty>
-        </td>
-      }
-    </nz-table>
+
+          </div>
+        </app-dasboard-box-component>
+      </div>
+      <div nz-col nzSpan="24">
+        <app-dasboard-box-component>
+          <div body>
+            <nz-table #tableData nzSize="default" [nzScroll]="{ x: 'max-content' }" [nzData]="reportsFilter()" >
+              <colgroup>
+                <col style="width: 50px" />
+                <col style="width: 150px" />
+                <col style="width: 150px" />
+                <col style="width: 80px" />
+                <col style="width: 150px" />
+                <col style="width: 150px" />
+                <col style="width: 80px" />
+                <col style="width: 150px" />
+              </colgroup>
+              <thead>
+              <tr>
+                <th>#ID</th>
+                <th>Title</th>
+                <th>Hardware</th>
+                <th>Priority</th>
+                <th>Created At</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </thead>
+              @if (tableData.data.length > 0) {
+                <tbody>
+                  @for (report of tableData.data; track report.id){
+                    <tr>
+                      <td>#{{report.id}}</td>
+                      <td>{{report.title}}</td>
+                      <td>{{report.hardwareName}}</td>
+                      <td><app-priority-tags-component [priority]="report.priority"></app-priority-tags-component></td>
+                      <td>{{report.createdDate.toDateString()}}</td>
+                      <td>{{report.dueDate.toDateString()}}</td>
+                      <td><app-single-status-tags-component [dueDate]="report.dueDate" [status]="report.status"></app-single-status-tags-component></td>
+                      <td><button nz-button nzType="primary"
+                                  [routerLink]="['/clients',report.clientId,report.clientName,
+                    'branches',report.branchId,report.branchName,
+                    'reports',report.id]">View</but
+                        'hardware',report.hardwareId,report.hardwareName,ton></td>
+                    </tr>
+                  }
+                </tbody>
+              } @else {
+                <td colspan="8">
+                  <nz-empty nzNotFoundImage="simple"></nz-empty>
+                </td>
+              }
+            </nz-table>
+          </div>
+        </app-dasboard-box-component>
+      </div>
+    </div>
   </div>
-</app-dasboard-box-component>
+</div>
