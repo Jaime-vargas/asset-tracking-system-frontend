@@ -15,21 +15,11 @@ export class SingleStatusTagsComponent {
   constructor(private utilityService: UtilityService) {
   }
 
-  // when status is not sent, is asumes that data from backend comes with only active reports.
-  status = input<boolean>(true);
-  dueDate = input.required<Date>();
-
-  label = computed(()=> {
-    if(this.status()){
-      const now = new Date();
-      return this.dueDate() > now ?  "ACTIVE" :  "OVERDUE";
-    }
-    return "CLOSED"
-  });
+  status = input<string>();
   tagColor = computed(()=> {
-    if (this.label() === "ACTIVE") return this.utilityService.baseColors.yellow;
-    if (this.label() === "OVERDUE") return this.utilityService.baseColors.red;
-    if (this.label() === "CLOSED") return this.utilityService.baseColors.green;
+    if (this.status() === "ACTIVE") return this.utilityService.baseColors.yellow;
+    if (this.status() === "OVERDUE") return this.utilityService.baseColors.red;
+    if (this.status() === "CLOSED") return this.utilityService.baseColors.green;
     return this.utilityService.baseColors.gray;
   })
 }
