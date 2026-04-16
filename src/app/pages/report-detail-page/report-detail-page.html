@@ -33,10 +33,10 @@
             <div body nz-row>
               <div nz-col nzSpan="16" nz-flex nzAlign="center" nzGap="middle">
                 <h3 nz-typography style="margin: 0">Report # {{report.id}}</h3>
-                <app-single-status-tags-component [status]="report.status" [dueDate]="report.dueDate"></app-single-status-tags-component>
+                <app-single-status-tags-component [status]="report.status" ></app-single-status-tags-component>
               </div>
               <div nz-col nzSpan="8" nz-flex nzGap="small" nzJustify="flex-end">
-                @if (report.status){
+                @if (report.status != 'CLOSED'){
                   <button nz-button nzType="primary">Edit Report</button>
                   <button nz-button nzType="primary" (click)="closeReport(report.id)" nzDanger>Close Report</button>
                 }
@@ -75,7 +75,7 @@
                         <nz-empty nzNotFoundImage="simple"></nz-empty>
                       </div>
                     }
-                    @if (report.status){
+                    @if (report.status != 'CLOSED'){
                       <div nz-col nzSpan="24" nz-flex nzJustify="flex-end">
                         <nz-upload [nzAccept]="'image/*'"
                                    [nzMultiple]="true"
@@ -114,15 +114,14 @@
                         </app-priority-tags-component>
                       }
                       @case ('status'){
-                        <app-single-status-tags-component [dueDate]="report.dueDate"
-                        [status]="item.value">
+                        <app-single-status-tags-component [status]="report.status"
+                        >
                         </app-single-status-tags-component>
                       }
                       @default {
                         <strong>{{item.value}}</strong>
                       }
                     }
-
                   </nz-col>
                   <nz-divider nzSize="small"></nz-divider>
                 </div>
@@ -163,7 +162,7 @@
                 }
               </div>
             </div>
-            @if (report.status){
+            @if (report.status != 'CLOSED'){
               <div footer nz-flex nzGap="middle" nzAlign="center" >
                 <form nz-form [formGroup]="commentForm" (ngSubmit)="submitComment()" nzLayout="inline" nzSize="large" style="display: flex; flex: 1; gap: 12px; align-items: flex-start;">
                   <nz-form-item style="flex: 1; margin-bottom: 0;">

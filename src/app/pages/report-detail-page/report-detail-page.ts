@@ -32,11 +32,6 @@ import {tr_TR} from 'ng-zorro-antd/i18n';
 import {Subscription} from 'rxjs';
 import {ApiUrlBaseService} from '../../services/api-url-base.service';
 
-// TYPE FOR SWITCH CASE USE INFERRING FROM TYPES
-type ReportDetailItem =
-  | { label: string; value: string; type: 'text' }
-  | { label: string; value: string; type: 'priority' }
-  | { label: string; value: boolean; type: 'status' };
 
 @Component({
   selector: 'app-report-detail-page',
@@ -92,7 +87,7 @@ export class ReportDetailPage {
       dueDate: new Date(report.dueDate)
     }
   });
-  reportDetailsView = computed<ReportDetailItem[]>(() => {
+  reportDetailsView = computed(() => {
     const report = this.reportView();
     if (!report) return [];
     const dueDate = new Date(report.dueDate).toDateString();
