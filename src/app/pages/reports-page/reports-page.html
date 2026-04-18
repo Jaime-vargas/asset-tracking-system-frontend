@@ -6,11 +6,65 @@
       <div nz-col nzSpan="24">
         <app-dasboard-box-component>
           <div body>
-            <div nz-col nzFlex="1 0 200px">
-              <nz-input-wrapper nzAllowClear >
-                <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-                <input nz-input placeholder=" Search Type..." />
-              </nz-input-wrapper>
+            <div nz-row [nzGutter]="[10,10]">
+              <div nz-col nzFlex="1 0 150px">
+                <nz-input-wrapper nzAllowClear >
+                  <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+                  <input nz-input [ngModel]="idFilter()" (ngModelChange)="idFilter.set($event)"  placeholder=" Search ID..." />
+                </nz-input-wrapper>
+              </div>
+              <div nz-col nzFlex="1 0 150px">
+                <nz-input-wrapper nzAllowClear >
+                  <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+                  <input nz-input [ngModel]="tittleFilter()" (ngModelChange)="tittleFilter.set($event)"  placeholder=" Search Title..." />
+                </nz-input-wrapper>
+              </div>
+              <div nz-col nzFlex="1 0 100px">
+                <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select a client" [ngModel]="clientFilter()" (ngModelChange)="clientFilter.set($event)">
+                  @for (client of clientList(); track $index){
+                    <nz-option [nzLabel]="client" [nzValue]="client" />
+                  }
+                </nz-select>
+              </div>
+              <div nz-col nzFlex="1 0 100px">
+                <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select a branch" [ngModel]="branchFilter()" (ngModelChange)="branchFilter.set($event)" >
+                  @for (branch of branchList(); track $index){
+                    <nz-option [nzLabel]="branch" [nzValue]="branch" />
+                  }
+                </nz-select>
+              </div>
+              <div nz-col nzFlex="1 0 150px">
+                <nz-input-wrapper nzAllowClear >
+                  <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+                  <input nz-input [ngModel]="hardwareFilter()" (ngModelChange)="hardwareFilter.set($event)"  placeholder=" Search Hardware..." />
+                </nz-input-wrapper>
+              </div>
+              <div nz-col nzFlex="1 0 50px">
+                <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Priority" [ngModel]="priorityFilter()" (ngModelChange)="priorityFilter.set($event)" >
+                  @for (priority of priorityList(); track $index){
+                    <nz-option [nzLabel]="priority" [nzValue]="priority" />
+                  }
+                </nz-select>
+              </div>
+              <div nz-col nzFlex="1 0 150px">
+                <nz-input-wrapper nzAllowClear >
+                  <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+                  <input nz-input [ngModel]="createdAtFilter()" (ngModelChange)="createdAtFilter.set($event)"  placeholder=" Search Created At..." />
+                </nz-input-wrapper>
+              </div>
+              <div nz-col nzFlex="1 0 150px">
+                <nz-input-wrapper nzAllowClear >
+                  <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
+                  <input nz-input [ngModel]="dueDateFilter()" (ngModelChange)="dueDateFilter.set($event)"  placeholder=" Search Due Date..." />
+                </nz-input-wrapper>
+              </div>
+              <div nz-col nzFlex="1 0 50px">
+                <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Status" [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)" >
+                  @for (status of statusList(); track $index){
+                    <nz-option [nzLabel]="status" [nzValue]="status" />
+                  }
+                </nz-select>
+              </div>
             </div>
           </div>
         </app-dasboard-box-component>
@@ -37,10 +91,10 @@
                 <th>#ID</th>
                 <th>Title</th>
                 <th>Client</th>
-                <th>Sucursal</th>
+                <th>Branch</th>
                 <th>Hardware</th>
                 <th>Priority</th>
-                <th>Created</th>
+                <th>Created At</th>
                 <th>Due Date</th>
                 <th>Status</th>
                 <th>Actions</th>
