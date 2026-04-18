@@ -52,11 +52,11 @@ export class HardwarePage {
               protected utilityService: UtilityService) {
     this.getAllHardwareData()
   }
+
   // TABLE DATA
   hardwareData = signal<HardwareTableDto[]>([]);
 
   // TABLE INPUT FILTERS
-
   clientList = computed(()=> {
     return new Set(this.hardwareData().map((hardware) => {
       return hardware.clientName;
@@ -64,10 +64,12 @@ export class HardwarePage {
   });
 
   branchList = computed(() => {
-    return new Set(this.hardwareData().map((hardware) => {
-      return hardware.branchName;
-    }))
+    const clientName = this.clientFilter();
+    return new Set(this.hardwareData().filter((hardware) =>
+      (!clientName || hardware.clientName === clientName)).map((hardware) =>
+      hardware.branchName))
   });
+  clientFilter = signal<string>("");
   branchFilter = signal("");
   typeFilter = signal<string>("");
   nameFilter = signal<string>("");
@@ -78,8 +80,15 @@ export class HardwarePage {
   // TABLE FILTER
   filteredHardware = computed(() => {
     return this.hardwareData().filter(hardware => {
+      const clientFilter = this.clientFilter();
+      const branchFilter = this.branchFilter();
+
+      const matchClient = (!clientFilter || hardware.clientName === clientFilter)
+      const matchBranch = (!branchFilter || hardware.branchName === branchFilter)
+
       return (
-        (!this.branchFilter() || hardware.branchName === this.branchFilter()) &&
+        matchClient &&
+        matchBranch &&
         hardware.type.toLowerCase().includes(this.typeFilter().toLowerCase()) &&
         hardware.name.toLowerCase().includes(this.nameFilter().toLowerCase()) &&
         hardware.model.toLowerCase().includes(this.modelFilter().toLowerCase()) &&

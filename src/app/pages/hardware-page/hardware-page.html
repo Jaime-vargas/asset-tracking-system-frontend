@@ -7,7 +7,7 @@
         <app-dasboard-box-component>
           <div body nz-row [nzGutter]="[5,5]">
             <div nz-col nzFlex="1 0 100px">
-              <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select a client">
+              <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select a client" [ngModel]="clientFilter()" (ngModelChange)="clientFilter.set($event)">
                 @for (client of clientList(); track $index){
                   <nz-option [nzLabel]="client" [nzValue]="client" />
                 }
