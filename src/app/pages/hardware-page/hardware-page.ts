@@ -62,13 +62,16 @@ export class HardwarePage {
       return hardware.clientName;
     }))
   });
-
   branchList = computed(() => {
     const clientName = this.clientFilter();
     return new Set(this.hardwareData().filter((hardware) =>
       (!clientName || hardware.clientName === clientName)).map((hardware) =>
       hardware.branchName))
   });
+  typeList = computed(() =>
+    new Set(this.hardwareData().map((hardware) =>
+    hardware.type))
+  );
   clientFilter = signal<string>("");
   branchFilter = signal("");
   typeFilter = signal<string>("");
@@ -82,14 +85,16 @@ export class HardwarePage {
     return this.hardwareData().filter(hardware => {
       const clientFilter = this.clientFilter();
       const branchFilter = this.branchFilter();
+      const typeFilter = this.typeFilter();
 
       const matchClient = (!clientFilter || hardware.clientName === clientFilter)
       const matchBranch = (!branchFilter || hardware.branchName === branchFilter)
+      const matchType = (!typeFilter || hardware.type === typeFilter)
 
       return (
         matchClient &&
         matchBranch &&
-        hardware.type.toLowerCase().includes(this.typeFilter().toLowerCase()) &&
+        matchType &&
         hardware.name.toLowerCase().includes(this.nameFilter().toLowerCase()) &&
         hardware.model.toLowerCase().includes(this.modelFilter().toLowerCase()) &&
         hardware.serialNumber.toLowerCase().includes(this.serialNumberFilter().toLowerCase()) &&
