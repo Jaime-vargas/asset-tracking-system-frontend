@@ -31,6 +31,8 @@ import {PhotoDto} from '../../interfaces/photo-dto';
 import {tr_TR} from 'ng-zorro-antd/i18n';
 import {Subscription} from 'rxjs';
 import {ApiUrlBaseService} from '../../services/api-url-base.service';
+import {NzPopconfirmDirective} from 'ng-zorro-antd/popconfirm';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 
 @Component({
@@ -59,7 +61,8 @@ import {ApiUrlBaseService} from '../../services/api-url-base.service';
     NzFormDirective,
     NzFormControlComponent,
     NzUploadComponent,
-    NzEmptyComponent
+    NzEmptyComponent,
+    NzPopconfirmDirective
   ],
   templateUrl: './report-detail-page.html',
   styleUrl: './report-detail-page.css',
@@ -70,7 +73,11 @@ export class ReportDetailPage {
   route: ActivatedRoute = inject(ActivatedRoute)
   routeContext = inject(RouteContextService)
 
-  constructor(private apiUrlBaseService: ApiUrlBaseService, private commentService: CommentService, private reportsService: ReportsService, private utilityService: UtilityService) {
+  constructor(private apiUrlBaseService: ApiUrlBaseService,
+              private commentService: CommentService,
+              private reportsService: ReportsService,
+              private utilityService: UtilityService,
+              private message: NzMessageService) {
     this.routeContext.setFromRoute(this.route);
     this.getReportById();
   }
@@ -178,6 +185,7 @@ export class ReportDetailPage {
     this.reportsService.closeReport(reportId).subscribe({
       next: () => {
         this.getReportById();
+        this.message.success('report closed successfully.');
       }
     })
   }
@@ -186,6 +194,7 @@ export class ReportDetailPage {
     this.commentService.postComment(this.reportId(), comment).subscribe({
       next: () => {
         this.getReportById();
+        this.message.success('comment posted successfully.');
       }
     })
   }
