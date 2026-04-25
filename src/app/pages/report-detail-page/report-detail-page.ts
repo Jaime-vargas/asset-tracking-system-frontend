@@ -1,4 +1,4 @@
-import {Component, computed, ElementRef, inject, signal, ViewChild} from '@angular/core';
+import {Component, computed, inject, signal, TemplateRef, ViewChild} from '@angular/core';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {ActivatedRoute, RouterLink} from '@angular/router';
@@ -12,7 +12,7 @@ import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
 import {NzAvatarComponent} from 'ng-zorro-antd/avatar';
 import {DatePipe} from '@angular/common';
-import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 'ng-zorro-antd/input';
+import {NzInputDirective} from 'ng-zorro-antd/input';
 import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 import {NzImageModule } from 'ng-zorro-antd/image';
 import {CarouselComponent} from '../../components/carousel-component/carousel-component';
@@ -21,18 +21,15 @@ import {SingleStatusTagsComponent} from '../../components/single-status-tags-com
 import {UtilityService} from '../../services/utility.service';
 import {NzBreadCrumbComponent, NzBreadCrumbItemComponent} from 'ng-zorro-antd/breadcrumb';
 import {CommentService} from '../../services/comment.service';
-import {CommentDto} from '../../interfaces/comment.dto';
 import {CommentRequestDTO} from '../../interfaces/comment-request.dto';
-import {FormBuilder, FormGroup, NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
+import {NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NzFormControlComponent, NzFormDirective} from 'ng-zorro-antd/form';
 import {NzUploadChangeParam, NzUploadComponent, NzUploadFile} from 'ng-zorro-antd/upload';
 import {NzEmptyComponent} from 'ng-zorro-antd/empty';
-import {PhotoDto} from '../../interfaces/photo-dto';
-import {tr_TR} from 'ng-zorro-antd/i18n';
-import {Subscription} from 'rxjs';
 import {ApiUrlBaseService} from '../../services/api-url-base.service';
 import {NzPopconfirmDirective} from 'ng-zorro-antd/popconfirm';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import {NzNotificationService} from 'ng-zorro-antd/notification';
 
 
 @Component({
@@ -77,10 +74,14 @@ export class ReportDetailPage {
               private commentService: CommentService,
               private reportsService: ReportsService,
               private utilityService: UtilityService,
-              private message: NzMessageService) {
+              private message: NzMessageService,
+              private notification: NzNotificationService) {
     this.routeContext.setFromRoute(this.route);
     this.getReportById();
   }
+
+  @ViewChild('errorTpl', { static: false })
+  errorTpl!: TemplateRef<any>;
 
   reportData = signal<ReportDetailDto | undefined>(undefined);
   reportView = computed(() => {
@@ -141,29 +142,39 @@ export class ReportDetailPage {
   }
 
   // FUNCTIONS FOR UPLOADING PHOTOS
+  uploadFileList: NzUploadFile[] = [];
+
   uploadUrl(): string {
     return `${this.apiUrlBaseService.baseUrl}/reports/${this.reportId()}/photos`;
   }
 
   onUploadChange(event: NzUploadChangeParam): void {
-    const { file, fileList } = event;
+    let { file, fileList } = event;
 
-    // error backend
+    // message error uploading image
     if (file.status === 'error') {
-      console.error('Error al subir:', file.error);
-      return;
+      this.message.error(file.error.error.message);
     }
-
-    // cuando termina cada archivo
+    // message success uploading image
     if (file.status === 'done') {
-      console.log('Archivo subido:', file.name);
+      this.message.success("File uploaded successfully: " + file.name);
     }
+    // if there was an error, show a modal with all errors
+    const stillUploading = fileList.some(f => f.status === 'uploading');
+    if (!stillUploading && fileList.length > 0) {
+      const filesOnError = fileList.filter(f => f.status === 'error');
+      const errorList = filesOnError.map(f =>
+        f.error?.error?.message || 'Error uploading file: ' + f.name
+      );
 
-    // cuando TODOS terminaron
-    const allDone = fileList.every(f => f.status === 'done');
+      if (errorList.length > 0) {
+        this.notification.template(this.errorTpl, {
+          nzData: errorList,
+          nzDuration: 0,
+        });
+      }
 
-    if (allDone && fileList.length > 0) {
-      console.log('Todos los archivos subidos');
+      this.uploadFileList = [];
       this.getReportById();
     }
   }
@@ -196,18 +207,6 @@ export class ReportDetailPage {
         this.getReportById();
         this.message.success('comment posted successfully.');
       }
-    })
-  }
-
-  uploadPhoto(photos: File[]) {
-    this.reportsService.uploadPhoto(this.reportId(), photos).subscribe({
-      next: () => {
-        console.log("Uploaded")
-        this.getReportById();
-      },
-      error: (error) => {
-      console.error('Error al subir', error.message);
-    }
     })
   }
 }
