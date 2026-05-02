@@ -16,74 +16,98 @@
 
     <div nz-row [nzGutter]="[10,10]" >
       <div nz-col nzSpan="24">
-
         <app-dasboard-box-component>
           <div body nz-flex nzJustify="space-between" nzAlign="center">
-            <h2 nz-typography class="title">{{ hardwareView()?.name }}</h2>
-            <button nz-button nzType="primary"><nz-icon nzType="edit" nzTheme="fill" />Edit Hardware</button>
+            <h1 nz-typography>{{ hardwareView()?.name}}</h1>
+            <button nz-button nzType="primary"><nz-icon nzType="edit" nzTheme="fill" />Edit Hardware Data</button>
           </div>
         </app-dasboard-box-component>
-
       </div>
-      <div nz-col nzSpan="14">
 
-        <div nz-row [nzGutter]="[10,10]" style="height: 100%" >
-          <!-- GLOBAL HARDWARE DETAILS -->
-          <div nz-col nzSpan="24">
-            <app-dasboard-box-component [flex]="true" >
-              <div body nz-flex nzVertical nzGap="small" >
-                <div nz-row nzAlign="middle">
-                  <div nz-col nzFlex="0 0 200px">
-                    <div><img nz-image [nzSrc]="defaultCameraImage"  width="200" height="200" alt="default image camera" class="shadow" style="border-radius: 10px"></div>
-                  </div>
-                  <div nz-col nzFlex="20px" style="height: 200px">
-                    <nz-divider nzType="vertical" style="height: 100%" ></nz-divider>
-                  </div>
-                  <div nz-col nzSpan="10">
-                    @for (detail of hardwareView()?.globalDetails; track detail.label){
-                      <div nz-row>
-                        <div nz-col nzSpan="10">
-                          <span class="label">{{ detail.label }}</span>
+      <div nz-col nzSpan="14">
+      <!-- GLOBAL HARDWARE DETAILS -->
+        <app-dasboard-box-component [flex]="true" [boxTitle]="'Hardware Information'" >
+          <div body nz-flex nzVertical nzGap="small" >
+            <div nz-row nzAlign="top" style="padding-top: 25px" >
+
+              <!-- PHOTO SECTION -->
+              <div nz-col nzFlex="0 0 200px">
+                <div nz-flex nzVertical nzAlign="center" nzJustify="center" nzGap="small" style="height: 100%">
+                  @for (photo of hardwareView()?.hardwarePhotos; track photo.label){
+                    <div><img nz-image [nzSrc]="photo.filepath"  [nzFallback]="photo.default" width="150" height="150" alt="hardware photo" class="shadow" style="border-radius: 10px"></div>
+                    <span class="imageTitle">{{photo.label}} <button nz-button nzType="text" (click)="showModal()">
+                    <nz-icon nzType="edit" nzTheme="outline" />
+                    </button></span>
+                    <nz-modal [nzVisible]="isVisible()"
+                              (nzOnCancel)="showModal()"
+                    [nzContent]="modalTpl"
+                    [nzFooter]="null">
+
+                    </nz-modal>
+                    <ng-template #modalTpl>
+                      <nz-upload
+                        nzType="drag"
+                        [nzAccept]="'image/*'"
+                        [nzMultiple]="false"
+                        [nzName]="'file'"
+                        [nzShowUploadList]="false"
+                        nzAction="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                      >
+                        <div nz-flex nzAlign="center" nzJustify="center" nzVertical style="height: 400px">
+                          <p class="ant-upload-drag-icon" >
+                            <nz-icon nzType="inbox" />
+                          </p>
+                          <p class="ant-upload-text">Click or drag file to this area to upload</p>
                         </div>
-                        <div nz-col nzSpan="14">
-                          <strong class="hInfo">{{ detail.value }}</strong>
-                        </div>
-                      </div>
-                      <div nz-row>
-                        <div nz-col nzSpan="24">
-                          <nz-divider nzSize="small"></nz-divider>
-                        </div>
-                      </div>
-                    }
-                  </div>
+                      </nz-upload>
+                    </ng-template>
+                  }
                 </div>
               </div>
-            </app-dasboard-box-component>
-          </div>
-          <div nz-col nzSpan="24">
-            <!-- HARDWARE INFORMATION -->
-            <app-dasboard-box-component  [boxTitle]="'Hardware Information'"  [flex]="true">
-              <div body nz-flex nzVertical nzGap="small">
+
+              <!-- DIVIDER -->
+              <div nz-col nzFlex="20px" style="height: 500px;">
+                <nz-divider nzType="vertical" style="height: 100%;" ></nz-divider>
+              </div>
+
+              <!-- HARDWARE INFO SECTION -->
+              <div nz-col nzSpan="10">
+                <!-- GLOBAL INFO -->
+                @for (detail of hardwareView()?.hardwareGlobalDetails; track detail.label){
+                  <div nz-row>
+                    <div nz-col nzSpan="10">
+                      <span class="label">{{ detail.label }}</span>
+                    </div>
+                    <div nz-col nzSpan="14">
+                      <strong class="hInfo">{{ detail.value }}</strong>
+                    </div>
+                  </div>
+                  <div nz-row>
+                    <div nz-col nzSpan="24">
+                      <nz-divider nzSize="small"></nz-divider>
+                    </div>
+                  </div>
+                }
+                <!-- SPECIFIC INFO -->
                 @for (hInfo of hardwareView()?.hardwareInfo; track hInfo.label){
                   <div nz-row>
-                    <div nz-col nzSpan="5">
+                    <div nz-col nzSpan="10">
                       <span class="label">{{ hInfo.label }}</span>
                     </div>
-                    <div nz-col nzSpan="5">
+                    <div nz-col nzSpan="14">
                       <strong class="hInfo">{{hInfo.value}}</strong>
                     </div>
                   </div>
                   <div nz-row>
-                    <div nz-col nzSpan="10">
+                    <div nz-col nzSpan="24">
                       <nz-divider nzSize="small"></nz-divider>
                     </div>
                   </div>
                 }
               </div>
-            </app-dasboard-box-component>
-
+            </div>
           </div>
-        </div>
+        </app-dasboard-box-component>
       </div>
 
       <!-- HISTORY OF REPORTS -->

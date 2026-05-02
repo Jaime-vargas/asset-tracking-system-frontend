@@ -17,6 +17,9 @@ import {UtilityService} from '../../services/utility.service';
 import {HardwareUnion} from '../../interfaces/hardware-dto/hardware-union';
 import {DoubleStatusTagComponent} from '../../components/double-status-tag-component/double-status-tag-component';
 import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
+import {NzModalComponent, NzModalService, NzModalModule} from 'ng-zorro-antd/modal';
+import {NzUploadComponent} from 'ng-zorro-antd/upload';
+import {ApiUrlBaseService} from '../../services/api-url-base.service';
 
 @Component({
   selector: 'app-hardware-device-page',
@@ -36,7 +39,10 @@ import {PriorityTagsComponent} from '../../components/priority-tags-component/pr
     NzRowDirective,
     NzColDirective,
     DoubleStatusTagComponent,
-    PriorityTagsComponent
+    PriorityTagsComponent,
+    NzModalComponent,
+    NzModalModule,
+    NzUploadComponent
   ],
   templateUrl: './hardware-device-page.html',
   styleUrl: './hardware-device-page.css'
@@ -46,7 +52,8 @@ export class HardwareDevicePage {
 
   route: ActivatedRoute = inject(ActivatedRoute);
   routeContext = inject(RouteContextService)
-  constructor(private hardwareService: HardwareService,
+  constructor(protected apiUrlBaseService: ApiUrlBaseService,
+              private hardwareService: HardwareService,
               private utilityService: UtilityService) {
     this.routeContext.setFromRoute(this.route);
     this.getHardwareDetail();
@@ -55,25 +62,57 @@ export class HardwareDevicePage {
   defaultCameraImage: string = '/defaultCamera.webp';
   hardwareDetailData = signal<HardwareUnion | undefined>(undefined);
 
-  // COMPUTED TO ASSIGN TYPES
+  // MODAL FOR IMAGES
+  isVisible = signal<boolean>(false);
+  showModal(): void {
+    this.isVisible() ? this.isVisible.set(false) : this.isVisible.set(true);
+  }
+
+  // GETTING GLOBAL OBJECT DETAILS
   hardwareView = computed(() => {
     const hardware = this.hardwareDetailData();
     if (!hardware) return undefined;
-    const globalDetails = [
+    const hardwareGlobalDetails = [
       {label: 'Type', value: hardware.type},
       {label: 'Name', value: hardware.name },
+      {label: 'Brand', value: hardware.brand},
+      {label: 'Model', value: hardware.model},
       {label: 'Serial Number', value: hardware.serialNumber },
       {label: 'Location', value: hardware.location},
     ];
+    const hardwarePhotos = this.getPhotosDependsOnType(hardware);
     const hardwareInfo = this.getDataDependsOnType(hardware);
     const lastMaintenanceDate = {label: 'Last Maintenance Date', value: this.utilityService.isValidDate(hardware.lastMaintenanceDate)};
 
     return {...hardware,
-      globalDetails,
+      hardwareGlobalDetails,
+      hardwarePhotos,
       hardwareInfo,
       lastMaintenanceDate
       }
   });
+  // GETTING DETAILS DEPENDING ON HARDWARE TYPE
+  getPhotosDependsOnType(hardware: HardwareUnion) {
+    switch (hardware.type) {
+      case ('Camera'):
+        return [
+          {
+            label: 'View from Camera',
+            filepath: hardware.viewFromCameraPhoto?.filePath
+              ? this.apiUrlBaseService.imageBaseUrl + hardware.viewFromCameraPhoto.filePath
+              : this.defaultCameraImage,
+            default: this.defaultCameraImage
+          },
+          {
+            label: 'View to Camera',
+            filepath: hardware.viewToCameraPhoto?.filePath
+              ? this.apiUrlBaseService.imageBaseUrl + hardware.viewToCameraPhoto.filePath
+              : this.defaultCameraImage,
+            default: this.defaultCameraImage
+          } ]
+      default: return []
+    }
+  }
 
   getDataDependsOnType(hardware: HardwareUnion):{label: string, value: string}[] {
     switch (hardware.type) {
@@ -82,6 +121,9 @@ export class HardwareDevicePage {
           {label: 'Camera ID', value: hardware.cameraId },
           {label: 'Mac Address', value: hardware.macAddress },
           {label: 'IP Address', value: hardware.ipAddress },
+          {label: 'IDF', value: hardware.idf },
+          {label: 'Username', value: hardware.username },
+          {label: 'Password', value: hardware.password }
         ]
       default: return []
     }

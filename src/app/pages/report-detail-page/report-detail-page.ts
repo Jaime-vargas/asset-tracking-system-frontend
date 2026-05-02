@@ -143,14 +143,11 @@ export class ReportDetailPage {
 
   // FUNCTIONS FOR UPLOADING PHOTOS
   uploadFileList: NzUploadFile[] = [];
-
   uploadUrl(): string {
     return `${this.apiUrlBaseService.baseUrl}/reports/${this.reportId()}/photos`;
   }
-
   onUploadChange(event: NzUploadChangeParam): void {
     let { file, fileList } = event;
-
     // message error uploading image
     if (file.status === 'error') {
       this.message.error(file.error.error.message);
@@ -166,14 +163,12 @@ export class ReportDetailPage {
       const errorList = filesOnError.map(f =>
         f.error?.error?.message || 'Error uploading file: ' + f.name
       );
-
       if (errorList.length > 0) {
         this.notification.template(this.errorTpl, {
           nzData: errorList,
           nzDuration: 0,
         });
       }
-
       this.uploadFileList = [];
       this.getReportById();
     }
@@ -201,6 +196,7 @@ export class ReportDetailPage {
     })
   }
 
+  // @ts-ignore
   postComment(comment: CommentRequestDTO) {
     this.commentService.postComment(this.reportId(), comment).subscribe({
       next: () => {

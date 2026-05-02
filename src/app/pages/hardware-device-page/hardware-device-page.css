@@ -3,7 +3,7 @@
   transition: all 0.2s ease;
 }
 .recentReportCard:hover {
-  transform: translateY(-3px);
+  transform: translateY(-5px);
 }
 
 .value{
@@ -17,4 +17,9 @@
 
 .reportTittle{
   font-size: 16px;
+}
+
+.imageTitle{
+  padding-bottom: 20px;
+  font-weight: bold;
 }
