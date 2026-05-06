@@ -35,11 +35,13 @@
                 <div nz-flex nzVertical nzAlign="center" nzJustify="center" nzGap="small" style="height: 100%">
                   @for (photo of hardwareView()?.hardwarePhotos; track photo.label){
                     <div><img nz-image [nzSrc]="photo.filepath"  [nzFallback]="photo.default" width="150" height="150" alt="hardware photo" class="shadow" style="border-radius: 10px"></div>
-                    <span class="imageTitle">{{photo.label}} <button nz-button nzType="text" (click)="showModal()">
+                    <span class="imageTitle">{{photo.label}} <button nz-button nzType="text" (click)="showUploadModal(photo.photoType)">
                     <nz-icon nzType="edit" nzTheme="outline" />
                     </button></span>
-                    <nz-modal [nzVisible]="isVisible()"
-                              (nzOnCancel)="showModal()"
+
+                    <!-- UPLOAD MODAL -->
+                    <nz-modal [nzVisible]="uploadVisible()"
+                              (nzOnCancel)="showUploadModal(null)"
                     [nzContent]="modalTpl"
                     [nzFooter]="null">
 
@@ -51,7 +53,8 @@
                         [nzMultiple]="false"
                         [nzName]="'file'"
                         [nzShowUploadList]="false"
-                        nzAction="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                        [nzAction]="uploadUrl()"
+                        (nzChange)="onUploadChange($event)"
                       >
                         <div nz-flex nzAlign="center" nzJustify="center" nzVertical style="height: 400px">
                           <p class="ant-upload-drag-icon" >
@@ -60,6 +63,9 @@
                           <p class="ant-upload-text">Click or drag file to this area to upload</p>
                         </div>
                       </nz-upload>
+                      <div nz-flex nzJustify="center">
+                        <span style="font-size: 1rem; font-weight: bold">Upload Image</span>
+                      </div>
                     </ng-template>
                   }
                 </div>

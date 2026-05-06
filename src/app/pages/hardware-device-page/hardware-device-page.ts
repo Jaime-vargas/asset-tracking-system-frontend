@@ -18,8 +18,10 @@ import {HardwareUnion} from '../../interfaces/hardware-dto/hardware-union';
 import {DoubleStatusTagComponent} from '../../components/double-status-tag-component/double-status-tag-component';
 import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
 import {NzModalComponent, NzModalService, NzModalModule} from 'ng-zorro-antd/modal';
-import {NzUploadComponent} from 'ng-zorro-antd/upload';
+import {NzUploadChangeParam, NzUploadComponent, NzUploadFile} from 'ng-zorro-antd/upload';
 import {ApiUrlBaseService} from '../../services/api-url-base.service';
+import {NzMessageService} from 'ng-zorro-antd/message';
+import {NzNotificationService} from 'ng-zorro-antd/notification';
 
 @Component({
   selector: 'app-hardware-device-page',
@@ -54,7 +56,10 @@ export class HardwareDevicePage {
   routeContext = inject(RouteContextService)
   constructor(protected apiUrlBaseService: ApiUrlBaseService,
               private hardwareService: HardwareService,
-              private utilityService: UtilityService) {
+              private utilityService: UtilityService,
+              private modal: NzModalService,
+              private message: NzMessageService,
+              private notification: NzNotificationService) {
     this.routeContext.setFromRoute(this.route);
     this.getHardwareDetail();
   }
@@ -63,9 +68,63 @@ export class HardwareDevicePage {
   hardwareDetailData = signal<HardwareUnion | undefined>(undefined);
 
   // MODAL FOR IMAGES
-  isVisible = signal<boolean>(false);
-  showModal(): void {
-    this.isVisible() ? this.isVisible.set(false) : this.isVisible.set(true);
+  uploadVisible = signal<boolean>(false);
+  showUploadModal(photoType: 'VIEW_FROM_CAMERA' | 'VIEW_TO_CAMERA' | null): void {
+    this.photoType.set(photoType);
+    this.uploadVisible() ? this.uploadVisible.set(false) : this.uploadVisible.set(true);
+  }
+  photoType = signal<'VIEW_FROM_CAMERA' | 'VIEW_TO_CAMERA' | null>(null)
+  replaceExisting = signal<boolean>(false);
+
+  // MODAL FOR REPLACE CONFIRM
+  showReplaceModal(): void {
+    this.modal.confirm({
+      nzTitle: 'A photo already exists',
+      nzContent: '<b style="color: red;">Are you sure you want to replace the photo?</b>',
+      nzOkText: 'Yes',
+      nzOkType: 'primary',
+      nzOnOk: () => this.replaceSubmit(),
+      nzCancelText: 'No',
+      nzOnCancel: () => console.log('Cancel')
+    });
+  }
+  replaceSubmit(): void {
+    this.replaceExisting.set(true);
+    const file = this.failedFile();
+    if (!file) return;
+    this.retryUpload(file);
+  }
+
+  uploadUrl():string {
+    return `${this.apiUrlBaseService.baseUrl}/hardware/${this.routeContext.hardwareId()}/camera/photos?photoType=${this.photoType()}&replaceExisting=${this.replaceExisting()}`;
+  }
+  failedFile = signal<File | undefined>(undefined);
+  onUploadChange(event: NzUploadChangeParam): void {
+    let { file} = event;
+    // message error uploading image
+    if (file.status === 'error') {
+      const errorResponse = file.error;
+      const message: string =
+        errorResponse?.error?.message;
+      if (message.includes('FileAlreadyExists')) {
+        this.failedFile.set(file.originFileObj)
+        this.uploadVisible.set(false);
+        this.showReplaceModal()
+      } else {
+        this.uploadVisible.set(false);
+        this.notification.error(
+          'Upload failed',
+          message,
+          { nzDuration: 0 }
+        );
+      }
+    }
+    // message success uploading image
+    if (file.status === 'done') {
+      this.message.success("File uploaded successfully: " + file.name);
+      this.uploadVisible.set(false);
+      this.getHardwareDetail();
+    }
   }
 
   // GETTING GLOBAL OBJECT DETAILS
@@ -92,7 +151,7 @@ export class HardwareDevicePage {
       }
   });
   // GETTING DETAILS DEPENDING ON HARDWARE TYPE
-  getPhotosDependsOnType(hardware: HardwareUnion) {
+  getPhotosDependsOnType(hardware: HardwareUnion):{label: string, filepath: string, default: string, photoType: 'VIEW_FROM_CAMERA' | 'VIEW_TO_CAMERA' } [] {
     switch (hardware.type) {
       case ('Camera'):
         return [
@@ -101,14 +160,16 @@ export class HardwareDevicePage {
             filepath: hardware.viewFromCameraPhoto?.filePath
               ? this.apiUrlBaseService.imageBaseUrl + hardware.viewFromCameraPhoto.filePath
               : this.defaultCameraImage,
-            default: this.defaultCameraImage
+            default: this.defaultCameraImage,
+            photoType: "VIEW_FROM_CAMERA"
           },
           {
             label: 'View to Camera',
             filepath: hardware.viewToCameraPhoto?.filePath
               ? this.apiUrlBaseService.imageBaseUrl + hardware.viewToCameraPhoto.filePath
               : this.defaultCameraImage,
-            default: this.defaultCameraImage
+            default: this.defaultCameraImage,
+            photoType: "VIEW_TO_CAMERA"
           } ]
       default: return []
     }
@@ -147,5 +208,28 @@ export class HardwareDevicePage {
           return this.hardwareDetailData.set(data);
       }
     })
+  }
+
+  retryUpload(file:File): void {
+    const formData = new FormData();
+    formData.append('file', file as any);
+
+    this.apiUrlBaseService.post(`hardware/${this.routeContext.hardwareId()}/camera/photos?photoType=${this.photoType()}&replaceExisting=${this.replaceExisting()}`, formData).subscribe({
+      next: () => {
+        this.message.success('File replaced successfully');
+        this.getHardwareDetail();
+        this.replaceExisting.set(false);
+        this.failedFile.set(undefined);
+      },
+      error: (err) => {
+        this.replaceExisting.set(false);
+        this.failedFile.set(undefined);
+        this.notification.error(
+          'Upload failed',
+          err?.error.message,
+          { nzDuration: 0 }
+        );
+      }
+    });
   }
 }
