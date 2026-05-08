@@ -3,7 +3,7 @@ import {NzFlexDirective} from "ng-zorro-antd/flex";
 import {NzImageDirective, NzImageGroupComponent} from "ng-zorro-antd/image";
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
-import {PhotoDto} from '../../interfaces/photo-dto';
+import {PhotoDto} from '../../interfaces/photo.dto';
 
 @Component({
   selector: 'app-carousel-component',
