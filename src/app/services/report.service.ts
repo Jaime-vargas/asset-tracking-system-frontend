@@ -3,7 +3,7 @@ import {ApiUrlBaseService} from './api-url-base.service';
 import {Observable} from 'rxjs';
 import {ReportTableDto} from '../interfaces/report-dto/report-table.dto';
 import {ReportDetailDto} from '../interfaces/report-dto/report-detail.dto';
-import {PhotoDto} from '../interfaces/photo-dto';
+import {PhotoDto} from '../interfaces/photo.dto';
 
 @Injectable({providedIn: 'root'})
 export class ReportsService {

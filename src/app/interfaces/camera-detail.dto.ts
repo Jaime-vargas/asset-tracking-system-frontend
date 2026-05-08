@@ -1,5 +1,5 @@
 import {HardwareDetailDto} from './hardware-dto/hardware-detail.dto';
-import {PhotoDto} from './photo-dto';
+import {PhotoDto} from './photo.dto';
 
 export interface CameraDetailDto extends HardwareDetailDto {
   type: 'Camera';

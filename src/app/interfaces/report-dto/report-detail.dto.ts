@@ -1,5 +1,5 @@
 import {CommentDto} from '../comment.dto';
-import {PhotoDto} from '../photo-dto';
+import {PhotoDto} from '../photo.dto';
 
 export interface ReportDetailDto {
   id: number;
