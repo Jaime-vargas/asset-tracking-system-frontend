@@ -17,6 +17,7 @@ import {RouteContextService} from '../../services/route-context.service';
 import {ReportCountTagsComponent} from '../../components/report-count-tags-component/report-count-tags-component';
 import {NzBreadCrumbComponent, NzBreadCrumbItemComponent} from 'ng-zorro-antd/breadcrumb';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcrumb-component';
 
 @Component({
   selector: 'app-client-branches-page',
@@ -38,7 +39,8 @@ import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
     NzBreadCrumbComponent,
     NzBreadCrumbItemComponent,
     NzRowDirective,
-    NzColDirective
+    NzColDirective,
+    BreadcrumbComponent
   ],
   templateUrl: './client-branches-page.html',
   styleUrl: './client-branches-page.css',
@@ -52,6 +54,12 @@ export class ClientBranchesPage {
     this.getBranches();
   }
 
+  // BREADCRUMB
+  breadcrumb = computed<{label:string | null, link?:(string|number|null)[]}[]>(() =>
+    [{label: 'Clients',
+      link: ['/clients']},
+      {label: this.routeContext.clientSlug()}
+    ]);
 
   // TABLE DATA
   branchesData = signal<BranchTableDto[]>([]);

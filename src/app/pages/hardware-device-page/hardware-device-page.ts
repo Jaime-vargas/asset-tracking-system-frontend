@@ -22,6 +22,7 @@ import {NzUploadChangeParam, NzUploadComponent, NzUploadFile} from 'ng-zorro-ant
 import {ApiUrlBaseService} from '../../services/api-url-base.service';
 import {NzMessageService} from 'ng-zorro-antd/message';
 import {NzNotificationService} from 'ng-zorro-antd/notification';
+import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcrumb-component';
 
 @Component({
   selector: 'app-hardware-device-page',
@@ -44,7 +45,8 @@ import {NzNotificationService} from 'ng-zorro-antd/notification';
     PriorityTagsComponent,
     NzModalComponent,
     NzModalModule,
-    NzUploadComponent
+    NzUploadComponent,
+    BreadcrumbComponent
   ],
   templateUrl: './hardware-device-page.html',
   styleUrl: './hardware-device-page.css'
@@ -63,6 +65,17 @@ export class HardwareDevicePage {
     this.routeContext.setFromRoute(this.route);
     this.getHardwareDetail();
   }
+  // BREADCRUMB
+  breadcrumb = computed<{label:string | null, link?:(string|number|null)[]}[]>(() =>
+    [{label: 'Clients',
+      link: ['/clients']},
+      {label: this.routeContext.clientSlug(),
+        link: ['/clients', this.routeContext.clientId(), this.routeContext.clientSlug()]},
+      {label: this.routeContext.branchSlug(),
+      link: ['/clients', this.routeContext.clientId(), this.routeContext.clientSlug(),'branches',this.routeContext.branchId(), this.routeContext.branchSlug(),'hardware']},
+      {label: this.routeContext.hardwareSlug()}
+    ]);
+
 
   defaultCameraImage: string = '/defaultCamera.webp';
   hardwareDetailData = signal<HardwareUnion | undefined>(undefined);

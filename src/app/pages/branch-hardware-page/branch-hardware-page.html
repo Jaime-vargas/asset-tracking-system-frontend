@@ -1,14 +1,5 @@
 <div class="contentPage">
-  <nz-breadcrumb>
-    <nz-breadcrumb-item>
-      <a class="breadcrumb" [routerLink]="'/clients'">Clients</a>
-    </nz-breadcrumb-item>
-    <nz-breadcrumb-item>
-      <a class="breadcrumb" [routerLink]="['/clients', routeContext.clientId(), routeContext.clientSlug()]">
-        {{routeContext.clientSlug()}}</a>
-    </nz-breadcrumb-item>
-    <nz-breadcrumb-item>{{routeContext.branchSlug()}}</nz-breadcrumb-item>
-  </nz-breadcrumb>
+  <app-breadcrumb-component [breadcrumb]="breadcrumb()"></app-breadcrumb-component>
   <nz-divider></nz-divider>
   <div class="contentBody">
     <div nz-row [nzGutter]="[10,10]">

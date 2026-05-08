@@ -5,18 +5,16 @@ import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';
 import {FormsModule} from '@angular/forms';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
-import {NzFlexDirective} from 'ng-zorro-antd/flex';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 'ng-zorro-antd/input';
 import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
-import {NzTagComponent} from 'ng-zorro-antd/tag';
 import {HardwareTableDto} from '../../interfaces/hardware-dto/hardware-table.dto';
 import {RouteContextService} from '../../services/route-context.service';
 import {UtilityService} from '../../services/utility.service';
 import {ReportCountTagsComponent} from '../../components/report-count-tags-component/report-count-tags-component';
-import {NzBreadCrumbComponent, NzBreadCrumbItemComponent} from 'ng-zorro-antd/breadcrumb';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcrumb-component';
 
 @Component({
   selector: 'app-branch-hardware-device-page',
@@ -25,21 +23,18 @@ import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
     DasboardBoxComponent,
     FormsModule,
     NzButtonComponent,
-    NzFlexDirective,
     NzIconDirective,
     NzInputDirective,
     NzInputPrefixDirective,
     NzInputWrapperComponent,
     NzEmptyComponent,
     NzTableComponent,
-    NzTagComponent,
     NzThMeasureDirective,
     RouterLink,
     ReportCountTagsComponent,
-    NzBreadCrumbComponent,
-    NzBreadCrumbItemComponent,
     NzRowDirective,
-    NzColDirective
+    NzColDirective,
+    BreadcrumbComponent
   ],
   templateUrl: './branch-hardware-page.html',
   styleUrl: './branch-hardware-page.css',
@@ -54,6 +49,16 @@ export class BranchHardwarePage {
     this.routeContext.setFromRoute(this.route);
     this.getHardwareDataByBranchId(this.branchId());
   }
+
+  // BREADCRUMB
+  breadcrumb = computed<{label:string | null, link?:(string|number|null)[]}[]>(() =>
+    [{label: 'Clients',
+      link: ['/clients']},
+      {label: this.routeContext.clientSlug(),
+        link: ['/clients', this.routeContext.clientId(), this.routeContext.clientSlug()]},
+      {label: this.routeContext.branchSlug()}
+    ]);
+
   clientId = computed(() =>
     this.routeContext.clientId() ?? 0);
   branchId = computed(() =>

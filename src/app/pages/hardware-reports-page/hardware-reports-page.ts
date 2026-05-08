@@ -16,6 +16,7 @@ import {FormsModule} from '@angular/forms';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 'ng-zorro-antd/input';
 import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcrumb-component';
 
 @Component({
   selector: 'app-hardware-reports-page',
@@ -39,7 +40,8 @@ import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
     NzInputPrefixDirective,
     NzInputWrapperComponent,
     NzOptionComponent,
-    NzSelectComponent
+    NzSelectComponent,
+    BreadcrumbComponent
   ],
   templateUrl: './hardware-reports-page.html',
   styleUrl: './hardware-reports-page.css',
@@ -52,6 +54,19 @@ export class HardwareReportsPage {
     this.routeContext.setFromRoute(this.route);
     this.getHardwareReports();
   }
+  // BREADCRUMB
+  breadcrumb = computed<{label:string | null, link?:(string|number|null)[]}[]>(() =>
+    [{label: 'Clients',
+      link: ['/clients']},
+      {label: this.routeContext.clientSlug(),
+        link: ['/clients', this.routeContext.clientId(), this.routeContext.clientSlug()]},
+      {label: this.routeContext.branchSlug(),
+        link: ['/clients', this.routeContext.clientId(), this.routeContext.clientSlug(),'branches',this.routeContext.branchId(), this.routeContext.branchSlug(),'hardware']},
+      {label: this.routeContext.hardwareSlug(),
+      link: ['/clients', this.routeContext.clientId(), this.routeContext.clientSlug(),'branches', this.routeContext.branchId(), this.routeContext.branchSlug(),'hardware', this.routeContext.hardwareId(), this.routeContext.hardwareSlug()]},
+      {label: 'Reports'}
+    ]);
+
 
   reportsData = signal<ReportTableDto[]>([]);
   reportsView = computed(()=>

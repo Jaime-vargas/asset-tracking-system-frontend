@@ -6,10 +6,10 @@ import {Injectable} from '@angular/core';
 })
 export class ApiUrlBaseService {
 
-  baseUrl = 'http://192.168.100.18:3000/api/v1';
-  imageBaseUrl = 'http://192.168.100.18:3000/';
-  // baseUrl = 'http://localhost:3000/api/v1';
-  // imageBaseUrl = 'http://localhost:3000/';
+  // baseUrl = 'http://192.168.100.18:3000/api/v1';
+  // imageBaseUrl = 'http://192.168.100.18:3000/';
+  baseUrl = 'http://localhost:3000/api/v1';
+  imageBaseUrl = 'http://localhost:3000/';
 
   constructor(private http: HttpClient) {}
 
