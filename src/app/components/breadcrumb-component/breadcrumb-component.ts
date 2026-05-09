@@ -13,6 +13,5 @@ import {RouterLink} from '@angular/router';
   styleUrl: './breadcrumb-component.css',
 })
 export class BreadcrumbComponent {
-  breadcrumb =
-    input.required<{label:string | null, link?:(string|number|null)[]}[]>();
+  breadcrumb = input.required<{label:string | number | null, link?:(string|number|null)[]}[]>();
 }
