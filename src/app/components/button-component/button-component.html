@@ -1,1 +1,12 @@
-<p>button-component works!</p>
+<button nz-button
+        [nzType]="type() === 'edit' ? 'default' : 'primary'"
+        [class]="type() === 'edit' ? 'edit-button': ''"
+        >
+  @if (type() === 'link'){
+    {{buttonLabel()}}
+    <nz-icon nzType="right" />
+  } @else {
+    <nz-icon nzType="edit" nzTheme="fill" />
+    {{buttonLabel()}}
+  }
+</button>
