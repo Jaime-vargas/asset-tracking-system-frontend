@@ -30,6 +30,7 @@ import {ApiUrlBaseService} from '../../services/api-url-base.service';
 import {NzPopconfirmDirective} from 'ng-zorro-antd/popconfirm';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import {NzNotificationService} from 'ng-zorro-antd/notification';
+import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcrumb-component';
 
 
 @Component({
@@ -59,7 +60,8 @@ import {NzNotificationService} from 'ng-zorro-antd/notification';
     NzFormControlComponent,
     NzUploadComponent,
     NzEmptyComponent,
-    NzPopconfirmDirective
+    NzPopconfirmDirective,
+    BreadcrumbComponent
   ],
   templateUrl: './report-detail-page.html',
   styleUrl: './report-detail-page.css',
@@ -82,6 +84,21 @@ export class ReportDetailPage {
 
   @ViewChild('errorTpl', { static: false })
   errorTpl!: TemplateRef<any>;
+
+  // BREADCRUMB
+  breadcrumb = computed<{label:string | number | null, link?:(string|number|null)[]}[]>(() =>
+    [{label: 'Clients',
+      link: ['/clients']},
+      {label: this.routeContext.clientSlug(),
+        link: ['/clients', this.routeContext.clientId(), this.routeContext.clientSlug()]},
+      {label: this.routeContext.branchSlug(),
+        link: ['/clients', this.routeContext.clientId(), this.routeContext.clientSlug(),'branches',this.routeContext.branchId(), this.routeContext.branchSlug(),'hardware']},
+      {label: this.routeContext.hardwareSlug(),
+        link: ['/clients', this.routeContext.clientId(), this.routeContext.clientSlug(),'branches', this.routeContext.branchId(), this.routeContext.branchSlug(),'hardware', this.routeContext.hardwareId(), this.routeContext.hardwareSlug()]},
+      {label: 'Reports',
+      link: ['/clients', this.routeContext.clientId(), this.routeContext.clientSlug(),'branches', this.routeContext.branchId(), this.routeContext.branchSlug(),'hardware', this.routeContext.hardwareId(), this.routeContext.hardwareSlug(), 'reports']},
+      {label: this.reportId()}
+    ]);
 
   reportData = signal<ReportDetailDto | undefined>(undefined);
   reportView = computed(() => {
