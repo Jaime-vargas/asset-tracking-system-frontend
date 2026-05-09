@@ -16,6 +16,9 @@ import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {ReportCountTagsComponent} from '../../components/report-count-tags-component/report-count-tags-component';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {TableComponent} from '../../components/table-component/table-component';
+import {ReportCountDTO} from '../../interfaces/report-dto/report-count.dto';
+import {TableData} from '../../interfaces/type/TableData';
 
 
 @Component({
@@ -37,7 +40,8 @@ import {NzTypographyComponent} from 'ng-zorro-antd/typography';
     ReportCountTagsComponent,
     NzRowDirective,
     NzColDirective,
-    NzTypographyComponent
+    NzTypographyComponent,
+    TableComponent
   ],
   templateUrl: './clients-page.html',
   styleUrl: './clients-page.css',
@@ -48,6 +52,32 @@ export class ClientsPage {
   }
 
   clientsData = signal<ClientTableDto[] >([]);
+
+  // TABLE COLUMNS
+  tableColumns = computed(() =>
+    [
+      {key:'name', label: 'Name', colWidth: 150, type: 'string'},
+      {key:'branches', label: 'Branches', colWidth: 80, type: 'icon-branch'},
+      {key:'totalHardware', label: 'Hardware', colWidth: 80, type: 'icon-hardware'},
+      {key:'reportsActive', label: 'Reports', colWidth: 150, type: 'report-count-tag'},
+      {key:'actions', label: 'Actions', colWidth: 200, type: 'button'},
+    ]
+  )
+  // TABLE DATA
+  tableData= computed<TableData[]>(()=> {
+    return this.filteredClients().map((client: ClientTableDto) => {
+      return {
+        id: client.id,
+        name: client.name,
+        branches: client.branches,
+        totalHardware: client.totalHardware,
+        reportsActive: client.reportsActive,
+        actions: [
+          {label: 'Manage', type: 'link', link:['/clients', client.id, this.utilityService.slugify(client.name)]},
+          {label: 'Edit', type: 'edit', link:['/clients', client.id, this.utilityService.slugify(client.name)]}]
+      }
+    })
+  });
 
   // DATA FILTER
   clientNameFilter = signal<string>('');

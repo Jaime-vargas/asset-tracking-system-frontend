@@ -1,1 +1,59 @@
-<p>table-componenrt works!</p>
+<nz-table #nzData
+          nzSize="default"
+          [nzScroll]="{ x: 'max-content' }"
+          [nzData]="tableData()">
+  <!-- DEFINING COLUMN SIZE -->
+  <colgroup>
+  @for (item of tableColumns(); track $index){
+    <col [style.width.px]="item.colWidth" />
+  }
+  </colgroup>
+  <!-- TABLE HEAD LABELS -->
+  <thead>
+    <tr>
+      @for (item of tableColumns(); track  $index){
+        <th>{{item.label}}</th>
+      }
+    </tr>
+  </thead>
+  <!-- TABLE ROWS -->
+  @if (nzData.data.length > 0) {
+    <tbody>
+      @for (row of nzData.data; track row['id']){
+        <tr>
+          @for (column of tableColumns(); track column.key) {
+            <td>
+              <!-- SWITCHING DATA DEPENDING OF TYPE -->
+              @switch (column.type){
+                <!-- ICON CASES -->
+                @case ('icon-branch'){
+                  <nz-icon nzType="shop" nzTheme="fill" class="bg-green table-icon" />{{row[column.key]}}
+                }
+                @case ('icon-hardware'){
+                  <nz-icon nzType="video-camera" nzTheme="fill" class="bg-green table-icon" />{{row[column.key]}}
+                }
+                <!-- TAG CASES -->
+                @case ('report-count-tag'){
+                  <app-report-count-tags-component [reports]="row[column.key]"></app-report-count-tags-component>
+                }
+                <!-- BUTTON CASES -->
+                @case ('button'){
+                  @for (button of row[column.key]; track $index){
+                    <app-button-component [buttonLabel]="button.label" [type]="button.type" [routerLink]="button.link"></app-button-component>
+                  }
+                }
+                @default {
+                  {{row[column.key]}}
+                }
+              }
+            </td>
+          }
+        </tr>
+      }
+    </tbody>
+  }@else {
+    <td colspan="5">
+      <nz-empty nzNotFoundImage="simple"></nz-empty>
+    </td>
+  }
+</nz-table>

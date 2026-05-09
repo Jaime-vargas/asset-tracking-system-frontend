@@ -14,47 +14,11 @@
           </div>
         </app-dasboard-box-component>
       </div>
+      <!-- TABLE COMPONENT -->
       <div nz-col nzSpan="24">
-        <app-dasboard-box-component>
+        <app-dasboard-box-component [flex]="true">
           <div body>
-            <nz-table #tableData nzSize="default" [nzScroll]="{ x: 'max-content' }" [nzData]="filteredClients()" >
-              <colgroup>
-                <col style="width: 150px" />
-                <col style="width: 100px" />
-                <col style="width: 100px" />
-                <col style="width: 150px" />
-                <col style="width: 200px" />
-              </colgroup>
-              <thead>
-              <tr>
-                <th>Name</th>
-                <th>Branches</th>
-                <th>Hardware</th>
-                <th>Reports</th>
-                <th>Actions</th>
-              </tr>
-              </thead>
-              @if (tableData.data.length > 0) {
-              <tbody>
-                @for (client of tableData.data; track client.id){
-                  <tr>
-                    <td>{{client.name}}</td>
-                    <td><nz-icon nzType="shop" nzTheme="fill" class="bg-green table-icon" />{{client.branches}}</td>
-                    <td><nz-icon nzType="video-camera" nzTheme="fill" class="bg-green table-icon" />{{client.totalHardware}}</td>
-                    <td><app-report-count-tags-component [reports]="client.reportsActive"></app-report-count-tags-component></td>
-                    <td>
-                      <button nz-button nzType="primary" [routerLink]="['/clients', client.id, utilityService.slugify(client.name)]" >Manage<nz-icon nzType="right" /></button>
-                      <button class="edit-button" nz-button nzType="default"><nz-icon nzType="edit" nzTheme="fill" />Edit</button>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-              } @else {
-                <td colspan="5">
-                  <nz-empty nzNotFoundImage="simple"></nz-empty>
-                </td>
-              }
-            </nz-table>
+            <app-table-component [tableColumns]="tableColumns()" [tableData]="tableData()"></app-table-component>
           </div>
         </app-dasboard-box-component>
       </div>

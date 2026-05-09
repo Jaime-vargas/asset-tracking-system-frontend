@@ -10,7 +10,6 @@ import {HardwareService} from '../../services/hardware.service';
 import {ReportTableDto} from '../../interfaces/report-dto/report-table.dto';
 import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
 import {SingleStatusTagsComponent} from '../../components/single-status-tags-component/single-status-tags-component';
-import {NzBreadCrumbComponent, NzBreadCrumbItemComponent} from 'ng-zorro-antd/breadcrumb';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {FormsModule} from '@angular/forms';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
@@ -30,8 +29,6 @@ import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcr
     NzDividerComponent,
     PriorityTagsComponent,
     SingleStatusTagsComponent,
-    NzBreadCrumbComponent,
-    NzBreadCrumbItemComponent,
     NzRowDirective,
     NzColDirective,
     FormsModule,
