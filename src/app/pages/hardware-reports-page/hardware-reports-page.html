@@ -56,53 +56,13 @@
           </div>
         </app-dasboard-box-component>
       </div>
+      <!-- TABLE COMPONENT -->
       <div nz-col nzSpan="24">
         <app-dasboard-box-component>
           <div body>
-            <nz-table #tableData nzSize="default" [nzScroll]="{ x: 'max-content' }" [nzData]="reportsFilter()" >
-              <colgroup>
-                <col style="width: 50px" />
-                <col style="width: 150px" />
-                <col style="width: 80px" />
-                <col style="width: 150px" />
-                <col style="width: 150px" />
-                <col style="width: 80px" />
-                <col style="width: 150px" />
-              </colgroup>
-              <thead>
-              <tr>
-                <th>#ID</th>
-                <th>Title</th>
-                <th>Priority</th>
-                <th>Created At</th>
-                <th>Due Date</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </thead>
-              @if (tableData.data.length > 0) {
-                <tbody>
-                  @for (report of tableData.data; track report.id){
-                    <tr>
-                      <td>#{{report.id}}</td>
-                      <td>{{report.title}}</td>
-                      <td><app-priority-tags-component [priority]="report.priority"></app-priority-tags-component></td>
-                      <td>{{report.createdDate.toDateString()}}</td>
-                      <td>{{report.dueDate.toDateString()}}</td>
-                      <td><app-single-status-tags-component [status]="report.status"></app-single-status-tags-component></td>
-                      <td><button nz-button nzType="primary"
-                                  [routerLink]="['/clients',report.clientId,report.clientName,
-                    'branches',report.branchId,report.branchName,
-                    'hardware',report.hardwareId,report.hardwareName,
-                    'reports',report.id]">View</button></td>
-                    </tr>
-                  }
-                </tbody>
-              } @else {
-                <td colspan="8">
-                  <nz-empty nzNotFoundImage="simple"></nz-empty>
-                </td>
-              }
-            </nz-table>
+            <app-table-component
+              [tableColumns]="tableHardwareReportsService.tableColumns"
+              [tableData]="tableData()"></app-table-component>
           </div>
         </app-dasboard-box-component>
       </div>

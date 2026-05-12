@@ -3,32 +3,25 @@ import {ActivatedRoute, RouterLink} from '@angular/router';
 import {RouteContextService} from '../../services/route-context.service';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';
-import {NzEmptyComponent} from 'ng-zorro-antd/empty';
-import {NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {HardwareService} from '../../services/hardware.service';
 import {ReportTableDto} from '../../interfaces/report-dto/report-table.dto';
-import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
-import {SingleStatusTagsComponent} from '../../components/single-status-tags-component/single-status-tags-component';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {FormsModule} from '@angular/forms';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 'ng-zorro-antd/input';
 import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
 import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcrumb-component';
+import {TableData} from '../../interfaces/table/table-data';
+import {TableComponent} from '../../components/table-component/table-component';
+import {TableColumnsHardwareReportsService} from '../../services/table-columns-service/table-columns-hardware-reports.service';
 
 @Component({
   selector: 'app-hardware-reports-page',
   imports: [
     NzButtonComponent,
-    RouterLink,
     DasboardBoxComponent,
-    NzEmptyComponent,
-    NzTableComponent,
-    NzThMeasureDirective,
     NzDividerComponent,
-    PriorityTagsComponent,
-    SingleStatusTagsComponent,
     NzRowDirective,
     NzColDirective,
     FormsModule,
@@ -38,7 +31,8 @@ import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcr
     NzInputWrapperComponent,
     NzOptionComponent,
     NzSelectComponent,
-    BreadcrumbComponent
+    BreadcrumbComponent,
+    TableComponent
   ],
   templateUrl: './hardware-reports-page.html',
   styleUrl: './hardware-reports-page.css',
@@ -47,7 +41,8 @@ export class HardwareReportsPage {
   route: ActivatedRoute = inject(ActivatedRoute);
   routeContext: RouteContextService = inject(RouteContextService)
 
-  constructor(private hardwareService: HardwareService) {
+  constructor(private hardwareService: HardwareService,
+              protected tableHardwareReportsService: TableColumnsHardwareReportsService) {
     this.routeContext.setFromRoute(this.route);
     this.getHardwareReports();
   }
@@ -76,6 +71,22 @@ export class HardwareReportsPage {
     })
   );
 
+  // TABLE DATA
+  tableData = computed<TableData[]>(() => {
+    return this.filteredReports().map((report) => {
+      return {
+        ...report,
+        id: "# " + report.id,
+        actions: [
+          {label: 'View', type: 'link', link:['/clients',report.clientId,report.clientName,
+              'branches',report.branchId,report.branchName,
+              'hardware',report.hardwareId,report.hardwareName,
+              'reports',report.id]}
+        ]
+      };
+    })
+  });
+
   // FILTERS FOR SEARCH REPORTS
   // LISTS FOR NZ-SELECT
   priorityList = computed(() =>
@@ -96,7 +107,8 @@ export class HardwareReportsPage {
   createdAtFilter = signal<string>("");
   dueDateFilter = signal<string>("");
   statusFilter = signal("");
-  reportsFilter = computed(()=>
+
+  filteredReports = computed(()=>
     this.reportsView().filter(report => {
       return (
         (this.idFilter() === null || report.id === this.idFilter()) &&
