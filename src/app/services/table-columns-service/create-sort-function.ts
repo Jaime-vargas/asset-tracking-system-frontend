@@ -2,7 +2,7 @@ import { NzTableSortFn } from 'ng-zorro-antd/table';
 
 export function createSortFn(
   key: string,
-  type: 'array' | 'number' | 'string'
+  type: 'array' | 'date'| 'number' | 'string'
 ): NzTableSortFn<Record<string, any>> {
 
   return (a: Record<string, any>, b: Record<string, any>) => {
@@ -14,6 +14,9 @@ export function createSortFn(
 
       case 'array':
         return valueA.length - valueB.length;
+
+      case 'date':
+        return  valueA.getTime() - valueB.getTime();
 
       case 'number':
         return Number(valueA) - Number(valueB);

@@ -1,32 +1,36 @@
 <nz-table #nzData
           nzSize="small"
-          [nzScroll]="{ x: 'max-content', y: '550px'}"
+          [nzScroll]="{ x: '100%', y: '500px'}"
           nzTableLayout="fixed"
           [nzShowSizeChanger]="true"
           [nzData]="tableData()">
   <!-- TABLE HEAD LABELS -->
-  <thead>
+  <thead class="theadd">
     <tr>
-      @for (item of tableColumns(); track  $index){
+      @for (columnItem of tableColumns(); track  $index){
         <th
-          [nzWidth]="item.colWidth + 'px'"
-          [nzColumnKey]="item.key"
-          [nzSortOrder]="item.sortOrder"
-          [nzSortFn]="item.sortFn"
-          [nzSortDirections]="item.sortDirections"
-        >{{item.label}}</th>
+          [nzLeft]="columnItem.fixed === 'nzLeft'"
+          [nzWidth]="columnItem.colWidth + 'px'"
+          [nzColumnKey]="columnItem.key"
+          [nzSortOrder]="columnItem.sortOrder"
+          [nzSortFn]="columnItem.sortFn"
+          [nzSortDirections]="columnItem.sortDirections"
+        >{{columnItem.label}}</th>
       }
     </tr>
   </thead>
   <!-- TABLE ROWS -->
-  @if (tableData().length > 0) {
     <tbody>
       @for (row of nzData.data; track row['id']){
         <tr>
           @for (column of tableColumns(); track column.key) {
-            <td>
+            <td nzEllipsis [nzLeft]="column.fixed === 'nzLeft'">
               <!-- SWITCHING DATA DEPENDING OF TYPE -->
               @switch (column.type){
+                <!-- DATES -->
+                @case ('date'){
+                  {{row[column.key].toDateString()}}
+                }
                 <!-- ICON CASES -->
                 @case ('icon-branch'){
                   <nz-icon nzType="shop" nzTheme="fill" class="bg-green table-icon" />{{row[column.key]}}
@@ -35,8 +39,14 @@
                   <nz-icon nzType="video-camera" nzTheme="fill" class="bg-green table-icon" />{{row[column.key]}}
                 }
                 <!-- TAG CASES -->
+                @case ('priority-tag'){
+                  <app-priority-tags-component [priority]="row[column.key]"></app-priority-tags-component>
+                }
                 @case ('report-count-tag'){
                   <app-report-count-tags-component [reports]="row[column.key]"></app-report-count-tags-component>
+                }
+                @case ('status-tag'){
+                  <app-single-status-tags-component [status]="row[column.key]"></app-single-status-tags-component>
                 }
                 <!-- BUTTON CASES -->
                 @case ('button'){
@@ -53,13 +63,4 @@
         </tr>
       }
     </tbody>
-  }@else {
-    <tbody>
-    <tr>
-      <td [attr.colspan]="tableColumns().length">
-        <nz-empty nzNotFoundImage="simple"></nz-empty>
-      </td>
-    </tr>
-    </tbody>
-  }
 </nz-table>
