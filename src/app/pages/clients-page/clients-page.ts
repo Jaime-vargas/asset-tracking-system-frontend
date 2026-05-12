@@ -1,8 +1,6 @@
-import {ChangeDetectorRef, Component, computed, signal} from '@angular/core';
+import {Component, computed, signal} from '@angular/core';
 import {NzDividerComponent} from "ng-zorro-antd/divider";
 import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';
-import {NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
-import {NzTagComponent} from 'ng-zorro-antd/tag';
 import {ClientService} from '../../services/client.service';
 import {ClientTableDto} from '../../interfaces/client-table.dto';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
@@ -10,14 +8,10 @@ import {NzIconDirective, NzIconModule} from 'ng-zorro-antd/icon';
 import {FormsModule} from '@angular/forms';
 import {NzInputModule} from 'ng-zorro-antd/input';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
-import {RouterLink} from '@angular/router';
 import {UtilityService} from '../../services/utility.service';
-import {NzEmptyComponent} from 'ng-zorro-antd/empty';
-import {ReportCountTagsComponent} from '../../components/report-count-tags-component/report-count-tags-component';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {TableComponent} from '../../components/table-component/table-component';
-import {ReportCountDTO} from '../../interfaces/report-dto/report-count.dto';
 import {TableData} from '../../interfaces/table/table-data';
 import {TableClientService} from '../../services/table-service/table-clients.service';
 
@@ -27,18 +21,12 @@ import {TableClientService} from '../../services/table-service/table-clients.ser
   imports: [
     NzDividerComponent,
     DasboardBoxComponent,
-    NzTableComponent,
-    NzTagComponent,
-    NzThMeasureDirective,
     NzButtonComponent,
     NzIconDirective,
     FormsModule,
     NzInputModule,
     NzIconModule,
     NzFlexDirective,
-    RouterLink,
-    NzEmptyComponent,
-    ReportCountTagsComponent,
     NzRowDirective,
     NzColDirective,
     NzTypographyComponent,
