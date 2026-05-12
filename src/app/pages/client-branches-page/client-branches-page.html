@@ -18,10 +18,18 @@
           </div>
         </app-dasboard-box-component>
       </div>
+      <app-dasboard-box-component [flex]="true">
+        <div body>
+          <app-table-component
+            [tableColumns]="tableClientsBranchesService.tableColumns"
+            [tableData]="tableData()">
+          </app-table-component>
+        </div>
+        </app-dasboard-box-component>
       <div nz-col nzSpan="24">
         <app-dasboard-box-component>
           <div body>
-            <nz-table #tableData nzSize="default" [nzScroll]="{ x: 'max-content' }" [nzData]="filteredBranches()">
+            <nz-table #tableDat nzSize="default" [nzScroll]="{ x: 'max-content' }" [nzData]="filteredBranches()">
               <colgroup>
                 <col style="width: 150px"/>
                 <col style="width: 100px"/>
@@ -36,9 +44,9 @@
                 <th>Actions</th>
               </tr>
               </thead>
-              @if (tableData.data.length > 0) {
+              @if (tableDat.data.length > 0) {
                 <tbody>
-                  @for (branch of tableData.data; track branch.id) {
+                  @for (branch of tableDat.data; track branch.id) {
                     <tr>
                       <td>{{ branch.name }}</td>
                       <td>

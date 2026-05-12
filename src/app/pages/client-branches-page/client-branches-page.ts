@@ -18,6 +18,9 @@ import {ReportCountTagsComponent} from '../../components/report-count-tags-compo
 import {NzBreadCrumbComponent, NzBreadCrumbItemComponent} from 'ng-zorro-antd/breadcrumb';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcrumb-component';
+import {TableComponent} from '../../components/table-component/table-component';
+import {TableClientsBranchesService} from '../../services/table-service/table-clients-branches.service';
+import {TableData} from '../../interfaces/table/table-data';
 
 @Component({
   selector: 'app-client-branches-page',
@@ -40,7 +43,8 @@ import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcr
     NzBreadCrumbItemComponent,
     NzRowDirective,
     NzColDirective,
-    BreadcrumbComponent
+    BreadcrumbComponent,
+    TableComponent
   ],
   templateUrl: './client-branches-page.html',
   styleUrl: './client-branches-page.css',
@@ -49,7 +53,8 @@ export class ClientBranchesPage {
   route: ActivatedRoute = inject(ActivatedRoute);
   routeContext = inject(RouteContextService)
   constructor(private clientService: ClientService,
-              protected utilityService: UtilityService) {
+              protected utilityService: UtilityService,
+              protected tableClientsBranchesService: TableClientsBranchesService) {
     this.routeContext.setFromRoute(this.route);
     this.getBranches();
   }
@@ -62,6 +67,20 @@ export class ClientBranchesPage {
     ]);
 
   // TABLE DATA
+  tableData = computed<TableData[]>(()=>{
+    return this.filteredBranches().map((branch: BranchTableDto) => {
+      return {
+        id: branch.id,
+        name: branch.name,
+        totalHardware: branch.totalHardware,
+        reportsActive: branch.reportsActive,
+        actions: [
+          {label: 'Manage', type: 'link', link:['/clients']},
+          {label: 'Edit', type: 'edit', link:['/clients']}
+        ]
+      }
+    })
+  })
   branchesData = signal<BranchTableDto[]>([]);
 
   // DATA FILTER
