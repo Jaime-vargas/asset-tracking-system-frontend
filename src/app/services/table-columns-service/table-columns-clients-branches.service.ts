@@ -6,7 +6,7 @@ import {createSortFn} from './create-sort-function';
   providedIn: 'root'
 })
 
-export class TableClientsBranchesService {
+export class TableColumnsClientsBranchesService {
   public tableColumns:ColumnItem[] = [
       {
         key:'name',

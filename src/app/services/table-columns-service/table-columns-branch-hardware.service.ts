@@ -7,7 +7,7 @@ import {Injectable} from '@angular/core';
   providedIn: 'root'
 })
 
-export class TableBranchHardwareService {
+export class TableColumnsBranchHardwareService {
   public tableColumns:ColumnItem[] = [
     {
       key:'type',

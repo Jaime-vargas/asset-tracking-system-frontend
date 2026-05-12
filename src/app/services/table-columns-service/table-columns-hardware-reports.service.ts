@@ -7,7 +7,7 @@ import {createSortFn} from './create-sort-function';
   providedIn: 'root'
 })
 
-export class TableHardwareReportsService {
+export class TableColumnsHardwareReportsService {
   public tableColumns:ColumnItem[] = [
     {
       key:'id',
