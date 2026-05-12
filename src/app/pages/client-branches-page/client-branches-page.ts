@@ -15,11 +15,10 @@ import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 
 import {UtilityService} from '../../services/utility.service';
 import {RouteContextService} from '../../services/route-context.service';
 import {ReportCountTagsComponent} from '../../components/report-count-tags-component/report-count-tags-component';
-import {NzBreadCrumbComponent, NzBreadCrumbItemComponent} from 'ng-zorro-antd/breadcrumb';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcrumb-component';
 import {TableComponent} from '../../components/table-component/table-component';
-import {TableClientsBranchesService} from '../../services/table-service/table-clients-branches.service';
+import {TableColumnsClientsBranchesService} from '../../services/table-columns-service/table-columns-clients-branches.service';
 import {TableData} from '../../interfaces/table/table-data';
 
 @Component({
@@ -39,8 +38,6 @@ import {TableData} from '../../interfaces/table/table-data';
     NzInputWrapperComponent,
     RouterLink,
     ReportCountTagsComponent,
-    NzBreadCrumbComponent,
-    NzBreadCrumbItemComponent,
     NzRowDirective,
     NzColDirective,
     BreadcrumbComponent,
@@ -54,10 +51,11 @@ export class ClientBranchesPage {
   routeContext = inject(RouteContextService)
   constructor(private clientService: ClientService,
               protected utilityService: UtilityService,
-              protected tableClientsBranchesService: TableClientsBranchesService) {
+              protected tableClientsBranchesService: TableColumnsClientsBranchesService) {
     this.routeContext.setFromRoute(this.route);
     this.getBranches();
   }
+  branchesData = signal<BranchTableDto[]>([]);
 
   // BREADCRUMB
   breadcrumb = computed<{label:string | null, link?:(string|number|null)[]}[]>(() =>
@@ -70,18 +68,15 @@ export class ClientBranchesPage {
   tableData = computed<TableData[]>(()=>{
     return this.filteredBranches().map((branch: BranchTableDto) => {
       return {
-        id: branch.id,
-        name: branch.name,
-        totalHardware: branch.totalHardware,
-        reportsActive: branch.reportsActive,
+        ...branch,
         actions: [
-          {label: 'Manage', type: 'link', link:['/clients']},
-          {label: 'Edit', type: 'edit', link:['/clients']}
+          {label: 'Manage', type: 'link', link:['/clients',this.routeContext.clientId(), this.routeContext.clientSlug(),
+              'branches',branch.id,this.utilityService.slugify(branch.name),'hardware']},
+          {label: 'Edit', type: 'edit', link:[]}
         ]
       }
     })
   })
-  branchesData = signal<BranchTableDto[]>([]);
 
   // DATA FILTER
   branchNameFilter = signal<string>('');

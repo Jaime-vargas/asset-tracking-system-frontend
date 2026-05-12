@@ -18,69 +18,19 @@
           </div>
         </app-dasboard-box-component>
       </div>
-      <app-dasboard-box-component [flex]="true">
-        <div body>
-          <app-table-component
-            [tableColumns]="tableClientsBranchesService.tableColumns"
-            [tableData]="tableData()">
-          </app-table-component>
-        </div>
-        </app-dasboard-box-component>
+
+      <!-- TABLE COMPONENT -->
       <div nz-col nzSpan="24">
         <app-dasboard-box-component>
           <div body>
-            <nz-table #tableDat nzSize="default" [nzScroll]="{ x: 'max-content' }" [nzData]="filteredBranches()">
-              <colgroup>
-                <col style="width: 150px"/>
-                <col style="width: 100px"/>
-                <col style="width: 150px"/>
-                <col style="width: 100px"/>
-              </colgroup>
-              <thead>
-              <tr>
-                <th>Name</th>
-                <th>Hardware</th>
-                <th>Reports</th>
-                <th>Actions</th>
-              </tr>
-              </thead>
-              @if (tableDat.data.length > 0) {
-                <tbody>
-                  @for (branch of tableDat.data; track branch.id) {
-                    <tr>
-                      <td>{{ branch.name }}</td>
-                      <td>
-                        <nz-icon nzType="video-camera" nzTheme="fill" class="bg-green table-icon"/>
-                        {{ branch.totalHardware }}
-                      </td>
-                      <td>
-                        <app-report-count-tags-component
-                          [reports]="branch.reportsActive"></app-report-count-tags-component>
-                      </td>
-                      <td>
-                        <button nz-button nzType="primary"
-                                [routerLink]="['/clients',routeContext.clientId(), routeContext.clientSlug(),
-                                'branches',branch.id,utilityService.slugify(branch.name),
-                                'hardware']">Manage
-                          <nz-icon nzType="right"/>
-                        </button>
-                        <button class="edit-button" nz-button nzType="default">
-                          <nz-icon nzType="edit" nzTheme="fill"/>
-                          Edit
-                        </button>
-                      </td>
-                    </tr>
-                  }
-                </tbody>
-              } @else {
-                <td colspan="5">
-                  <nz-empty nzNotFoundImage="simple"></nz-empty>
-                </td>
-              }
-            </nz-table>
+            <app-table-component
+              [tableColumns]="tableClientsBranchesService.tableColumns"
+              [tableData]="tableData()">
+            </app-table-component>
           </div>
-        </app-dasboard-box-component>
+          </app-dasboard-box-component>
       </div>
+
     </div>
   </div>
 </div>
