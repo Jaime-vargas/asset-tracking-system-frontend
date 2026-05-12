@@ -1,7 +1,7 @@
 import {Component, computed, inject, signal, TemplateRef, ViewChild} from '@angular/core';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
-import {ActivatedRoute, RouterLink} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {RouteContextService} from '../../services/route-context.service';
 import {ReportsService} from '../../services/report.service';
 import {ReportDetailDto} from '../../interfaces/report-dto/report-detail.dto';
@@ -19,7 +19,6 @@ import {CarouselComponent} from '../../components/carousel-component/carousel-co
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {SingleStatusTagsComponent} from '../../components/single-status-tags-component/single-status-tags-component';
 import {UtilityService} from '../../services/utility.service';
-import {NzBreadCrumbComponent, NzBreadCrumbItemComponent} from 'ng-zorro-antd/breadcrumb';
 import {CommentService} from '../../services/comment.service';
 import {CommentRequestDTO} from '../../interfaces/comment-request.dto';
 import {NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -38,7 +37,6 @@ import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcr
   imports: [
     NzButtonComponent,
     NzDividerComponent,
-    RouterLink,
     NzFlexDirective,
     DasboardBoxComponent,
     NzTypographyComponent,
@@ -53,8 +51,6 @@ import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcr
     CarouselComponent,
     NzIconDirective,
     SingleStatusTagsComponent,
-    NzBreadCrumbComponent,
-    NzBreadCrumbItemComponent,
     ReactiveFormsModule,
     NzFormDirective,
     NzFormControlComponent,

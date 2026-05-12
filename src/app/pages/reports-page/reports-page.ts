@@ -17,6 +17,9 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 'ng-zorro-antd/input';
 import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
 import {FormsModule} from '@angular/forms';
+import {TableComponent} from '../../components/table-component/table-component';
+import {TableData} from '../../interfaces/table/table-data';
+import {TableColumnsReportsService} from '../../services/table-columns-service/table-columns-reports.service';
 
 @Component({
   selector: 'app-reports-page',
@@ -39,14 +42,16 @@ import {FormsModule} from '@angular/forms';
     NzInputWrapperComponent,
     NzOptionComponent,
     NzSelectComponent,
-    FormsModule
+    FormsModule,
+    TableComponent
   ],
   templateUrl: './reports-page.html',
   styleUrl: './reports-page.css',
 })
 export class ReportsPage {
 
-  constructor(private reportsService: ReportsService) {
+  constructor(private reportsService: ReportsService,
+              protected tableColumnsReportsService: TableColumnsReportsService) {
     this.getReports();
   }
 
@@ -57,6 +62,22 @@ export class ReportsPage {
         ...reports,
         createdDate: new Date(reports.createdDate),
         dueDate: new Date(reports.dueDate),
+      }
+    })
+  });
+
+  // TABLE DATA
+  tableData = computed<TableData[]>(() => {
+    return this.filteredReports().map((report) => {
+      return {
+        ...report,
+        id: '# ' + report.id,
+        actions: [
+          {label: 'View', type: 'link', link:['/clients',report.clientId,report.clientName,
+              'branches',report.branchId,report.branchName,
+              'hardware',report.hardwareId,report.hardwareName,
+              'reports',report.id]}
+        ]
       }
     })
   });
