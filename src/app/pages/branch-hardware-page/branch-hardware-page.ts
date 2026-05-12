@@ -15,6 +15,9 @@ import {UtilityService} from '../../services/utility.service';
 import {ReportCountTagsComponent} from '../../components/report-count-tags-component/report-count-tags-component';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcrumb-component';
+import {TableComponent} from '../../components/table-component/table-component';
+import {TableData} from '../../interfaces/table/table-data';
+import {TableColumnsBranchHardwareService} from '../../services/table-columns-service/table-columns-branch-hardware.service';
 
 @Component({
   selector: 'app-branch-hardware-device-page',
@@ -34,7 +37,8 @@ import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcr
     ReportCountTagsComponent,
     NzRowDirective,
     NzColDirective,
-    BreadcrumbComponent
+    BreadcrumbComponent,
+    TableComponent
   ],
   templateUrl: './branch-hardware-page.html',
   styleUrl: './branch-hardware-page.css',
@@ -45,10 +49,12 @@ export class BranchHardwarePage {
   routeContext = inject(RouteContextService)
 
   constructor(private branchService: BranchService,
-              protected utilityService: UtilityService) {
+              protected utilityService: UtilityService,
+              protected tableBranchHardwareService: TableColumnsBranchHardwareService) {
     this.routeContext.setFromRoute(this.route);
     this.getHardwareDataByBranchId(this.branchId());
   }
+  hardwareData = signal<HardwareTableDto[]>([]);
 
   // BREADCRUMB
   breadcrumb = computed<{label:string | null, link?:(string|number|null)[]}[]>(() =>
@@ -59,13 +65,20 @@ export class BranchHardwarePage {
       {label: this.routeContext.branchSlug()}
     ]);
 
-  clientId = computed(() =>
-    this.routeContext.clientId() ?? 0);
-  branchId = computed(() =>
-    this.routeContext.branchId() ?? 0);
-
   // TABLE DATA
-  hardwareData = signal<HardwareTableDto[]>([]);
+  tableData = computed<TableData[]>(() => {
+      return this.filteredHardware().map(hardware => {
+        return {
+          ...hardware,
+          actions: [
+            {label: 'View', type: 'link', link:['/clients',this.routeContext.clientId(), this.routeContext.clientSlug(),
+                'branches',this.routeContext.branchId(),this.routeContext.branchSlug(),
+                'hardware',hardware.id,this.utilityService.slugify(hardware.name)]},
+          ]
+        }
+      })
+  });
+
 
   // TABLE INPUT FILTERS
   typeFilter = signal<string>("");
@@ -87,6 +100,11 @@ export class BranchHardwarePage {
       );
     });
   });
+
+  clientId = computed(() =>
+    this.routeContext.clientId() ?? 0);
+  branchId = computed(() =>
+    this.routeContext.branchId() ?? 0);
 
   getHardwareDataByBranchId(branchId : number) {
     this.branchService.getHardwareTableFromBranch(branchId).subscribe({
