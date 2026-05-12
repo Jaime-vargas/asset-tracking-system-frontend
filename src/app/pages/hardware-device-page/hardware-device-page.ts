@@ -11,7 +11,6 @@ import {HardwareService} from '../../services/hardware.service'
 import {NzImageModule } from 'ng-zorro-antd/image';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {RouteContextService} from '../../services/route-context.service';
-import {NzBreadCrumbComponent, NzBreadCrumbItemComponent} from 'ng-zorro-antd/breadcrumb';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {UtilityService} from '../../services/utility.service';
 import {HardwareUnion} from '../../interfaces/hardware-dto/hardware-union';
@@ -37,8 +36,6 @@ import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcr
     DasboardCardComponent,
     RouterLink,
     NzImageModule,
-    NzBreadCrumbComponent,
-    NzBreadCrumbItemComponent,
     NzRowDirective,
     NzColDirective,
     DoubleStatusTagComponent,
