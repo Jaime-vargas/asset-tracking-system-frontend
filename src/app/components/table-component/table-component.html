@@ -1,22 +1,19 @@
 <nz-table #nzData
-          nzSize="default"
-          [nzScroll]="{ x: 'max-content' }"
+          nzSize="small"
+          [nzScroll]="{ x: 'max-content', y: '550px'}"
+          nzTableLayout="fixed"
+          [nzShowSizeChanger]="true"
           [nzData]="tableData()">
-  <!-- DEFINING COLUMN SIZE -->
-  <colgroup>
-  @for (item of tableColumns(); track $index){
-    <col [style.width.px]="item.colWidth" />
-  }
-  </colgroup>
   <!-- TABLE HEAD LABELS -->
   <thead>
     <tr>
       @for (item of tableColumns(); track  $index){
         <th
+          [nzWidth]="item.colWidth + 'px'"
           [nzColumnKey]="item.key"
-        [nzSortOrder]="item.sortOrder"
-        [nzSortFn]="item.sortFn"
-        [nzSortDirections]="item.sortDirections"
+          [nzSortOrder]="item.sortOrder"
+          [nzSortFn]="item.sortFn"
+          [nzSortDirections]="item.sortDirections"
         >{{item.label}}</th>
       }
     </tr>
