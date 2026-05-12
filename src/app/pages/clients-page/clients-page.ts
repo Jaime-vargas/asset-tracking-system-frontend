@@ -48,22 +48,14 @@ import {TableClientService} from '../../services/table-service/table-clients.ser
   styleUrl: './clients-page.css',
 })
 export class ClientsPage {
-  constructor(private clientService: ClientService, protected utilityService: UtilityService) {
+  constructor(private clientService: ClientService,
+              protected utilityService: UtilityService,
+              protected tableClientService: TableClientService) {
     this.getClients()
   }
 
   clientsData = signal<ClientTableDto[] >([]);
 
-  // TABLE COLUMNS
-  tableColumns = computed(() =>
-    [
-      {key:'name', label: 'Name', colWidth: 150, type: 'string'},
-      {key:'branches', label: 'Branches', colWidth: 80, type: 'icon-branch'},
-      {key:'totalHardware', label: 'Hardware', colWidth: 80, type: 'icon-hardware'},
-      {key:'reportsActive', label: 'Reports', colWidth: 150, type: 'report-count-tag'},
-      {key:'actions', label: 'Actions', colWidth: 200, type: 'button'},
-    ]
-  )
   // TABLE DATA
   tableData= computed<TableData[]>(()=> {
     return this.filteredClients().map((client: ClientTableDto) => {
