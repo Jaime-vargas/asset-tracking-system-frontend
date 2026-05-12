@@ -63,67 +63,14 @@
           </div>
         </app-dasboard-box-component>
       </div>
-      <!-- HARDWARE TABLE -->
+      <!-- TABLE COMPONENT -->
       <div nz-col nzSpan="24">
         <app-dasboard-box-component >
           <div body>
-            <nz-table #tableData nzSize="default" [nzScroll]="{ x: 'max-content' }" [nzData]="filteredHardware()" >
-              <colgroup>
-                <col style="width: 120px" />
-                <col style="width: 120px" />
-                <col style="width: 100px" />
-                <col style="width: 150px" />
-                <col style="width: 180px" />
-                <col style="width: 120px" />
-                <col style="width: 120px" />
-                <col style="width: 160px" />
-                <col style="width: 150px" />
-                <col style="width: 120px" />
-              </colgroup>
-              <thead>
-              <tr>
-                <th>Client</th>
-                <th>Branch</th>
-                <th>Type</th>
-                <th>Name</th>
-                <th>Model</th>
-                <th>Serial Number</th>
-                <th>Location</th>
-                <th>Reports</th>
-                <th>Last Maintenance</th>
-                <th>Actions</th>
-              </thead>
-              @if (tableData.data.length > 0) {
-                <tbody>
-                  @for (hardware of tableData.data; track hardware.id){
-                    <tr>
-                      <td>{{hardware.clientName}}</td>
-                      <td>{{hardware.branchName}}</td>
-                      @if (hardware.type === "Camera") {
-                        <td><nz-icon nzType="video-camera" nzTheme="fill" class="bg-blue" /> {{hardware.type}}</td>
-                      } @else {
-                        <td>{{hardware.type}}</td>
-                      }
-                      <td>{{hardware.name}}</td>
-                      <td>{{hardware.model}}</td>
-                      <td>{{hardware.serialNumber}}</td>
-                      <td>{{hardware.location}}</td>
-                      <td><app-report-count-tags-component [reports]="hardware.reportsActive"></app-report-count-tags-component> </td>
-                      <td>{{utilityService.isValidDate(hardware.lastMaintenanceDate)}}</td>
-                      <td><button nz-button nzType="primary"
-                                  [routerLink]="['/clients',hardware.clientId, utilityService.slugify(hardware.clientName),
-                                'branches',hardware.branchId, utilityService.slugify(hardware.branchName),
-                                'hardware', hardware.id, utilityService.slugify(hardware.name),]">View<nz-icon nzType="right" /></button>
-                      </td>
-                    </tr>
-                  }
-                </tbody>
-              } @else {
-                <td colspan="10">
-                  <nz-empty nzNotFoundImage="simple"></nz-empty>
-                </td>
-              }
-            </nz-table>
+            <app-table-component
+            [tableColumns]="tableHardwareService.tableColumns"
+            [tableData]="tableData()">
+            </app-table-component>
           </div>
         </app-dasboard-box-component>
       </div>

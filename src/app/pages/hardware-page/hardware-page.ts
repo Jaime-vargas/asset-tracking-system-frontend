@@ -19,6 +19,9 @@ import {ne_NP} from 'ng-zorro-antd/i18n';
 import {ReportCountTagsComponent} from '../../components/report-count-tags-component/report-count-tags-component';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {TableComponent} from '../../components/table-component/table-component';
+import {TableColumnsHardwareService} from '../../services/table-columns-service/table-columns-hardware.service';
+import {TableData} from '../../interfaces/table/table-data';
 
 @Component({
   selector: 'app-hardware-page',
@@ -41,7 +44,8 @@ import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
     ReportCountTagsComponent,
     NzTypographyComponent,
     NzRowDirective,
-    NzColDirective
+    NzColDirective,
+    TableComponent
   ],
   templateUrl: './hardware-page.html',
   styleUrl: './hardware-page.css',
@@ -49,12 +53,25 @@ import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 export class HardwarePage {
 
   constructor(private hardwareService: HardwareService,
-              protected utilityService: UtilityService) {
+              protected utilityService: UtilityService,
+              protected tableHardwareService: TableColumnsHardwareService) {
     this.getAllHardwareData()
   }
+  hardwareData = signal<HardwareTableDto[]>([]);
 
   // TABLE DATA
-  hardwareData = signal<HardwareTableDto[]>([]);
+  tableData = computed<TableData[]>(()=> {
+    return this.filteredHardware().map((hardware: HardwareTableDto) => {
+      return {
+        ...hardware,
+        actions: [
+          {label: 'View', type: 'link', link: ['/clients',hardware.clientId, this.utilityService.slugify(hardware.clientName),
+              'branches',hardware.branchId, this.utilityService.slugify(hardware.branchName),
+              'hardware', hardware.id, this.utilityService.slugify(hardware.name),]}
+        ]
+      }
+    })
+  })
 
   // TABLE INPUT FILTERS
   clientList = computed(()=> {
