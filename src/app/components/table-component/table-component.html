@@ -12,12 +12,17 @@
   <thead>
     <tr>
       @for (item of tableColumns(); track  $index){
-        <th>{{item.label}}</th>
+        <th
+          [nzColumnKey]="item.key"
+        [nzSortOrder]="item.sortOrder"
+        [nzSortFn]="item.sortFn"
+        [nzSortDirections]="item.sortDirections"
+        >{{item.label}}</th>
       }
     </tr>
   </thead>
   <!-- TABLE ROWS -->
-  @if (nzData.data.length > 0) {
+  @if (tableData().length > 0) {
     <tbody>
       @for (row of nzData.data; track row['id']){
         <tr>
@@ -52,8 +57,12 @@
       }
     </tbody>
   }@else {
-    <td colspan="5">
-      <nz-empty nzNotFoundImage="simple"></nz-empty>
-    </td>
+    <tbody>
+    <tr>
+      <td [attr.colspan]="tableColumns().length">
+        <nz-empty nzNotFoundImage="simple"></nz-empty>
+      </td>
+    </tr>
+    </tbody>
   }
 </nz-table>

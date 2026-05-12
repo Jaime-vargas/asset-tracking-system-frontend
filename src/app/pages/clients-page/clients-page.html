@@ -18,7 +18,7 @@
       <div nz-col nzSpan="24">
         <app-dasboard-box-component [flex]="true">
           <div body>
-            <app-table-component [tableColumns]="tableColumns()" [tableData]="tableData()"></app-table-component>
+            <app-table-component [tableColumns]="tableClientService.tableColumns" [tableData]="tableData()"></app-table-component>
           </div>
         </app-dasboard-box-component>
       </div>

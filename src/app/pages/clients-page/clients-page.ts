@@ -1,4 +1,4 @@
-import {Component, computed, signal} from '@angular/core';
+import {ChangeDetectorRef, Component, computed, signal} from '@angular/core';
 import {NzDividerComponent} from "ng-zorro-antd/divider";
 import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';
 import {NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
@@ -18,7 +18,8 @@ import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {TableComponent} from '../../components/table-component/table-component';
 import {ReportCountDTO} from '../../interfaces/report-dto/report-count.dto';
-import {TableData} from '../../interfaces/type/TableData';
+import {TableData} from '../../interfaces/table/table-data';
+import {TableClientService} from '../../services/table-service/table-clients.service';
 
 
 @Component({
