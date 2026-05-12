@@ -1,5 +1,6 @@
-import {computed, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {ColumnItem} from '../../interfaces/table/column-item';
+import {createSortFn} from './create-sort-function';
 
 @Injectable({
   providedIn: 'root'
@@ -10,46 +11,44 @@ export class TableClientService {
       {
         key:'name',
         label: 'Name',
-        colWidth: 150,
+        colWidth: 250,
         type: 'string',
         sortOrder: "ascend",
-        sortFn: (a: Record<string, any>, b: Record<string, any>) =>
-          String(a['name']).localeCompare(String(b['name'])),
-        sortDirections: ['ascend', 'descend']
+        sortFn: createSortFn('name', 'string'),
+        sortDirections: ['ascend', 'descend'],
       },
       {
         key:'branches',
         label: 'Branches',
-        colWidth: 80,
+        colWidth: 100,
         type: 'icon-branch',
         sortOrder: null,
-        sortFn: null,
-        sortDirections: [null]
+        sortFn: createSortFn('branches', 'string'),
+        sortDirections: ['ascend', 'descend', null]
       },
       {
         key:'totalHardware',
         label: 'Hardware',
-        colWidth: 80,
+        colWidth: 100,
         type: 'icon-hardware',
         sortOrder: null,
-        sortFn: (a: Record<string, any>, b: Record<string, any>) =>
-          a['totalHardware'] - b['totalHardware'],
-        sortDirections: ['ascend', 'descend', null]
+        sortFn: createSortFn('totalHardware', 'number'),
+        sortDirections: ['descend', 'ascend', null]
       },
       {
         key:'reportsActive',
         label: 'Reports',
-        colWidth: 150,
+        colWidth: 230,
         type: 'report-count-tag',
         sortOrder: null,
-        sortFn: (a: Record<string, any[]>, b: Record<string, any[]>) =>
-          a['reportsActive'].length - b['totalHardware'].length,
-        sortDirections: ['ascend', 'descend', null]
+        sortFn: createSortFn('reportsActive', 'array'),
+        sortDirections: ['descend', 'ascend', null]
+
       },
       {
         key:'actions',
         label: 'Actions',
-        colWidth: 200,
+        colWidth: 250,
         type: 'button',
         sortOrder: null,
         sortFn: null,

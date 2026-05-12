@@ -6,7 +6,7 @@ import {createSortFn} from './create-sort-function';
   providedIn: 'root'
 })
 
-export class TableClientService {
+export class TableClientsBranchesService {
   public tableColumns:ColumnItem[] = [
       {
         key:'name',
@@ -18,22 +18,13 @@ export class TableClientService {
         sortDirections: ['ascend', 'descend'],
       },
       {
-        key:'branches',
-        label: 'Branches',
-        colWidth: 100,
-        type: 'icon-branch',
-        sortOrder: null,
-        sortFn: createSortFn('branches', 'string'),
-        sortDirections: ['ascend', 'descend', null]
-      },
-      {
         key:'totalHardware',
         label: 'Hardware',
         colWidth: 100,
         type: 'icon-hardware',
         sortOrder: null,
-        sortFn: createSortFn('totalHardware', 'number'),
-        sortDirections: ['descend', 'ascend', null]
+        sortFn: createSortFn('totalHardware', 'string'),
+        sortDirections: ['ascend', 'descend', null]
       },
       {
         key:'reportsActive',
