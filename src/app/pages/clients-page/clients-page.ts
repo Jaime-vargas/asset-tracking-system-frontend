@@ -13,7 +13,7 @@ import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {TableComponent} from '../../components/table-component/table-component';
 import {TableData} from '../../interfaces/table/table-data';
-import {TableClientService} from '../../services/table-service/table-clients.service';
+import {TableClientService} from '../../services/table-columns-service/table-columns-clients.service';
 
 
 @Component({
@@ -41,18 +41,13 @@ export class ClientsPage {
               protected tableClientService: TableClientService) {
     this.getClients()
   }
-
   clientsData = signal<ClientTableDto[] >([]);
 
   // TABLE DATA
   tableData= computed<TableData[]>(()=> {
     return this.filteredClients().map((client: ClientTableDto) => {
       return {
-        id: client.id,
-        name: client.name,
-        branches: client.branches,
-        totalHardware: client.totalHardware,
-        reportsActive: client.reportsActive,
+        ...client,
         actions: [
           {label: 'Manage', type: 'link', link:['/clients', client.id, this.utilityService.slugify(client.name)]},
           {label: 'Edit', type: 'edit', link:['/clients', client.id, this.utilityService.slugify(client.name)]}]
