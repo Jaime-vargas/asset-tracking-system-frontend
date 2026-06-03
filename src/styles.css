@@ -1,6 +1,6 @@
 .mainframe {
   min-width: 1280px;
-  background: #F4F4F4 !important;
+  background: rgba(252, 252, 252, 0.99) !important;
   height: 100dvh;
   overflow: hidden;
 }
@@ -24,6 +24,9 @@ nz-breadcrumb-item{
   font-size: 30px;
 }
 
+*{
+  font-family: 'Inter', sans-serif;
+}
 
 .bg-white {
   background-color: #fff;

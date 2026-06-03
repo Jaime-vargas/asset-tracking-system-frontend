@@ -1,5 +1,6 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,13 @@ export class ApiUrlBaseService {
   imageBaseUrl = 'http://localhost:3000/';
 
   constructor(private http: HttpClient) {}
+
+  getMultipart<T>(endpoint: string): Observable<Blob> {
+    return this.http.get(`${this.imageBaseUrl}${endpoint}`,
+      {
+        responseType: 'blob'
+      });
+  }
 
   get<T>(endpoint: string) {
     return this.http.get<T>(`${this.baseUrl}/${endpoint}`);

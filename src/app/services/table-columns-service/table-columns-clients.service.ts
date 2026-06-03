@@ -13,7 +13,7 @@ export class TableClientService {
         label: 'Name',
         colWidth: 250,
         fixed: null,
-        type: 'string',
+        type: 'img-string',
         sortOrder: "ascend",
         sortFn: createSortFn('name', 'string'),
         sortDirections: ['ascend', 'descend'],

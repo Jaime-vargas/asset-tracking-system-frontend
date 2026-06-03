@@ -3,6 +3,19 @@
   <nz-divider></nz-divider>
   <div class="contentBody">
     <div nz-row [nzGutter]="[10,10]">
+
+      <div nz-col nzSpan="24">
+        <nz-flex nzJustify="flex-end">
+          <button nz-button nz-dropdown [nzDropdownMenu]="menu" nzPlacement="bottomRight">Download <nz-icon nzType="download" nzTheme="outline" /></button>
+          <nz-dropdown-menu #menu="nzDropdownMenu">
+            <ul nz-menu>
+              <li nz-menu-item (click)="getPhotoReport()">Photo report</li>
+              <li nz-menu-item (click)="getTechnicalMemory()">Technical memory</li>
+            </ul>
+          </nz-dropdown-menu>
+        </nz-flex>
+      </div>
+
       <div nz-col nzSpan="24">
         <app-dasboard-box-component>
           <div body nz-row [nzGutter]="[5,5]">

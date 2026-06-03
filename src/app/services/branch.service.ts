@@ -11,4 +11,12 @@ export class BranchService {
   getHardwareTableFromBranch(branchId:number): Observable<HardwareTableDto[]>{
     return this.api.get(`branches/${branchId}/hardware`);
   }
+
+  getPhotoReport(branchID:number): Observable<Blob>{
+    return this.api.getMultipart(`${branchID}/photoReport`);
+  }
+
+  getTechnicalMemory(branchID:number): Observable<Blob>{
+    return this.api.getMultipart(`${branchID}/technicalMemory`);
+  }
 }

@@ -17,4 +17,5 @@ export class ClientService{
   getBranches(clientId:number): Observable<BranchTableDto[]>{
     return this.api.get(`clients/${clientId}/branches`);
   }
+
 }

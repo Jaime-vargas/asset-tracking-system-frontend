@@ -20,6 +20,9 @@ import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcr
 import {TableComponent} from '../../components/table-component/table-component';
 import {TableColumnsClientsBranchesService} from '../../services/table-columns-service/table-columns-clients-branches.service';
 import {TableData} from '../../interfaces/table/table-data';
+import {NzDropdownDirective, NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
+import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
+import {EditSideBar} from '../../components/edit-side-bar/edit-side-bar';
 
 @Component({
   selector: 'app-client-branches-page',
@@ -41,7 +44,12 @@ import {TableData} from '../../interfaces/table/table-data';
     NzRowDirective,
     NzColDirective,
     BreadcrumbComponent,
-    TableComponent
+    TableComponent,
+    NzDropdownDirective,
+    NzDropdownMenuComponent,
+    NzMenuDirective,
+    NzMenuItemComponent,
+    EditSideBar
   ],
   templateUrl: './client-branches-page.html',
   styleUrl: './client-branches-page.css',

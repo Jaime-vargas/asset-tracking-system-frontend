@@ -18,6 +18,9 @@ import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcr
 import {TableComponent} from '../../components/table-component/table-component';
 import {TableData} from '../../interfaces/table/table-data';
 import {TableColumnsBranchHardwareService} from '../../services/table-columns-service/table-columns-branch-hardware.service';
+import {NzDropdownDirective, NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
+import {NzFlexDirective} from 'ng-zorro-antd/flex';
+import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
 
 @Component({
   selector: 'app-branch-hardware-device-page',
@@ -38,7 +41,12 @@ import {TableColumnsBranchHardwareService} from '../../services/table-columns-se
     NzRowDirective,
     NzColDirective,
     BreadcrumbComponent,
-    TableComponent
+    TableComponent,
+    NzDropdownDirective,
+    NzDropdownMenuComponent,
+    NzFlexDirective,
+    NzMenuDirective,
+    NzMenuItemComponent
   ],
   templateUrl: './branch-hardware-page.html',
   styleUrl: './branch-hardware-page.css',
@@ -106,6 +114,22 @@ export class BranchHardwarePage {
   branchId = computed(() =>
     this.routeContext.branchId() ?? 0);
 
+  getPhotoReport(){
+    return this.branchService.getPhotoReport(this.branchId()).subscribe({
+      next: (blob: Blob) => {
+        const fileURL = URL.createObjectURL(blob);
+        window.open(fileURL, '_blank');
+      }
+    })
+  }
+  getTechnicalMemory(){
+    return this.branchService.getTechnicalMemory(this.branchId()).subscribe({
+      next: (blob: Blob) => {
+        const fileURL = URL.createObjectURL(blob);
+        window.open(fileURL, '_blank');
+      }
+    })
+  }
   getHardwareDataByBranchId(branchId : number) {
     this.branchService.getHardwareTableFromBranch(branchId).subscribe({
       next: (data) => {
