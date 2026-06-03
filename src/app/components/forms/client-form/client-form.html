@@ -1,0 +1,28 @@
+<div class="main-container">
+  <span class="title">Edit Client</span>
+  <nz-divider></nz-divider>
+  <p class="sub-title">Client Photo</p>
+  <div nz-flex nzAlign="center" nzVertical nzJustify="center"
+       style="width: 100%; gap: 20px">
+    <img nz-image [nzDisablePreview]="true"  class="client-logo" [nzSrc]="image()" [nzFallback]="''">
+    <button class="form-btn default-btn" nz-button nzSize="large" nzType="text" type="button"><nz-icon nzType="upload" nzTheme="outline" />Change photo</button>
+  </div>
+
+  <form nz-form [formGroup]="form" style="height: stretch">
+    <nz-form-item>
+      <nz-form-label class="sub-title" nzRequired>Nombre</nz-form-label>
+      <nz-form-control>
+        <input nz-input formControlName="name" >
+      </nz-form-control>
+    </nz-form-item>
+    <nz-divider></nz-divider>
+    <div class="buttons-container" nz-flex nzAlign="center" nzJustify="flex-end"
+         style="width: 100%; gap: 20px">
+      <button class="form-btn default-btn" nzSize="large" nz-button nzType="text" type="button" (click)="onCancel()">Cancel</button>
+      <button class="form-btn primary-btn" nzSize="large" nz-button nzType="text" type="submit">
+        <nz-icon nzType="save" nzTheme="outline" />Save Changes</button>
+    </div>
+  </form>
+
+
+</div>

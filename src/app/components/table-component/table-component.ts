@@ -1,4 +1,4 @@
-import {Component, input} from '@angular/core';
+import {Component, input, output} from '@angular/core';
 import {NzTableComponent, NzThAddOnComponent} from 'ng-zorro-antd/table';
 import {TableData} from '../../interfaces/table/table-data';
 import {ReportCountTagsComponent} from '../report-count-tags-component/report-count-tags-component';
@@ -10,6 +10,7 @@ import {ColumnItem} from '../../interfaces/table/column-item';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import {PriorityTagsComponent} from '../priority-tags-component/priority-tags-component';
 import {SingleStatusTagsComponent} from '../single-status-tags-component/single-status-tags-component';
+import {ApiUrlBaseService} from '../../services/api-url-base.service';
 
 
 @Component({
@@ -31,6 +32,8 @@ import {SingleStatusTagsComponent} from '../single-status-tags-component/single-
 })
 
 export class TableComponent {
+  constructor(protected apiUrlBaseService: ApiUrlBaseService) {
+  }
   tableColumns = input.required<ColumnItem[]>();
   tableData = input.required<TableData[]>();
 }

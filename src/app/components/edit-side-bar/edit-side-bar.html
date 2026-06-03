@@ -1,0 +1,12 @@
+<nz-drawer
+  [nzWidth]="600"
+  [nzClosable]="false"
+  [nzVisible]="isVisible()"
+  (nzOnClose)="onClose()"
+  nzPlacement="right"
+>
+  <ng-container *nzDrawerContent>
+    <ng-content select="[body]">
+    </ng-content>
+  </ng-container>
+</nz-drawer>

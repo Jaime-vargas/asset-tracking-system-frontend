@@ -5,6 +5,7 @@ type colType =
   'date'|
   'icon-branch'|
   'icon-hardware'|
+  'img-string'|
   'priority-tag'|
   'report-count-tag'|
   'status-tag'|

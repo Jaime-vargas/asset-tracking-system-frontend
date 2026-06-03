@@ -4,3 +4,16 @@
   max-height: 500px !important;
   overflow-y: auto !important;
 }
+
+.img-text{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.img-text img{
+  height: 20px;
+  width: 60px;
+  object-fit:contain;
+  flex-shrink:0;
+}

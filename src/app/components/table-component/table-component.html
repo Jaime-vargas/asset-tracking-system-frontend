@@ -27,6 +27,13 @@
             <td nzEllipsis [nzLeft]="column.fixed === 'nzLeft'">
               <!-- SWITCHING DATA DEPENDING OF TYPE -->
               @switch (column.type){
+                <!-- IMAGE + STRING -->
+                @case ('img-string'){
+                <div class="img-text">
+                  <img [src]="apiUrlBaseService.imageBaseUrl + row['photo'].filePath">
+                  <span>{{row[column.key]}}</span>
+                </div>
+                }
                 <!-- DATES -->
                 @case ('date'){
                   {{row[column.key].toDateString()}}
@@ -51,7 +58,8 @@
                 <!-- BUTTON CASES -->
                 @case ('button'){
                   @for (button of row[column.key]; track $index){
-                    <app-button-component [buttonLabel]="button.label" [type]="button.type" [routerLink]="button.link"></app-button-component>
+                    <app-button-component [buttonLabel]="button.label" [type]="button.type" (click)="button.onClick(row)"></app-button-component>
+                                          <!-- [routerLink]="button.link" -->
                   }
                 }
                 @default {

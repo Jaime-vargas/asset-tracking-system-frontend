@@ -1,0 +1,42 @@
+.main-container{
+  height:calc(100vh - 50px) ;
+  display: flex;
+  flex-direction: column;
+}
+.title{
+  font-size: 20px;
+  font-weight: bold;
+}
+.sub-title{
+  font-size: 14px;
+  font-weight: bold;
+}
+.buttons-container{
+  position: relative;
+  margin-top: auto;
+}
+.form-btn{
+  border-radius: 6px;
+  box-shadow: 1px 1px 4px #e3e3e3;
+}
+
+.default-btn{
+  background: #f3f3f7;
+  border: 1px solid #dcdcdc;
+}
+.primary-btn{
+  background: #0161fb;
+  color: white;
+
+}
+.primary-btn:hover{
+  background: #4186ff;
+}
+
+.client-logo{
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  box-shadow: 1px 1px 6px #c9c9c9;
+  border-radius: 20px;
+}
