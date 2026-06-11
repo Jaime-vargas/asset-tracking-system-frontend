@@ -10,7 +10,7 @@ import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 
 import { NzSelectModule } from 'ng-zorro-antd/select'
 import {NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
 import {NzTagComponent} from 'ng-zorro-antd/tag';
-import {HardwareTableDto} from '../../interfaces/hardware-dto/hardware-table.dto';
+import {HardwareTableDto} from '../../interfaces/hardware/hardware-table.dto';
 import {UtilityService} from '../../services/utility.service';
 import {HardwareService} from '../../services/hardware.service';
 import {RouterLink} from '@angular/router';

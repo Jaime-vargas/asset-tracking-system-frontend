@@ -1,1 +1,15 @@
-<p>upload-button-component works!</p>
+<nz-upload
+  nzType="select"
+  [nzAccept]="'image/*'"
+  [nzMultiple]="false"
+  [nzName]="'file'"
+  [nzShowUploadList]="false"
+  [nzAction]="uploadUrl()"
+  (nzChange)="onUploadChange($event)"
+>
+  <button nz-button class="form-btn default-btn" nzType="default">
+    <nz-icon nzType="edit" nzTheme="outline" />
+    Change image
+  </button>
+</nz-upload>
+

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ApiUrlBaseService} from './api-url-base.service';
 import {Observable} from 'rxjs';
-import {HardwareTableDto} from '../interfaces/hardware-dto/hardware-table.dto';
+import {HardwareTableDto} from '../interfaces/hardware/hardware-table.dto';
 
 @Injectable({providedIn: 'root'})
 export class BranchService {
@@ -18,5 +18,9 @@ export class BranchService {
 
   getTechnicalMemory(branchID:number): Observable<Blob>{
     return this.api.getMultipart(`${branchID}/technicalMemory`);
+  }
+
+  getQrCodes(branchID:number):Observable<Blob>{
+    return this.api.getMultipart(`jwt/qr/pdf/${branchID}`);
   }
 }

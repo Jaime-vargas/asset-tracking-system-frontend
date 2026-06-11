@@ -1,4 +1,4 @@
-import {ReportCountDTO} from './report-dto/report-count.dto';
+import {ReportCountDTO} from './report/report-count.dto';
 import {PhotoDto} from './photo.dto';
 
 export interface ClientTableDto {

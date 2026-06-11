@@ -3,6 +3,7 @@ import {ApiUrlBaseService} from './api-url-base.service';
 import {Observable} from 'rxjs';
 import {ClientTableDto} from '../interfaces/client-table.dto';
 import {BranchTableDto} from '../interfaces/branch-table.dto';
+import {ClientRequestDto} from '../interfaces/client/client-request.dto';
 
 @Injectable({providedIn: 'root'})
 export class ClientService{
@@ -16,6 +17,14 @@ export class ClientService{
 
   getBranches(clientId:number): Observable<BranchTableDto[]>{
     return this.api.get(`clients/${clientId}/branches`);
+  }
+
+  addClient(clientRequestDto: ClientRequestDto): Observable<ClientTableDto>{
+    return this.api.post("clients", clientRequestDto);
+  }
+
+  editClient(clientId: number, clientRequestDto: ClientRequestDto): Observable<ClientTableDto>{
+    return this.api.put(`clients/${clientId}`, clientRequestDto);
   }
 
 }

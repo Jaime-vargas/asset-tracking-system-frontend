@@ -4,7 +4,7 @@ import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {ActivatedRoute} from '@angular/router';
 import {RouteContextService} from '../../services/route-context.service';
 import {ReportsService} from '../../services/report.service';
-import {ReportDetailDto} from '../../interfaces/report-dto/report-detail.dto';
+import {ReportDetailDto} from '../../interfaces/report/report-detail.dto';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
 import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';

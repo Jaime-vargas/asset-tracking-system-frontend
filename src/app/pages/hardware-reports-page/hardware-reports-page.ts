@@ -5,7 +5,7 @@ import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {HardwareService} from '../../services/hardware.service';
-import {ReportTableDto} from '../../interfaces/report-dto/report-table.dto';
+import {ReportTableDto} from '../../interfaces/report/report-table.dto';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {FormsModule} from '@angular/forms';
 import {NzIconDirective} from 'ng-zorro-antd/icon';

@@ -14,7 +14,7 @@ export class TableClientService {
         colWidth: 250,
         fixed: null,
         type: 'img-string',
-        sortOrder: "ascend",
+        sortOrder: "null",
         sortFn: createSortFn('name', 'string'),
         sortDirections: ['ascend', 'descend'],
       },
@@ -44,7 +44,8 @@ export class TableClientService {
         colWidth: 230,
         fixed: null,
         type: 'report-count-tag',
-        sortOrder: null,
+        priority: 1,
+        sortOrder: "descend",
         sortFn: createSortFn('reportsActive', 'array'),
         sortDirections: ['descend', 'ascend', null]
 
@@ -54,7 +55,7 @@ export class TableClientService {
         label: 'Actions',
         colWidth: 250,
         fixed: null,
-        type: 'button',
+        type: "button",
         sortOrder: null,
         sortFn: null,
         sortDirections: [null]

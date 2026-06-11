@@ -13,7 +13,7 @@ import {ActivatedRoute, RouterLink} from '@angular/router';
 import {RouteContextService} from '../../services/route-context.service';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {UtilityService} from '../../services/utility.service';
-import {HardwareUnion} from '../../interfaces/hardware-dto/hardware-union';
+import {HardwareUnion} from '../../interfaces/hardware/hardware-union';
 import {DoubleStatusTagComponent} from '../../components/double-status-tag-component/double-status-tag-component';
 import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
 import {NzModalComponent, NzModalService, NzModalModule} from 'ng-zorro-antd/modal';

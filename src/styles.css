@@ -105,10 +105,32 @@ td{
 }
 
 .edit-button{
-  background-color: #f4f4f4;
   margin-left:10px;
 }
-.edit-button nz-icon{
-  color: #3a6abd;
+
+/* NEW GLOBAL STYLES */
+
+.form-btn{
+  border-radius: 6px;
+  box-shadow: 1px 1px 4px #e3e3e3;
+}
+
+.default-btn{
+  background: #f3f3f7;
+  border: 1px solid #dcdcdc;
+}
+.primary-btn{
+  background: #0161fb;
+  color: white;
+}
+.primary-btn:disabled{
+  background: #9bbcff;
+  color: #e5e5e5;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+.primary-btn:hover{
+  background: #4186ff;
+  color: white;
 }
 

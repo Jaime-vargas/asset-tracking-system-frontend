@@ -3,11 +3,17 @@
   <h2 nz-typography>Clients</h2>
 
   <nz-divider></nz-divider>
-  <app-edit-side-bar #drawer>
-    <div body>
-      <app-client-form #form (cancel)="drawer.onClose()"></app-client-form>
-    </div>
-  </app-edit-side-bar>
+  <!-- SIDEBAR COMPONENT -->
+  @if(isOpenSubscribe()){
+    <app-edit-side-bar>
+      <div body>
+        <app-client-form></app-client-form>
+      </div>
+    </app-edit-side-bar>
+  }
+  <!-- /SIDEBAR COMPONENT -->
+
+  <!-- SEARCH SECTION -->
   <div class="contentBody">
     <div nz-row [nzGutter]="[10,10]">
       <div nz-col nzSpan="24">
@@ -17,10 +23,12 @@
               <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
               <input nz-input [ngModel]="clientNameFilter()" (ngModelChange)="clientNameFilter.set($event)" placeholder=" Search clients..." />
             </nz-input-wrapper>
-            <button nz-button nzType="primary" (click)="drawer.onClose()"><nz-icon nzType="plus" nzTheme="outline" />Add Branch</button>
+            <button  nz-button class="form-btn primary-btn" nzType="primary" (click)="openNewSidebar()"><nz-icon nzType="plus" nzTheme="outline"/>Add Client</button>
           </div>
         </app-dasboard-box-component>
       </div>
+      <!-- /SEARCH SECTION -->
+
       <!-- TABLE COMPONENT -->
       <div nz-col nzSpan="24">
         <app-dasboard-box-component>

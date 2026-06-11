@@ -1,6 +1,6 @@
 import {Component, computed, inject, signal} from '@angular/core';
 import {ReportsService} from '../../services/report.service';
-import {ReportTableDto} from '../../interfaces/report-dto/report-table.dto';
+import {ReportTableDto} from '../../interfaces/report/report-table.dto';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';

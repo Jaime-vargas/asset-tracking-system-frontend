@@ -12,6 +12,7 @@
           [nzLeft]="columnItem.fixed === 'nzLeft'"
           [nzWidth]="columnItem.colWidth + 'px'"
           [nzColumnKey]="columnItem.key"
+          [nzSortPriority]="columnItem.priority ?? false"
           [nzSortOrder]="columnItem.sortOrder"
           [nzSortFn]="columnItem.sortFn"
           [nzSortDirections]="columnItem.sortDirections"
@@ -30,7 +31,10 @@
                 <!-- IMAGE + STRING -->
                 @case ('img-string'){
                 <div class="img-text">
-                  <img [src]="apiUrlBaseService.imageBaseUrl + row['photo'].filePath">
+                  <img nz-image nzDisablePreview
+                       [nzSrc]="row['photo']?.filePath ?
+                          apiUrlBaseService.imageBaseUrl + row['photo'].filePath :
+                          '/default-images/default-client.webp'">
                   <span>{{row[column.key]}}</span>
                 </div>
                 }
@@ -58,8 +62,10 @@
                 <!-- BUTTON CASES -->
                 @case ('button'){
                   @for (button of row[column.key]; track $index){
-                    <app-button-component [buttonLabel]="button.label" [type]="button.type" (click)="button.onClick(row)"></app-button-component>
-                                          <!-- [routerLink]="button.link" -->
+                    <app-button-component [buttonLabel]="button.label"
+                                          [type]="button.type"
+                                          [routerLink]="button.link ? button.link : null"
+                                          (click)="button.onClick ? button.onClick(row) : null" ></app-button-component>
                   }
                 }
                 @default {

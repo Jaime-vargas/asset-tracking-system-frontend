@@ -1,5 +1,5 @@
 import {Component, computed, inject, signal} from '@angular/core';
-import {ActivatedRoute, RouterLink} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {BranchService} from '../../services/branch.service';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';
@@ -7,14 +7,11 @@ import {FormsModule} from '@angular/forms';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 'ng-zorro-antd/input';
-import {NzEmptyComponent} from 'ng-zorro-antd/empty';
-import {NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
-import {HardwareTableDto} from '../../interfaces/hardware-dto/hardware-table.dto';
+import {HardwareTableDto} from '../../interfaces/hardware/hardware-table.dto';
 import {RouteContextService} from '../../services/route-context.service';
-import {UtilityService} from '../../services/utility.service';
-import {ReportCountTagsComponent} from '../../components/report-count-tags-component/report-count-tags-component';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcrumb-component';
+import {UtilityService} from '../../services/utility.service';
 import {TableComponent} from '../../components/table-component/table-component';
 import {TableData} from '../../interfaces/table/table-data';
 import {TableColumnsBranchHardwareService} from '../../services/table-columns-service/table-columns-branch-hardware.service';
@@ -33,11 +30,6 @@ import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
     NzInputDirective,
     NzInputPrefixDirective,
     NzInputWrapperComponent,
-    NzEmptyComponent,
-    NzTableComponent,
-    NzThMeasureDirective,
-    RouterLink,
-    ReportCountTagsComponent,
     NzRowDirective,
     NzColDirective,
     BreadcrumbComponent,
@@ -130,6 +122,15 @@ export class BranchHardwarePage {
       }
     })
   }
+  getQrCodes(){
+    return this.branchService.getQrCodes(this.branchId()).subscribe({
+      next: (blob: Blob) => {
+        const fileURL = URL.createObjectURL(blob);
+        window.open(fileURL, '_blank');
+      }
+    })
+  }
+
   getHardwareDataByBranchId(branchId : number) {
     this.branchService.getHardwareTableFromBranch(branchId).subscribe({
       next: (data) => {

@@ -11,6 +11,7 @@ import { NzTableModule } from 'ng-zorro-antd/table';
 import {PriorityTagsComponent} from '../priority-tags-component/priority-tags-component';
 import {SingleStatusTagsComponent} from '../single-status-tags-component/single-status-tags-component';
 import {ApiUrlBaseService} from '../../services/api-url-base.service';
+import {NzImageDirective} from 'ng-zorro-antd/image';
 
 
 @Component({
@@ -25,7 +26,8 @@ import {ApiUrlBaseService} from '../../services/api-url-base.service';
     NzThAddOnComponent,
     NzTableModule,
     PriorityTagsComponent,
-    SingleStatusTagsComponent
+    SingleStatusTagsComponent,
+    NzImageDirective
   ],
   templateUrl: './table-component.html',
   styleUrl: './table-component.css',

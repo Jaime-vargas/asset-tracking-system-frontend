@@ -64,7 +64,7 @@
               <div nz-col nzSpan="12">
                 <app-dasboard-card-component [cardTitle]="client.name">
                   <div body>
-                    <button nz-button nzType="primary"
+                    <button class="form-btn primary-btn" nz-button nzType="primary"
                             [routerLink]="['/clients', client.id, this.utilityService.slugify(client.name)]" >
                       View Branches
                       <nz-icon nzType="right" /></button>

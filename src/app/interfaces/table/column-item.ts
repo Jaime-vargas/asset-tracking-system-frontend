@@ -1,7 +1,7 @@
 import {NzTableSortFn, NzTableSortOrder} from 'ng-zorro-antd/table';
 
 type colType =
-  'button'|
+  'button' |
   'date'|
   'icon-branch'|
   'icon-hardware'|
@@ -17,6 +17,7 @@ export interface ColumnItem {
   colWidth: number;
   fixed: 'nzLeft' | 'nzRight' | null;
   type: colType;
+  priority?: number | boolean;
   sortOrder: NzTableSortOrder | null;
   sortFn: NzTableSortFn<Record<string, any>> | null;
   sortDirections: NzTableSortOrder[];
