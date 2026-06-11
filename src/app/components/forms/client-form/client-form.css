@@ -15,23 +15,7 @@
   position: relative;
   margin-top: auto;
 }
-.form-btn{
-  border-radius: 6px;
-  box-shadow: 1px 1px 4px #e3e3e3;
-}
 
-.default-btn{
-  background: #f3f3f7;
-  border: 1px solid #dcdcdc;
-}
-.primary-btn{
-  background: #0161fb;
-  color: white;
-
-}
-.primary-btn:hover{
-  background: #4186ff;
-}
 
 .client-logo{
   width: 200px;

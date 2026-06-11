@@ -1,5 +1,5 @@
 import {Component, computed, input, signal} from '@angular/core';
-import {ReportCountDTO} from '../../interfaces/report-dto/report-count.dto';
+import {ReportCountDTO} from '../../interfaces/report/report-count.dto';
 import {NzTagComponent} from 'ng-zorro-antd/tag';
 import {UtilityService} from '../../services/utility.service';
 
