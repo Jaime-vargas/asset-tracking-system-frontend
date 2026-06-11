@@ -1,0 +1,25 @@
+<div class="upload-content shadow">
+  @if (currentPhoto()){
+    <img nz-image [nzDisablePreview]="true" class="client-logo"
+         [nzSrc]="currentPhoto()!">
+  } @else {
+    <nz-upload
+      nzType="drag"
+      [nzAccept]="'image/*'"
+      [nzMultiple]="false"
+      [nzName]="'file'"
+      [nzShowUploadList]="false"
+      [nzDisabled]="isDisabled()"
+      [nzAction]="uploadUrl()"
+      (nzChange)="onUploadChange($event)"
+    >
+      <div nz-flex nzAlign="center" nzJustify="center" nzVertical>
+        <p class="ant-upload-drag-icon" >
+          <nz-icon nzType="inbox" />
+        </p>
+        <p class="ant-upload-text">Click or drag file to this area to upload</p>
+      </div>
+    </nz-upload>
+  }
+</div>
+
