@@ -1,5 +1,6 @@
 import {Component, inject, signal} from '@angular/core';
 import {NzDrawerComponent, NzDrawerContentDirective} from 'ng-zorro-antd/drawer';
+import {SidebarStore} from '../../store/sidebar.store';
 
 @Component({
   selector: 'app-edit-side-bar',
@@ -14,10 +15,20 @@ import {NzDrawerComponent, NzDrawerContentDirective} from 'ng-zorro-antd/drawer'
 })
 export class EditSideBar {
 
+  constructor(
+    private sidebarStore: SidebarStore
+  ) {}
 
-  isVisible = signal(false);
-
-  onClose(){
-    this.isVisible.update(value => !value);
+  ngOnInit() {
+    this.sidebarStore.isOpen$.subscribe(isOpen => {
+      this.isOpened.set(isOpen);
+    })
   }
+
+  isOpened = signal(false);
+
+  onClose() {
+    this.sidebarStore.close();
+  }
+
 }
