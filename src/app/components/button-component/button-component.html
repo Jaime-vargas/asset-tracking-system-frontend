@@ -1,6 +1,7 @@
 <button nz-button
+        class="form-btn"
         [nzType]="type() === 'edit' ? 'default' : 'primary'"
-        [class]="type() === 'edit' ? 'edit-button': ''"
+        [class]="type() === 'edit' ? 'edit-button default-btn': 'primary-btn'"
         >
   @if (type() === 'link'){
     {{buttonLabel()}}
