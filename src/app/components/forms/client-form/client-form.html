@@ -8,6 +8,7 @@
     <div style="height: 200px; width: 200px; ">
       <app-upload-drag-and-drop-component
         [currentPhoto]="clientImage()"
+        [fallbackImage]="fallbackClientImage"
         [isDisabled]="uploadDisabled()"
         [url]="url()"
         (uploadSuccess)="refreshForm()"></app-upload-drag-and-drop-component>

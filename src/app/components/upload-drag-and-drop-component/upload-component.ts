@@ -39,7 +39,7 @@ export class UploadComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
-
+  fallbackImage = input<string>("");
   url = input.required<string>();
   currentPhoto = input.required<string | undefined>();
   isDisabled = input.required<boolean>();

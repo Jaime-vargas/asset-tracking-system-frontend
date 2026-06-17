@@ -1,7 +1,8 @@
 <div class="upload-content shadow">
   @if (currentPhoto()){
     <img nz-image [nzDisablePreview]="true" class="client-logo"
-         [nzSrc]="currentPhoto()!">
+         [nzSrc]="currentPhoto()!"
+         [nzFallback]="fallbackImage()">
   } @else {
     <nz-upload
       nzType="drag"

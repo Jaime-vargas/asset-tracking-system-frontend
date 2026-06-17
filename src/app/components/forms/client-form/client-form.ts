@@ -88,6 +88,7 @@ export class ClientForm{
   formMode = signal<string>("add")
 
   // Image Helpers
+  fallbackClientImage = '/default-images/default-client.webp';
   url = computed(()=>`clients/${this.clientToEdit()?.id}/photo`);
   uploadDisabled = computed(()=>
     this.formMode() === 'add'

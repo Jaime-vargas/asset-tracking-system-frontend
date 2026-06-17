@@ -34,7 +34,8 @@
                   <img nz-image nzDisablePreview
                        [nzSrc]="row['photo']?.filePath ?
                           apiUrlBaseService.imageBaseUrl + row['photo'].filePath :
-                          '/default-images/default-client.webp'">
+                          '/default-images/default-client.webp'"
+                       [nzFallback]="'/default-images/default-client.webp'">
                   <span>{{row[column.key]}}</span>
                 </div>
                 }
