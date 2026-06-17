@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import {CanActivateFn, Routes} from '@angular/router';
 import {DashboardPage} from './pages/dashboard-page/dashboard-page';
 import {ClientsPage} from './pages/clients-page/clients-page';
 import {ClientBranchesPage} from './pages/client-branches-page/client-branches-page';
@@ -9,10 +9,16 @@ import {HardwareReportsPage} from './pages/hardware-reports-page/hardware-report
 import {ReportsPage} from './pages/reports-page/reports-page';
 import {ReportDetailPage} from './pages/report-detail-page/report-detail-page';
 import {UsersPage} from './pages/users-page/users-page';
+import {LoginPage} from './pages/login-page/login-page';
+import {AuthService} from './services/auth-service';
+import {AuthGuardService} from './services/auth-guard.service';
+import {QrScannerComponent} from './components/qr-scanner-component/qr-scanner-component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-  { path: 'dashboard', component: DashboardPage },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: LoginPage},
+  { path: 'dashboard', component: DashboardPage,
+  canActivate: [AuthGuardService]},
   { path: 'clients', component: ClientsPage },
   { path: 'clients/:clientId/:clientSlug', component: ClientBranchesPage },
   { path: 'hardware', component: HardwarePage },
@@ -34,4 +40,5 @@ export const routes: Routes = [
     component: ReportDetailPage
   },
   { path: 'users', component: UsersPage },
+  { path: 'qr', component: QrScannerComponent },
 ];
