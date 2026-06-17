@@ -42,7 +42,7 @@ import {ClientStore} from '../../store/client.store';
   templateUrl: './clients-page.html',
   styleUrl: './clients-page.css',
 })
-export class ClientsPage {
+export class ClientsPage implements OnInit {
   constructor(private clientService: ClientService,
               protected utilityService: UtilityService,
               protected tableClientService: TableClientService,
@@ -53,13 +53,13 @@ export class ClientsPage {
 
   ngOnInit() {
     this.sidebarStore.isOpen$.subscribe(isOpen => {
-      this.isOpenSubscribe.set(isOpen);
+      this.isOpenSidebar.set(isOpen);
     });
     this.sidebarStore.refreshTable$.subscribe(()=>{
       this.getClients();
     });
   }
-  isOpenSubscribe = signal<boolean>(false);
+  isOpenSidebar = signal<boolean>(false);
   clientsData = signal<ClientTableDto[] >([]);
 
   // TABLE DATA
