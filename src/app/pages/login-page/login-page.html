@@ -1,1 +1,46 @@
-<p>login-page works!</p>
+<div nz-flex nzJustify="center" nzAlign="center" style="height: 100%">
+  <div class="login-container">
+    <app-dasboard-box-component>
+      <div body>
+        <h3 nz-typography>Login</h3>
+        <form nz-form [formGroup]="loginForm" (ngSubmit)="logInFormSubmit()" style="height: stretch" >
+          <nz-form-item>
+            <nz-form-label class="sub-title" nzRequired>Nombre</nz-form-label>
+            <nz-form-control [nzErrorTip] = "nameErrorTpl">
+              <input nz-input formControlName="name" >
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label class="sub-title" nzRequired>Password</nz-form-label>
+            <nz-form-control [nzErrorTip] = "passwordErrorTpl">
+              <input nz-input type="password" formControlName="password" >
+            </nz-form-control>
+          </nz-form-item>
+          <nz-divider></nz-divider>
+          <div class="buttons-container" nz-flex nzAlign="center" nzJustify="flex-start"
+               style="width: 100%; gap: 20px">
+            <button nz-button class="form-btn primary-btn" nzType="primary" nzSize="large" type="submit" [disabled]="loginForm.invalid">Log In</button>
+          </div>
+        </form>
+      </div>
+    </app-dasboard-box-component>
+
+    Token Recived:
+    <span>{{token()}}</span>
+  </div>
+</div>
+
+<!-- TEMPLATE ERRORS -->
+<ng-template #nameErrorTpl let-control>
+  @if (control.hasError('required')) {
+    Name is mandatory
+  }
+</ng-template>
+<ng-template #passwordErrorTpl let-control>
+  @if (control.hasError('required')) {
+    Password is mandatory
+  }
+</ng-template>
+
+
+
