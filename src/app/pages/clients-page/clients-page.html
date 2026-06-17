@@ -4,7 +4,7 @@
 
   <nz-divider></nz-divider>
   <!-- SIDEBAR COMPONENT -->
-  @if(isOpenSubscribe()){
+  @if(isOpenSidebar()){
     <app-edit-side-bar>
       <div body>
         <app-client-form></app-client-form>
@@ -13,10 +13,12 @@
   }
   <!-- /SIDEBAR COMPONENT -->
 
-  <!-- SEARCH SECTION -->
+
   <div class="contentBody">
     <div nz-row [nzGutter]="[10,10]">
       <div nz-col nzSpan="24">
+
+        <!-- SEARCH SECTION -->
         <app-dasboard-box-component>
           <div body nz-flex nzGap="middle">
             <nz-input-wrapper nzAllowClear >
@@ -26,8 +28,9 @@
             <button  nz-button class="form-btn primary-btn" nzType="primary" (click)="openNewSidebar()"><nz-icon nzType="plus" nzTheme="outline"/>Add Client</button>
           </div>
         </app-dasboard-box-component>
+        <!-- /SEARCH SECTION -->
       </div>
-      <!-- /SEARCH SECTION -->
+
 
       <!-- TABLE COMPONENT -->
       <div nz-col nzSpan="24">

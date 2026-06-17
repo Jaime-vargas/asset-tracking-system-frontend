@@ -1,9 +1,21 @@
 <div class="contentPage">
   <app-breadcrumb-component [breadcrumb]="breadcrumb()"></app-breadcrumb-component>
   <nz-divider></nz-divider>
+
+  <!-- SIDEBAR COMPONENT -->
+  @if(isOpenSidebar()){
+    <app-edit-side-bar>
+      <div body>
+        <app-branch-form></app-branch-form>
+      </div>
+    </app-edit-side-bar>
+  }
+  <!-- /SIDEBAR COMPONENT -->
   <div class="contentBody">
     <div nz-row [nzGutter]="[10,10]">
       <div nz-col nzSpan="24">
+
+        <!-- SEARCH SECTION -->
         <app-dasboard-box-component>
           <div body nz-flex nzGap="middle">
             <nz-input-wrapper nzAllowClear>
@@ -11,12 +23,13 @@
               <input nz-input [ngModel]="branchNameFilter()" (ngModelChange)="branchNameFilter.set($event)"
                      placeholder=" Search branches..."/>
             </nz-input-wrapper>
-            <button nz-button nzType="primary">
+            <button nz-button class="form-btn primary-btn" nzType="primary">
               <nz-icon nzType="plus" nzTheme="outline"/>
               Add Branch
             </button>
           </div>
         </app-dasboard-box-component>
+        <!-- /SEARCH SECTION -->
       </div>
 
       <!-- TABLE COMPONENT -->
