@@ -38,4 +38,5 @@ export class TableComponent {
   }
   tableColumns = input.required<ColumnItem[]>();
   tableData = input.required<TableData[]>();
+  protected readonly console = console;
 }

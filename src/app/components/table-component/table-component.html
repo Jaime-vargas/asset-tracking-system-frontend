@@ -23,7 +23,7 @@
   <!-- TABLE ROWS -->
     <tbody>
       @for (row of nzData.data; track row['id']){
-        <tr>
+        <tr (click)="console.log(row['actions']['0'].link)">
           @for (column of tableColumns(); track column.key) {
             <td nzEllipsis [nzLeft]="column.fixed === 'nzLeft'">
               <!-- SWITCHING DATA DEPENDING OF TYPE -->
@@ -40,8 +40,12 @@
                 </div>
                 }
                 <!-- DATES -->
-                @case ('date'){
-                  {{row[column.key].toDateString()}}
+                <!-- TODO - backend must send null if no date instead of a String -->
+                @case ('date') {
+                  {{ row[column.key] === 'N/A'
+                  ? 'N/A'
+                  :  row[column.key]
+                  }}
                 }
                 <!-- ICON CASES -->
                 @case ('icon-branch'){
