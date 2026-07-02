@@ -1,1 +1,34 @@
-<p>branch-form works!</p>
+<div class="main-container">
+  <span class="title">{{formTitle()}}</span>
+  <nz-divider></nz-divider>
+
+  <form nz-form [formGroup]="branchForm" (ngSubmit)="submitForm()" style="height: stretch">
+    <nz-form-item>
+      <nz-form-label class="sub-title" nzRequired>Name</nz-form-label>
+      <nz-form-control [nzErrorTip] = "nameErrorTpl">
+        <input nz-input formControlName="name" >
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-divider></nz-divider>
+    <div class="buttons-container" nz-flex nzAlign="center" nzJustify="flex-end"
+         style="width: 100%; gap: 20px">
+      <button nz-button class="form-btn default-btn" nzType="default" nzSize="large" type="button" (click)="onClose()">Cancel</button>
+      <button nz-button class="form-btn primary-btn" nzType="primary" nzSize="large" type="submit" [disabled]="branchForm.invalid">
+        <nz-icon nzType="save" nzTheme="outline" />Save Changes</button>
+    </div>
+  </form>
+</div>
+
+<!-- Template Errors -->
+<ng-template #nameErrorTpl let-control>
+  @if (control.hasError('required')) {
+    Name is mandatory
+  }
+  @if (control.hasError('minlength')) {
+    Name is too short
+  }
+  @if (control.hasError('maxlength')) {
+    Name is too large
+  }
+</ng-template>
