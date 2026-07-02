@@ -1,19 +1,15 @@
 <div class="contentPage">
   <app-breadcrumb-component [breadcrumb]="breadcrumb()"></app-breadcrumb-component>
-  <nz-divider></nz-divider>
   <div class="contentBody">
     <div nz-row [nzGutter]="[10,10]">
 
       <div nz-col nzSpan="24">
-        <nz-flex nzJustify="flex-end">
-          <button nz-button nz-dropdown [nzDropdownMenu]="menu" nzPlacement="bottomRight">Download <nz-icon nzType="download" nzTheme="outline" /></button>
-          <nz-dropdown-menu #menu="nzDropdownMenu">
-            <ul nz-menu>
-              <li nz-menu-item (click)="getPhotoReport()">Photo report</li>
-              <li nz-menu-item (click)="getTechnicalMemory()">Technical memory</li>
-              <li nz-menu-item (click)="getQrCodes()">QR codes</li>
-            </ul>
-          </nz-dropdown-menu>
+        <nz-flex nzJustify="space-between" nzGap="small">
+          <div nz-flex nzGap="small">
+            <button nz-button class="form-btn default-btn" nz-dropdown [nzDropdownMenu]="downloadMenu" nzPlacement="bottomLeft">Download <nz-icon nzType="download" nzTheme="outline" /></button>
+            <button nz-button class="form-btn default-btn" nz-dropdown [nzDropdownMenu]="importMenu" nzPlacement="bottomLeft">Import</button>
+          </div>
+          <button nz-button class="form-btn primary-btn" nzType="primary" nz-dropdown [nzDropdownMenu]="newMenu" nzPlacement="bottomRight"><nz-icon nzType="plus" nzTheme="outline" />Add Hardware</button>
         </nz-flex>
       </div>
 
@@ -56,9 +52,6 @@
                 <input nz-input [ngModel]="lastMaintenanceFilter()" (ngModelChange)="lastMaintenanceFilter.set($event)" placeholder=" Search Last Maintenance..." />
               </nz-input-wrapper>
             </div>
-            <div nz-col nzFlex="1 1 200px" >
-              <button nz-button nzType="primary"><nz-icon nzType="plus" nzTheme="outline" />Add Hardware</button>
-            </div>
           </div>
         </app-dasboard-box-component>
       </div>
@@ -72,6 +65,41 @@
           </div>
         </app-dasboard-box-component>
       </div>
+      <!-- /TABLE COMPONENT -->
     </div>
   </div>
 </div>
+
+<!-- Drop down - Download button -->
+<nz-dropdown-menu #downloadMenu="nzDropdownMenu">
+  <ul nz-menu>
+    <li nz-menu-item (click)="hardwareStore.getPhotoReportByBranchId()">Photo report</li>
+    <li nz-menu-item (click)="hardwareStore.getTechnicalMemoryByBranchId()">Technical memory</li>
+    <li nz-menu-item (click)="hardwareStore.getQrCodesByBranchId()">QR codes</li>
+  </ul>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #importMenu="nzDropdownMenu">
+  <ul nz-menu>
+    <li nz-menu-item>Import from .XLS</li>
+    <li nz-menu-item>Download template</li>
+  </ul>
+</nz-dropdown-menu>
+<nz-dropdown-menu #newMenu="nzDropdownMenu">
+  <ul nz-menu>
+    <li nz-menu-item (click)="openNewSidebar()">Camera</li>
+    <li nz-menu-item>Switch</li>
+    <li nz-menu-item>Server</li>
+  </ul>
+</nz-dropdown-menu>
+
+<!-- SIDEBAR COMPONENT -->
+@if(openSideBar()){
+  <app-edit-side-bar>
+    <div body>
+      <app-camera-form></app-camera-form>
+    </div>
+  </app-edit-side-bar>
+}
+<!-- /SIDEBAR COMPONENT -->
+

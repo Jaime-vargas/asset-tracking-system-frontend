@@ -11,5 +11,4 @@ export interface CameraDetailDto extends HardwareDetailDto {
   password: string; // NEW
   viewFromCameraPhoto: PhotoDto; // NEW
   viewToCameraPhoto: PhotoDto; // NEW
-
 }
