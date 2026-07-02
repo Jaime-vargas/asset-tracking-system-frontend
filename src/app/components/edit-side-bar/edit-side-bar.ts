@@ -14,28 +14,13 @@ import {Subscription} from 'rxjs';
   templateUrl: './edit-side-bar.html',
   styleUrl: './edit-side-bar.css',
 })
-export class EditSideBar implements OnInit, OnDestroy {
+export class EditSideBar {
 
-  constructor(
-    private sidebarStore: SidebarStore
-  ) {}
+  sidebarStore = inject(SidebarStore);
 
-  subscriptions = new Subscription();
-  ngOnInit() {
-    this.subscriptions.add(
-      this.sidebarStore.isOpen$.subscribe(isOpen => {
-        this.isOpened.set(isOpen);
-      })
-    );
-  }
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-  }
-
-  isOpened = signal(false);
+  isOpen = this.sidebarStore.isOpen;
 
   onClose() {
-    this.sidebarStore.close();
+    this.isOpen.set(false);
   }
-
 }
