@@ -17,9 +17,15 @@ export class SingleStatusTagsComponent {
 
   status = input<string>();
   tagColor = computed(()=> {
-    if (this.status() === "ACTIVE") return this.utilityService.baseColors.yellow;
-    if (this.status() === "OVERDUE") return this.utilityService.baseColors.red;
-    if (this.status() === "CLOSED") return this.utilityService.baseColors.green;
-    return this.utilityService.baseColors.gray;
+    switch (this.status()) {
+      case "ACTIVE":
+        return this.utilityService.baseColors.yellow;
+      case "OVERDUE":
+        return this.utilityService.baseColors.red;
+      case "CLOSED":
+        return this.utilityService.baseColors.green;
+      default:
+        return this.utilityService.baseColors.gray;
+    }
   })
 }
