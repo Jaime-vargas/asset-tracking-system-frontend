@@ -2,13 +2,13 @@ import {Component, input, InputSignal} from '@angular/core';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 
 @Component({
-  selector: 'app-dasboard-card-component',
+  selector: 'app-dashboard-card-component',
   imports: [
     NzTypographyComponent
   ],
-  templateUrl: './dasboard-card-component.html',
-  styleUrl: './dasboard-card-component.css',
+  templateUrl: './dashboard-card-component.html',
+  styleUrl: './dashboard-card-component.css',
 })
-export class DasboardCardComponent {
+export class DashboardCardComponent {
     cardTitle = input();
 }

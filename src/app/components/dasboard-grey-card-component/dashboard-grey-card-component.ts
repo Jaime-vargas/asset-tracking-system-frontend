@@ -6,8 +6,8 @@ import {NzTypographyComponent} from "ng-zorro-antd/typography";
     imports: [
         NzTypographyComponent
     ],
-  templateUrl: './dasboard-grey-card-component.html',
-  styleUrl: './dasboard-grey-card-component.css',
+  templateUrl: './dashboard-grey-card-component.html',
+  styleUrl: './dashboard-grey-card-component.css',
 })
-export class DasboardGreyCardComponent {
+export class DashboardGreyCardComponent {
 }

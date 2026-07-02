@@ -9,9 +9,9 @@ import {NzTypographyComponent} from 'ng-zorro-antd/typography';
     NzTypographyComponent,
   ],
   templateUrl: './dashboard-box-component.html',
-  styleUrl: './dasboard-box-component.css',
+  styleUrl: './dashboard-box.component.css',
 })
-export class DasboardBoxComponent {
+export class DashboardBoxComponent {
   boxTitle = input<string>();
   flex = input<boolean>(false);
   bgColor = input<string>("#fff");
