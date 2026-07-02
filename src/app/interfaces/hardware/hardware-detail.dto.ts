@@ -9,5 +9,9 @@ export interface HardwareDetailDto {
   location: string;
   name: string;
   lastMaintenanceDate: string;
+
+  overdueReportsCount:number;
+  activeReportsCount:number;
+
   recentActiveReports: ReportHistoryDto[];
 }
