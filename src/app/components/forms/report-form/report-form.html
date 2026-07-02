@@ -1,1 +1,77 @@
-<p>report-form works!</p>
+<div class="main-container">
+
+  <span class="title">{{ formTitle() }}</span>
+
+  <nz-divider></nz-divider>
+
+  <form nz-form [formGroup]="reportForm" nzLayout="vertical" (ngSubmit)="submitForm()" style="height: stretch">
+
+    <nz-row [nzGutter]="16">
+      <nz-col [nzSpan]="24">
+        <nz-form-item>
+          <nz-form-label nzRequired>Report name</nz-form-label>
+          <nz-form-control [nzErrorTip] ="errorTpl">
+            <input nz-input formControlName="title" />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+
+      <nz-col [nzSpan]="24">
+        <nz-form-item>
+          <nz-form-label nzRequired>Priority</nz-form-label>
+          <nz-form-control>
+            <nz-select formControlName="priorityEnum">
+              <nz-option nzValue="LOW" nzLabel="Low" />
+              <nz-option nzValue="MEDIUM" nzLabel="Medium" />
+              <nz-option nzValue="HIGH" nzLabel="High" />
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+
+      <nz-col [nzSpan]="24">
+        <nz-form-item>
+          <nz-form-label nzRequired>Report Details</nz-form-label>
+          <nz-form-control [nzErrorTip] ="errorTpl">
+            <nz-textarea-count [nzMaxCharacterCount]="1000">
+              <textarea nzSize="small" rows="6" formControlName="reportDetails" nz-input></textarea>
+            </nz-textarea-count>
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+
+      <nz-col [nzSpan]="24">
+        <nz-form-item>
+          <nz-form-label nzRequired>Due date</nz-form-label>
+          <nz-form-control>
+            <nz-date-picker [nzDisabledDate]="disabledDate" formControlName="dueDate" />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+
+    </nz-row>
+    <nz-divider></nz-divider>
+    <div class="buttons-container" nz-flex nzAlign="center" nzJustify="flex-end"
+         style="width: 100%; gap: 20px">
+      <button nz-button class="form-btn default-btn" nzType="default" nzSize="large" type="button" (click)="onClose()" >Close</button>
+      <button nz-button class="form-btn primary-btn" nzType="primary" nzSize="large" type="submit"
+              [disabled]="reportForm.invalid"
+              [nzLoading]="buttonLoading()">
+        <nz-icon nzType="save" nzTheme="outline" />Save Changes</button>
+    </div>
+
+  </form>
+</div>
+
+<!-- Template Errors -->
+<ng-template #errorTpl let-control>
+  @if (control.hasError('required')) {
+    This field is mandatory
+  }
+  @if (control.hasError('minlength')) {
+    This field is too short
+  }
+  @if (control.hasError('maxlength')) {
+    This field is too large
+  }
+</ng-template>
