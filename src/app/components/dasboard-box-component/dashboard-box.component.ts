@@ -14,4 +14,5 @@ import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 export class DasboardBoxComponent {
   boxTitle = input<string>();
   flex = input<boolean>(false);
+  bgColor = input<string>("#fff");
 }

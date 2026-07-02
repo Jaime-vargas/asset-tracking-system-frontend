@@ -1,0 +1,153 @@
+<div class="main-container">
+  <span class="title">{{formTitle()}}</span>
+  <form nz-form [formGroup]="hardwareForm" (ngSubmit)="submitForm()" style="height: stretch">
+    <nz-divider nzText="Camera info" nzOrientation=left></nz-divider>
+    <nz-row [nzGutter]="16">
+      <nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label nzRequired>Camera ID</nz-form-label>
+          <nz-form-control [nzErrorTip] = "errorTpl">
+            <input nz-input formControlName="cameraId" />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+
+      <nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label nzRequired>Name</nz-form-label>
+          <nz-form-control [nzErrorTip] = "errorTpl">
+            <input nz-input formControlName="name" />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+    </nz-row>
+
+    <nz-row [nzGutter]="16">
+      <nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label nzRequired>Brand</nz-form-label>
+          <nz-form-control [nzErrorTip] = "errorTpl">
+            <input nz-input formControlName="brand" />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+
+      <nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label nzRequired>Model</nz-form-label>
+          <nz-form-control [nzErrorTip] = "errorTpl">
+            <input nz-input formControlName="model" />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+    </nz-row>
+
+    <nz-row [nzGutter]="16">
+      <nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label nzRequired>Serial Number</nz-form-label>
+          <nz-form-control [nzErrorTip] = "errorTpl">
+            <input nz-input formControlName="serialNumber" />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+
+      <nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label>Location</nz-form-label>
+          <nz-form-control [nzErrorTip] = "errorTpl">
+            <input nz-input formControlName="location" />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+    </nz-row>
+
+    <nz-divider nzText="Network" nzOrientation=left></nz-divider>
+
+    <nz-row [nzGutter]="16">
+      <nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label nzRequired>MAC Address</nz-form-label>
+          <nz-form-control [nzErrorTip] = "macErrorTpl">
+            <input nz-input formControlName="macAddress" />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+
+      <nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label nzRequired>IP Address</nz-form-label>
+          <nz-form-control [nzErrorTip] = "ipErrorTpl">
+            <input nz-input formControlName="ipAddress" />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+    </nz-row>
+
+    <nz-row [nzGutter]="16">
+      <nz-col [nzSpan]="24">
+        <nz-form-item>
+          <nz-form-label>IDF</nz-form-label>
+          <nz-form-control [nzErrorTip] = "errorTpl">
+            <input nz-input formControlName="idf" />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+    </nz-row>
+
+    <nz-divider nzText="Credentials" nzOrientation=left></nz-divider>
+
+    <nz-row [nzGutter]="16">
+      <nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label>Username</nz-form-label>
+          <nz-form-control [nzErrorTip] = "errorTpl">
+            <input nz-input formControlName="username" />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+
+      <nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label >Password</nz-form-label>
+          <nz-form-control [nzErrorTip] = "errorTpl">
+            <input nz-input type="password" formControlName="password" />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+    </nz-row>
+
+    <nz-divider></nz-divider>
+    <div class="buttons-container" nz-flex nzAlign="center" nzJustify="flex-end"
+         style="width: 100%; gap: 20px">
+      <button nz-button class="form-btn default-btn" nzType="default" nzSize="large" type="button" (click)="onClose()" >Cancel</button>
+      <button nz-button class="form-btn primary-btn" nzType="primary" nzSize="large" type="submit" [disabled]="hardwareForm.invalid">
+        <nz-icon nzType="save" nzTheme="outline" />Save Changes</button>
+    </div>
+  </form>
+</div>
+
+<!-- Template Errors -->
+<ng-template #errorTpl let-control>
+  @if (control.hasError('required')) {
+    This field is mandatory
+  }
+  @if (control.hasError('minlength')) {
+    This field is too short
+  }
+  @if (control.hasError('maxlength')) {
+    This field is too large
+  }
+</ng-template>
+
+<ng-template #macErrorTpl let-control>
+  @if (control.hasError('pattern')) {
+    Invalid MAC format
+  }
+</ng-template>
+
+<ng-template #ipErrorTpl let-control>
+  @if (control.hasError('pattern')) {
+    Invalid IP format
+  }
+</ng-template>
