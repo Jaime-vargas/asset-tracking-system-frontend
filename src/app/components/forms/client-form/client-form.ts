@@ -1,4 +1,4 @@
-import {Component, inject, output, signal, OnInit, computed, effect} from '@angular/core';
+import {Component, inject, output, signal, OnInit, computed, effect, OnDestroy} from '@angular/core';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
@@ -20,6 +20,7 @@ import {NzNotificationService} from 'ng-zorro-antd/notification';
 import {Subscription} from 'rxjs';
 import {ClientStore} from '../../../store/client.store';
 import {UploadButtonComponent} from '../../upload-button-component/upload-button-component';
+import {ClientDto} from '../../../interfaces/client/client.dto';
 
 @Component({
   selector: 'app-client-form',
@@ -42,120 +43,95 @@ import {UploadButtonComponent} from '../../upload-button-component/upload-button
   templateUrl: './client-form.html',
   styleUrl: './client-form.css',
 })
-export class ClientForm{
-  constructor(protected apiUrlBaseService: ApiUrlBaseService,
-              private clientService: ClientService,
-              private clientStore: ClientStore,
-              private sidebarStore: SidebarStore,
-              private message : NzMessageService,
-              private notification : NzNotificationService) {
-  }
-  private subscriptions: Subscription = new Subscription();
+export class ClientForm implements OnInit{
 
-  ngOnInit() {
-    this.subscriptions.add(
-      this.sidebarStore.selectedEntity$.subscribe(entity => {
-        this.clientToEdit.set(entity);
-        this.setFieldsFromEntity();
-      })
-    );
-    this.subscriptions.add(
-      this.sidebarStore.formMode$.subscribe(mode => {
-        this.formMode.set(mode)
-      })
-    );
-    this.subscriptions.add(
-      this.clientStore.clientList$.subscribe(clientList => {
-        const current = this.clientToEdit();
-        if(!current || !clientList) return;
-        const updatedClient =
-          clientList.find(
-            c => c.id === current.id
-          );
-        if(updatedClient) this.clientToEdit.set(updatedClient);
-      })
-    )
-  }
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-  }
+  private clientStore = inject(ClientStore);
+  protected formBuilder = inject(FormBuilder);
+  private sidebarStore = inject(SidebarStore);
 
-  formTitle= computed(()=>
-    this.formMode() === "add" ? "New Client" : "Update Client"
-  )
+  formMode = this.clientStore.formMode;
+  selectedClient = this.clientStore.selectedClient;
+  selectedClientImage = this.clientStore.selectedClientImage;
 
-  clientToEdit = signal<ClientTableDto | null>(null);
-  formMode = signal<string>("add")
-
-  // Image Helpers
+  // Static
   fallbackClientImage = '/default-images/default-client.webp';
-  url = computed(()=>`clients/${this.clientToEdit()?.id}/photo`);
+
+  // Computed variables
+  // --------------------
+  formTitle = computed(() =>
+    this.formMode() === "add" ? "New Client" : "Update Client"
+  );
+
+
+  uploadUrl = computed(()=>  {
+      const url = this.clientStore.clientPhotoUrl();
+      if(url === null) return '';
+      return this.formMode() === 'add'? '' : url;
+  });
+
+  // if formMode is "add" you cannot update a photo because there isn't an id to refer
   uploadDisabled = computed(()=>
     this.formMode() === 'add'
   );
-  clientImage = computed(()=>{
-    const path = this.clientToEdit()?.photo?.filePath;
-    if(!path) return undefined;
-    return this.apiUrlBaseService.imageBaseUrl + path;
-  });
 
-  // Form fields
-  private fb = inject(FormBuilder);
-  form: FormGroup = this.fb.group({
+
+  ngOnInit() {
+    const client = this.selectedClient();
+    if (client === null) return;
+    this.fillFieldsFromEntity(client);
+  }
+
+  // Form
+  // --------------------
+  protected clientForm: FormGroup = this.formBuilder.group({
     name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(25)],],
   });
 
-  setFieldsFromEntity() {
-    const client = this.clientToEdit();
-    if(client) {
-      this.form.patchValue({
-        name: this.clientToEdit()?.name,
-      })
+  fillFieldsFromEntity(client: ClientTableDto) {
+    this.clientForm.patchValue({
+      name: client.name,
+    })
+  }
+
+  submitForm(){
+    if(this.clientForm.invalid) return;
+    const client: ClientRequestDto = this.clientForm.getRawValue();
+    switch (this.formMode()) {
+      case 'add':
+        this.addRequest(client);
+        break;
+      case 'edit':
+        this.editRequest(client);
+        break;
     }
+  }
+
+  addRequest(client: ClientRequestDto) {
+    this.clientStore.addClient(client);
+    this.formMode.set("edit");
+  }
+
+  editRequest(client: ClientRequestDto) {
+    const selectedClient = this.selectedClient();
+    if (selectedClient === null) return;
+    this.clientStore.editClient(selectedClient.id, client);
+    this.onClose();
   }
 
   onClose() {
-    this.form.reset();
-    this.sidebarStore.clearSelectedEntity();
-    this.sidebarStore.close();
+    this.clientForm.reset();
+    this.selectedClient.set(null);
+    this.sidebarStore.isOpen.set(false);
   }
 
-  refreshForm(){
-    this.sidebarStore.triggerRefreshTable();
+  uploadSuccess(client: ClientTableDto) {
+    this.clientStore.updateSelectedClient(client);
   }
 
-  submit(){
-    const client: ClientRequestDto = this.form.getRawValue();
-    if(this.form.invalid) return
-    switch (this.formMode()) {
-      case 'add':
-        this.clientService.addClient(client).subscribe({
-          next: (client: ClientTableDto) => {
-            this.clientToEdit.set(client);
-            this.sidebarStore.triggerRefreshTable();
-            this.sidebarStore.setMode("edit");
-            this.message.success("Client created successfully.");
-          }
-        })
-        break;
-      case 'edit':
-        const entity = this.clientToEdit();
-        if (entity) {
-          this.clientService.editClient(entity.id, client).subscribe({
-            next: (response: any) => {
-              this.sidebarStore.triggerRefreshTable();
-              this.onClose();
-              this.message.success("Client updated successfully.");
-            },error: (err) => {
-              this.notification.error(
-                'Upload failed',
-                err?.error.message,
-                { nzDuration: 0 }
-              );
-            }
-          })
-        }
-    }
+  uploadClientPhoto(formData: FormData) {
+    const selectedClient = this.selectedClient();
+    if (selectedClient === null) return;
+    this.clientStore.uploadClientPhoto(selectedClient.id, formData, true);
   }
 }
 
