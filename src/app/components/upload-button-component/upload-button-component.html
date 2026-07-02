@@ -7,9 +7,8 @@
   [nzAction]="uploadUrl()"
   (nzChange)="onUploadChange($event)"
 >
-  <button nz-button class="form-btn default-btn" nzType="default">
-    <nz-icon nzType="edit" nzTheme="outline" />
-    Change image
-  </button>
+    <ng-content select="[body]">
+    </ng-content>
 </nz-upload>
+
 

@@ -1,11 +1,13 @@
-import {Component, computed, input, output, OnInit, OnDestroy} from '@angular/core';
-import {NzModalComponent, NzModalModule, } from 'ng-zorro-antd/modal';
+import {Component, input, output, inject, signal} from '@angular/core';
+import {NzModalModule, NzModalService,} from 'ng-zorro-antd/modal';
 import {NzUploadChangeParam, NzUploadComponent} from 'ng-zorro-antd/upload';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzImageDirective} from 'ng-zorro-antd/image';
-import {UploadService} from '../../services/upload.service';
-import {Subscription} from 'rxjs';
+
+import {NzMessageService} from 'ng-zorro-antd/message';
+import {NzNotificationService} from 'ng-zorro-antd/notification';
+import {AbstractUploadComponent} from '../../services/abstract-upload-component.directive';
 
 @Component({
   selector: 'app-upload-drag-and-drop-component',
@@ -21,36 +23,8 @@ import {Subscription} from 'rxjs';
   styleUrl: './upload-component.css',
 })
 
-export class UploadComponent implements OnInit, OnDestroy {
-
-  constructor(
-    private uploadService : UploadService
-) {}
-
-  private subscriptions: Subscription = new Subscription();
-  // Subscribe for allowing knows if file was uploaded successfully
-  ngOnInit() {
-    this.subscriptions.add(
-      this.uploadService.uploadSuccess$.subscribe(()=>{
-        this.uploadSuccess.emit();
-      })
-    )
-  }
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-  }
-  fallbackImage = input<string>("");
-  url = input.required<string>();
-  currentPhoto = input.required<string | undefined>();
-  isDisabled = input.required<boolean>();
-
-  uploadSuccess = output<void>();
-
-  uploadUrl(){
-    return this.uploadService.setEndpoint(this.url());
-  }
-
-  onUploadChange(event: NzUploadChangeParam): void {
-    this.uploadService.onUploadChange(event);
-  }
+export class UploadComponent extends AbstractUploadComponent{
+  currentPhoto = input.required<string | null>();
+  fallbackImage = input.required<string>();
+  isDisabled = input<boolean>(false);
 }

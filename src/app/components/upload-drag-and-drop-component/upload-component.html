@@ -1,6 +1,6 @@
 <div class="upload-content shadow">
   @if (currentPhoto()){
-    <img nz-image [nzDisablePreview]="true" class="client-logo"
+    <img nz-image
          [nzSrc]="currentPhoto()!"
          [nzFallback]="fallbackImage()">
   } @else {
@@ -18,7 +18,7 @@
         <p class="ant-upload-drag-icon" >
           <nz-icon nzType="inbox" />
         </p>
-        <p class="ant-upload-text">Click or drag file to this area to upload</p>
+        <span class="ant-upload-text">Click or drag file to this area to upload</span>
       </div>
     </nz-upload>
   }
