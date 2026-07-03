@@ -29,7 +29,6 @@ nz-breadcrumb-item{
 }
 
 .bg-white {
-  background-color: #fff;
   border-radius: 10px;
   padding: 18px;
 }
@@ -66,6 +65,7 @@ nz-breadcrumb-item{
 .bg-yellow {
   color: #ec8a42;
 }
+
 .bg-blue {
   color: #255498;
 }
@@ -107,6 +107,26 @@ td{
 .edit-button{
   margin-left:10px;
 }
+
+/* SIDEBAR FORM STYLES */
+.main-container{
+  height:calc(100vh - 50px) ;
+  display: flex;
+  flex-direction: column;
+}
+.title{
+  font-size: 20px;
+  font-weight: bold;
+}
+.sub-title{
+  font-size: 14px;
+  font-weight: bold;
+}
+.buttons-container{
+  position: relative;
+  margin-top: auto;
+}
+
 
 /* NEW GLOBAL STYLES */
 
