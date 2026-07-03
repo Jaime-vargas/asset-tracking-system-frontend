@@ -1,8 +1,7 @@
-import {Component, computed, inject, signal} from '@angular/core';
+import {Component, computed, inject, OnInit, signal} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {BranchService} from '../../services/branch.service';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
-import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';
+import {DashboardBoxComponent} from '../../components/dasboard-box-component/dashboard-box.component';
 import {FormsModule} from '@angular/forms';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
@@ -18,12 +17,16 @@ import {TableColumnsBranchHardwareService} from '../../services/table-columns-se
 import {NzDropdownDirective, NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
 import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
+import {SidebarStore} from '../../store/sidebar.store';
+import {EditSideBar} from '../../components/edit-side-bar/edit-side-bar';
+import {HardwareStore} from '../../store/hardware.store';
+import {CameraForm} from '../../components/forms/camera-form/camera-form.component';
 
 @Component({
   selector: 'app-branch-hardware-device-page',
   imports: [
     NzDividerComponent,
-    DasboardBoxComponent,
+    DashboardBoxComponent,
     FormsModule,
     NzButtonComponent,
     NzIconDirective,
