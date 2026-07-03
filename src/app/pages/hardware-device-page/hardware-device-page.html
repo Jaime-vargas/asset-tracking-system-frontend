@@ -1,119 +1,181 @@
 <div class="contentPage">
   <app-breadcrumb-component [breadcrumb]="breadcrumb()"></app-breadcrumb-component>
-  <nz-divider></nz-divider>
   <div class="contentBody">
 
     <div nz-row [nzGutter]="[10,10]" >
       <div nz-col nzSpan="24">
         <app-dasboard-box-component>
           <div body nz-flex nzJustify="space-between" nzAlign="center">
-            <h1 nz-typography>{{ hardwareView()?.name}}</h1>
-            <button nz-button nzType="primary"><nz-icon nzType="edit" nzTheme="fill" />Edit Hardware Data</button>
-          </div>
+            <div nz-flex nzVertical>
+              <h1 nz-typography style="margin: 0">{{ hardwareView()?.name}}</h1>
+              <span>Last update: {{hardwareView()?.lastMaintenanceDate}}</span>
+            </div>
+            <div nz-flex nzGap="small">
+              <button nz-button class="form-btn default-btn" nz-dropdown [nzDropdownMenu]="downloadMenu" nzPlacement="bottomLeft">Download <nz-icon nzType="download" nzTheme="outline" /></button>
+              <button nz-button class="form-btn primary-btn" nzType="primary" (click)="openEditSideBar()"><nz-icon nzType="edit" nzTheme="fill" />Edit Hardware Data</button>
+              <button nz-button class="form-btn primary-btn" nzType="primary" (click)="openNewReportSideBar()">New Report</button>
+            </div>
+           </div>
         </app-dasboard-box-component>
       </div>
 
       <div nz-col nzSpan="14">
-      <!-- GLOBAL HARDWARE DETAILS -->
-        <app-dasboard-box-component [flex]="true" [boxTitle]="'Hardware Information'" >
-          <div body nz-flex nzVertical nzGap="small" >
-            <div nz-row nzAlign="top" style="padding-top: 25px" >
-
-              <!-- PHOTO SECTION -->
-              <div nz-col nzFlex="0 0 200px">
-                <div nz-flex nzVertical nzAlign="center" nzJustify="center" nzGap="small" style="height: 100%">
-                  @for (photo of hardwareView()?.hardwarePhotos; track photo.label){
-                    <div><img nz-image [nzSrc]="photo.filepath"  [nzFallback]="photo.default" width="150" height="150" alt="hardware photo" class="shadow" style="border-radius: 10px"></div>
-                    <span class="imageTitle">{{photo.label}} <button nz-button nzType="text" (click)="showUploadModal(photo.photoType)">
-                    <nz-icon nzType="edit" nzTheme="outline" />
-                    </button></span>
-
-                    <!-- UPLOAD MODAL -->
-                    <nz-modal [nzVisible]="uploadVisible()"
-                              (nzOnCancel)="showUploadModal(null)"
-                    [nzContent]="modalTpl"
-                    [nzFooter]="null">
-
-                    </nz-modal>
-                    <ng-template #modalTpl>
-                      <nz-upload
-                        nzType="drag"
-                        [nzAccept]="'image/*'"
-                        [nzMultiple]="false"
-                        [nzName]="'file'"
-                        [nzShowUploadList]="false"
-                        [nzAction]="uploadUrl()"
-                        (nzChange)="onUploadChange($event)"
-                      >
-                        <div nz-flex nzAlign="center" nzJustify="center" nzVertical style="height: 400px">
-                          <p class="ant-upload-drag-icon" >
-                            <nz-icon nzType="inbox" />
-                          </p>
-                          <p class="ant-upload-text">Click or drag file to this area to upload</p>
-                        </div>
-                      </nz-upload>
-                      <div nz-flex nzJustify="center">
-                        <span style="font-size: 1rem; font-weight: bold">Upload Image</span>
-                      </div>
-                    </ng-template>
-                  }
+        <div nz-row [nzGutter]="[10,10]">
+          <div nz-col nzSpan="12">
+            <app-dasboard-box-component>
+              <div body>
+                <div nz-flex nzGap="middle" nzAlign="center">
+                  <img [src]="activeReports() > 0 ? './icons/warning.png' : './icons/check.png' " width="35" height="35">
+                  <div>
+                    <h2 nz-typography style="margin: 0;">{{selectedHardwareDetail()?.activeReportsCount}}</h2>
+                    <h4 style="margin: 0;">Active reports</h4>
+                  </div>
                 </div>
               </div>
-
-              <!-- DIVIDER -->
-              <div nz-col nzFlex="20px" style="height: 500px;">
-                <nz-divider nzType="vertical" style="height: 100%;" ></nz-divider>
+            </app-dasboard-box-component>
+          </div>
+          <div nz-col nzSpan="12">
+            <app-dasboard-box-component>
+              <div body >
+                <div nz-flex nzGap="middle" nzAlign="center">
+                  <img [src]="overdueReports() > 0 ? './icons/warning.png' : './icons/check.png' " width="35" height="35">
+                  <div >
+                    <h2 nz-typography style="margin: 0;">
+                      {{selectedHardwareDetail()?.overdueReportsCount}}</h2>
+                    <h4 style="margin: 0;">Overdue reports</h4>
+                  </div>
+                </div>
               </div>
+            </app-dasboard-box-component>
+          </div>
+        </div>
 
-              <!-- HARDWARE INFO SECTION -->
-              <div nz-col nzSpan="10">
-                <!-- GLOBAL INFO -->
-                @for (detail of hardwareView()?.hardwareGlobalDetails; track detail.label){
-                  <div nz-row>
-                    <div nz-col nzSpan="10">
-                      <span class="label">{{ detail.label }}</span>
-                    </div>
-                    <div nz-col nzSpan="14">
-                      <strong class="hInfo">{{ detail.value }}</strong>
-                    </div>
+
+        <div nz-col nzSpan="24">
+          <!-- GLOBAL HARDWARE DETAILS -->
+          <app-dasboard-box-component [flex]="true">
+            <div body nz-flex nzVertical nzGap="small" >
+              <div nz-row>
+                <h3 nz-typography>Hardware Information</h3>
+              </div>
+              <div nz-row nzAlign="top" style="padding-top: 15px" >
+
+                <!-- PHOTO SECTION -->
+                <div nz-col nzFlex="0 0 180px">
+                  <div nz-flex nzVertical nzAlign="center" nzJustify="center" nzGap="small">
+
+                    @for (photo of hardwareView()?.hardwarePhotos; track photo.label){
+                      <div style="width: 150px; height:150px">
+                        <!-- UPLOAD MODAL -->
+                        <app-upload-drag-and-drop-component
+                          [currentPhoto]="photo.filepath"
+                          [fallbackImage]="fallbackCameraImage"
+                          [uploadUrl]="photo.link"
+                          (uploadSuccess)="uploadSuccess($event)">
+                        </app-upload-drag-and-drop-component>
+                      </div>
+                      <div>
+                        <span class="imageTitle">{{photo.label}}</span>
+                        @if (photo.filepath){
+                          <!-- UPLOAD BUTTON MODAL -->
+                          <app-upload-button-component
+                            [uploadUrl]="photo.link"
+                            (manualUpload)="uploadCameraPhoto(photo.photoType, $event)">
+                            <div body>
+                              <button nz-button nzType="text">
+                                <nz-icon nzType="edit" nzTheme="outline" />
+                              </button>
+                            </div>
+                          </app-upload-button-component>
+                        }
+                      </div>
+                    }
                   </div>
-                  <div nz-row>
-                    <div nz-col nzSpan="24">
-                      <nz-divider nzSize="small"></nz-divider>
+                </div>
+
+                <!-- HARDWARE INFO SECTION -->
+                <div nz-col nzFlex="1 0 350px">
+                  <!-- GLOBAL INFO -->
+                  <app-dashboard-card-component>
+                    <div body>
+                      <div nz-row nzGutter="10">
+                        <div nz-col [nzMd]="{span: 24}" [nzXXl]="{span: 11}" >
+                          @for (detail of hardwareView()?.hardwareGlobalDetails; track detail.label){
+                            <div nz-row>
+                              <div nz-col nzSpan="10">
+                                <span class="label">{{ detail.label }}</span>
+                              </div>
+                              <div nz-col nzSpan="14">
+                                <strong class="hInfo">{{ detail.value }}</strong>
+                              </div>
+                            </div>
+                            <div nz-row>
+                              <div nz-col nzSpan="24">
+                                <nz-divider nzSize="small"></nz-divider>
+                              </div>
+                            </div>
+                          }
+                        </div>
+
+                        <div style="border: 1px #E5E7EEFF solid; margin: 0 5px">
+                        </div>
+
+                        <div nz-col [nzMd]="{span: 24}" [nzXXl]="{span: 11}"  >
+                          <!-- SPECIFIC INFO -->
+
+
+
+
+                          @for (hInfo of hardwareView()?.hardwareInfo; track hInfo.label){
+                            <div nz-row>
+                              <div nz-col nzSpan="10">
+                                <span class="label">{{ hInfo.label }}</span>
+                              </div>
+
+                              <div nz-col nzSpan="14">
+                                @switch (hInfo.label){
+
+                                  @case ('Password'){
+                                    <div>
+                                      {{ showPassword() ? hInfo.value : '••••••••••••' }}
+                                      <button nz-button nzType="text" (click)="showPassword.set(!showPassword())">
+                                        <nz-icon [nzType]="showPassword() ? 'eye-invisible' : 'eye'" />
+                                      </button>
+                                    </div>
+                                  }
+                                  @default {
+                                    <strong class="hInfo">{{hInfo.value}}</strong>
+                                  }
+                                }
+                              </div>
+
+                            </div>
+                            <div nz-row>
+                              <div nz-col nzSpan="24">
+                                <nz-divider nzSize="small"></nz-divider>
+                              </div>
+                            </div>
+                          }
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                }
-                <!-- SPECIFIC INFO -->
-                @for (hInfo of hardwareView()?.hardwareInfo; track hInfo.label){
-                  <div nz-row>
-                    <div nz-col nzSpan="10">
-                      <span class="label">{{ hInfo.label }}</span>
-                    </div>
-                    <div nz-col nzSpan="14">
-                      <strong class="hInfo">{{hInfo.value}}</strong>
-                    </div>
-                  </div>
-                  <div nz-row>
-                    <div nz-col nzSpan="24">
-                      <nz-divider nzSize="small"></nz-divider>
-                    </div>
-                  </div>
-                }
+                  </app-dashboard-card-component>
+                </div>
               </div>
             </div>
-          </div>
-        </app-dasboard-box-component>
+          </app-dasboard-box-component>
+        </div>
       </div>
 
       <!-- HISTORY OF REPORTS -->
       <div nz-col nzSpan="10">
-        <app-dasboard-box-component [boxTitle]="'Report History'" [flex]="true">
+        <app-dasboard-box-component [boxTitle]="'Recent reports'" [flex]="true">
           <div body nz-flex nzVertical nzGap="small">
             @if(lastReports()?.length === 0){
               <nz-empty nzNotFoundImage="simple"></nz-empty>
             } @else {
               @for (report of lastReports(); track report.id){
-                <app-dasboard-card-component class="recentReportCard" [routerLink]="['/clients',routeContext.clientId(),routeContext.clientSlug(),
+                <app-dashboard-card-component class="recentReportCard" [routerLink]="['/clients',routeContext.clientId(),routeContext.clientSlug(),
                 'branches',routeContext.branchId(),routeContext.branchSlug(),
                 'hardware',routeContext.hardwareId(),routeContext.hardwareSlug(),
                 'reports',report.id]">
@@ -134,13 +196,13 @@
                         </div>
                       </div>
                       <div nz-col nzSpan="24">
-                        <span>Technician: <strong>{{report.reportedBy}}</strong> </span>
+                        <span>Reported by: <strong>{{report.reportedBy}}</strong> </span>
                       </div>
                     </div>
                   </div>
-                </app-dasboard-card-component>
+                </app-dashboard-card-component>
               }
-              <button nz-button nzBlock [routerLink]="['/clients',routeContext.clientId(), routeContext.clientSlug(),
+              <button nz-button class="form-btn default-btn" [routerLink]="['/clients',routeContext.clientId(), routeContext.clientSlug(),
                         'branches',routeContext.branchId(), routeContext.branchSlug(),
                         'hardware', routeContext.hardwareId(), routeContext.hardwareSlug(),'reports']" > View All Reports </button>
             }
@@ -150,3 +212,29 @@
     </div>
   </div>
 </div>
+
+<nz-dropdown-menu #downloadMenu="nzDropdownMenu">
+  <ul nz-menu>
+    <li nz-menu-item (click)="hardwareStore.getPhotoReportByCameraId()">Photo report</li>
+    <li nz-menu-item (click)="hardwareStore.getTechnicalMemoryByBranchId()">Technical memory</li>
+    <li nz-menu-item (click)="hardwareStore.getQrCodesByBranchId()">QR codes</li>
+  </ul>
+</nz-dropdown-menu>
+
+<!-- SIDEBAR COMPONENT -->
+@if(openSidebar()){
+  <app-edit-side-bar>
+    <div body>
+      @switch (sidebarContent()){
+        @case ("cameraForm"){
+          <app-camera-form></app-camera-form>
+        }
+        @case ("reportForm"){
+          <app-report-form></app-report-form>
+        }
+      }
+    </div>
+  </app-edit-side-bar>
+}
+<!-- /SIDEBAR COMPONENT -->
+

@@ -1,13 +1,12 @@
-import {Component, computed, inject, OnInit, signal} from '@angular/core';
+import {Component, computed, effect, inject, OnInit, signal} from '@angular/core';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
-import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';
+import {DashboardBoxComponent} from '../../components/dasboard-box-component/dashboard-box.component';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
 import {NzEmptyComponent} from 'ng-zorro-antd/empty';
-import {DasboardCardComponent} from '../../components/dasboard-card-component/dasboard-card-component';
-import {HardwareService} from '../../services/hardware.service'
+import {DashboardCardComponent} from '../../components/dashboard-card-component/dashboard-card-component';
 import {NzImageModule } from 'ng-zorro-antd/image';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {RouteContextService} from '../../services/route-context.service';
@@ -16,53 +15,79 @@ import {UtilityService} from '../../services/utility.service';
 import {HardwareUnion} from '../../interfaces/hardware/hardware-union';
 import {DoubleStatusTagComponent} from '../../components/double-status-tag-component/double-status-tag-component';
 import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
-import {NzModalComponent, NzModalService, NzModalModule} from 'ng-zorro-antd/modal';
-import {NzUploadChangeParam, NzUploadComponent, NzUploadFile} from 'ng-zorro-antd/upload';
+import {NzModalModule} from 'ng-zorro-antd/modal';
 import {ApiUrlBaseService} from '../../services/api-url-base.service';
-import {NzMessageService} from 'ng-zorro-antd/message';
-import {NzNotificationService} from 'ng-zorro-antd/notification';
 import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcrumb-component';
+import {NzDropdownDirective, NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
+import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
+import {HardwareStore} from '../../store/hardware.store';
+import {UploadButtonComponent} from '../../components/upload-button-component/upload-button-component';
+import {UploadComponent} from '../../components/upload-drag-and-drop-component/upload-component';
+import {EditSideBar} from '../../components/edit-side-bar/edit-side-bar';
+import {CameraForm} from '../../components/forms/camera-form/camera-form.component';
+import {SidebarStore} from '../../store/sidebar.store';
+import {ReportForm} from '../../components/forms/report-form/report-form';
+import {ReportStore} from '../../store/report.store';
 
 @Component({
   selector: 'app-hardware-device-page',
   imports: [
     NzDividerComponent,
     NzTypographyComponent,
-    DasboardBoxComponent,
+    DashboardBoxComponent,
     NzButtonComponent,
     NzIconDirective,
     NzFlexDirective,
     NzEmptyComponent,
-    DasboardCardComponent,
+    DashboardCardComponent,
     RouterLink,
     NzImageModule,
     NzRowDirective,
     NzColDirective,
     DoubleStatusTagComponent,
     PriorityTagsComponent,
-    NzModalComponent,
     NzModalModule,
-    NzUploadComponent,
-    BreadcrumbComponent
+    BreadcrumbComponent,
+    NzDropdownDirective,
+    NzDropdownMenuComponent,
+    NzMenuDirective,
+    NzMenuItemComponent,
+    UploadButtonComponent,
+    UploadComponent,
+    EditSideBar,
+    CameraForm,
+    ReportForm
   ],
   templateUrl: './hardware-device-page.html',
   styleUrl: './hardware-device-page.css'
 })
 
-export class HardwareDevicePage {
+export class HardwareDevicePage implements OnInit {
 
+  apiUrlBaseService = inject(ApiUrlBaseService);
+
+  hardwareStore = inject(HardwareStore);
+  reportStore = inject(ReportStore);
   route: ActivatedRoute = inject(ActivatedRoute);
-  routeContext = inject(RouteContextService)
-  constructor(protected apiUrlBaseService: ApiUrlBaseService,
-              private hardwareService: HardwareService,
-              private utilityService: UtilityService,
-              private modal: NzModalService,
-              private message: NzMessageService,
-              private notification: NzNotificationService) {
-    this.routeContext.setFromRoute(this.route);
-    this.getHardwareDetail();
-  }
-  // BREADCRUMB
+  routeContext = inject(RouteContextService);
+  sidebarStore = inject(SidebarStore);
+  utilityService = inject(UtilityService);
+
+  // Store
+  openSidebar = this.sidebarStore.isOpen;
+  selectedHardwareId = this.hardwareStore.selectedHardwareId;
+  selectedHardwareDetail = this.hardwareStore.selectedHardwareDetail;
+
+
+  showPassword = signal<boolean>(false);
+
+  // Static
+  fallbackCameraImage: string = '/defaultCamera.webp';
+
+  //SidebarContent
+  sidebarContent = signal<'reportForm'|'cameraForm'>('cameraForm');
+
+  // Computed
   breadcrumb = computed<{label:string | null, link?:(string|number|null)[]}[]>(() =>
     [{label: 'Clients',
       link: ['/clients']},
@@ -73,73 +98,70 @@ export class HardwareDevicePage {
       {label: this.routeContext.hardwareSlug()}
     ]);
 
+  activeReports = computed(() =>
+  {
+    const active = this.selectedHardwareDetail();
+    if (active === null) return 0;
+    return active.activeReportsCount
+  })
 
-  defaultCameraImage: string = '/defaultCamera.webp';
-  hardwareDetailData = signal<HardwareUnion | undefined>(undefined);
+  overdueReports = computed(() =>
+  {
+    const active = this.selectedHardwareDetail();
+    if (active === null) return 0;
+    return active.overdueReportsCount
+  })
 
-  // MODAL FOR IMAGES
-  uploadVisible = signal<boolean>(false);
-  showUploadModal(photoType: 'VIEW_FROM_CAMERA' | 'VIEW_TO_CAMERA' | null): void {
-    this.photoType.set(photoType);
-    this.uploadVisible() ? this.uploadVisible.set(false) : this.uploadVisible.set(true);
-  }
-  photoType = signal<'VIEW_FROM_CAMERA' | 'VIEW_TO_CAMERA' | null>(null)
-  replaceExisting = signal<boolean>(false);
-
-  // MODAL FOR REPLACE CONFIRM
-  showReplaceModal(): void {
-    this.modal.confirm({
-      nzTitle: 'A photo already exists',
-      nzContent: '<b style="color: red;">Are you sure you want to replace the photo?</b>',
-      nzOkText: 'Yes',
-      nzOkType: 'primary',
-      nzOnOk: () => this.replaceSubmit(),
-      nzCancelText: 'No',
-      nzOnCancel: () => console.log('Cancel')
+  constructor() {
+    // effect to know if report is saved or edited successfully in this page in order to update report list.
+    effect(() => {
+      const report = this.reportStore.reportHistoryTrigger();
+      if (report === null) return;
+      this.hardwareStore.uploadReportHistoryDtoList(report);
     });
   }
-  replaceSubmit(): void {
-    this.replaceExisting.set(true);
-    const file = this.failedFile();
-    if (!file) return;
-    this.retryUpload(file);
+
+  ngOnInit() {
+    this.routeContext.setFromRoute(this.route);
+    const hardwareId = this.routeContext.hardwareId()
+    if (hardwareId === null) return;
+    this.selectedHardwareId.set(hardwareId);
+    this.hardwareStore.getHardwareDetail(hardwareId);
   }
 
-  uploadUrl():string {
-    return `${this.apiUrlBaseService.baseUrl}/hardware/${this.routeContext.hardwareId()}/camera/photos?photoType=${this.photoType()}&replaceExisting=${this.replaceExisting()}`;
+  uploadSuccess(data: HardwareUnion){
+    this.hardwareStore.uploadSuccess(data);
   }
-  failedFile = signal<File | undefined>(undefined);
-  onUploadChange(event: NzUploadChangeParam): void {
-    let { file} = event;
-    // message error uploading image
-    if (file.status === 'error') {
-      const errorResponse = file.error;
-      const message: string =
-        errorResponse?.error?.message;
-      if (message.includes('FileAlreadyExists')) {
-        this.failedFile.set(file.originFileObj)
-        this.uploadVisible.set(false);
-        this.showReplaceModal()
-      } else {
-        this.uploadVisible.set(false);
-        this.notification.error(
-          'Upload failed',
-          message,
-          { nzDuration: 0 }
-        );
-      }
-    }
-    // message success uploading image
-    if (file.status === 'done') {
-      this.message.success("File uploaded successfully: " + file.name);
-      this.uploadVisible.set(false);
-      this.getHardwareDetail();
-    }
+
+  uploadCameraPhoto(photoType: string, formData: FormData){
+    const selectedCameraId = this.selectedHardwareId()
+    if(selectedCameraId === null) return;
+    this.hardwareStore.uploadCameraPhoto(selectedCameraId, photoType, true, formData).subscribe();
+  }
+
+  openEditSideBar(){
+    this.sidebarContent.set("cameraForm");
+    const selectedCameraId = this.selectedHardwareId()
+    if(selectedCameraId === null) return;
+    this.hardwareStore.getCameraEditData(selectedCameraId);
+    this.hardwareStore.formMode.set("edit");
+    this.openSidebar.set(true);
+  }
+
+  openNewReportSideBar(){
+    this.sidebarContent.set("reportForm");
+    const selectedCameraId = this.selectedHardwareId()
+    if(selectedCameraId === null) return;
+
+    this.reportStore.selectedHardwareId.set(selectedCameraId);
+    this.reportStore.formMode.set("add");
+    this.openSidebar.set(true);
+
   }
 
   // GETTING GLOBAL OBJECT DETAILS
   hardwareView = computed(() => {
-    const hardware = this.hardwareDetailData();
+    const hardware = this.selectedHardwareDetail();
     if (!hardware) return undefined;
     const hardwareGlobalDetails = [
       {label: 'Type', value: hardware.type},
@@ -149,19 +171,20 @@ export class HardwareDevicePage {
       {label: 'Serial Number', value: hardware.serialNumber },
       {label: 'Location', value: hardware.location},
     ];
-    const hardwarePhotos = this.getPhotosDependsOnType(hardware);
+    let hardwarePhotos = this.getPhotosDependsOnType(hardware);
     const hardwareInfo = this.getDataDependsOnType(hardware);
-    const lastMaintenanceDate = {label: 'Last Maintenance Date', value: this.utilityService.isValidDate(hardware.lastMaintenanceDate)};
+    // const lastMaintenanceDate = {label: 'Last Maintenance Date', value: this.utilityService.isValidDate(hardware.lastMaintenanceDate)};
 
     return {...hardware,
       hardwareGlobalDetails,
       hardwarePhotos,
       hardwareInfo,
-      lastMaintenanceDate
+      lastMaintenanceDate: this.utilityService.validLongDate(hardware.lastMaintenanceDate),
       }
   });
+
   // GETTING DETAILS DEPENDING ON HARDWARE TYPE
-  getPhotosDependsOnType(hardware: HardwareUnion):{label: string, filepath: string, default: string, photoType: 'VIEW_FROM_CAMERA' | 'VIEW_TO_CAMERA' } [] {
+  getPhotosDependsOnType(hardware: HardwareUnion):{label: string, filepath: string | null, default: string, photoType: 'VIEW_FROM_CAMERA' | 'VIEW_TO_CAMERA', link: string} [] {
     switch (hardware.type) {
       case ('Camera'):
         return [
@@ -169,17 +192,19 @@ export class HardwareDevicePage {
             label: 'View from Camera',
             filepath: hardware.viewFromCameraPhoto?.filePath
               ? this.apiUrlBaseService.imageBaseUrl + hardware.viewFromCameraPhoto.filePath
-              : this.defaultCameraImage,
-            default: this.defaultCameraImage,
-            photoType: "VIEW_FROM_CAMERA"
+              : null,
+            default: this.fallbackCameraImage,
+            photoType: "VIEW_FROM_CAMERA",
+            link: this.hardwareStore.getHardwarePhotoUrl(this.hardwareStore.selectedHardwareId()?? 0,"VIEW_FROM_CAMERA")
           },
           {
             label: 'View to Camera',
             filepath: hardware.viewToCameraPhoto?.filePath
               ? this.apiUrlBaseService.imageBaseUrl + hardware.viewToCameraPhoto.filePath
-              : this.defaultCameraImage,
-            default: this.defaultCameraImage,
-            photoType: "VIEW_TO_CAMERA"
+              : null,
+            default: this.fallbackCameraImage,
+            photoType: "VIEW_TO_CAMERA",
+            link: this.hardwareStore.getHardwarePhotoUrl(this.hardwareStore.selectedHardwareId()?? 0,"VIEW_TO_CAMERA")
           } ]
       default: return []
     }
@@ -209,37 +234,4 @@ export class HardwareDevicePage {
       }
     })
   });
-
-  hardwareId = computed(() =>
-    this.routeContext.hardwareId() ?? 0);
-  getHardwareDetail(){
-    return this.hardwareService.getHardwareDetail(this.hardwareId()).subscribe({
-      next: data => {
-          return this.hardwareDetailData.set(data);
-      }
-    })
-  }
-
-  retryUpload(file:File): void {
-    const formData = new FormData();
-    formData.append('file', file as any);
-
-    this.apiUrlBaseService.post(`hardware/${this.routeContext.hardwareId()}/camera/photos?photoType=${this.photoType()}&replaceExisting=${this.replaceExisting()}`, formData).subscribe({
-      next: () => {
-        this.message.success('File replaced successfully');
-        this.getHardwareDetail();
-        this.replaceExisting.set(false);
-        this.failedFile.set(undefined);
-      },
-      error: (err) => {
-        this.replaceExisting.set(false);
-        this.failedFile.set(undefined);
-        this.notification.error(
-          'Upload failed',
-          err?.error.message,
-          { nzDuration: 0 }
-        );
-      }
-    });
-  }
 }
