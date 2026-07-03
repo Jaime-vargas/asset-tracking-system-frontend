@@ -1,6 +1,6 @@
-import {Component, computed, ElementRef, OnInit, signal, ViewChild} from '@angular/core';
+import {Component, computed, ElementRef, inject, OnInit, signal, ViewChild} from '@angular/core';
 import {NzDividerComponent} from "ng-zorro-antd/divider";
-import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';
+import {DashboardBoxComponent} from '../../components/dasboard-box-component/dashboard-box.component';
 import {ClientService} from '../../services/client.service';
 import {ClientTableDto} from '../../interfaces/client-table.dto';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
@@ -19,12 +19,11 @@ import {SidebarStore} from '../../store/sidebar.store';
 import {FormsModule} from '@angular/forms';
 import {ClientStore} from '../../store/client.store';
 
-
 @Component({
   selector: 'app-clients-page',
   imports: [
     NzDividerComponent,
-    DasboardBoxComponent,
+    DashboardBoxComponent,
     NzButtonComponent,
     NzIconDirective,
     NzInputModule,
@@ -43,26 +42,30 @@ import {ClientStore} from '../../store/client.store';
   styleUrl: './clients-page.css',
 })
 export class ClientsPage implements OnInit {
-  constructor(private clientService: ClientService,
-              protected utilityService: UtilityService,
-              protected tableClientService: TableClientService,
-              protected clientStore: ClientStore,
-              protected sidebarStore: SidebarStore) {
-    this.getClients();
-  }
 
-  ngOnInit() {
-    this.sidebarStore.isOpen$.subscribe(isOpen => {
-      this.isOpenSidebar.set(isOpen);
-    });
-    this.sidebarStore.refreshTable$.subscribe(()=>{
-      this.getClients();
-    });
-  }
-  isOpenSidebar = signal<boolean>(false);
-  clientsData = signal<ClientTableDto[] >([]);
+  private clientStore = inject(ClientStore);
+  private sidebarStore = inject(SidebarStore);
+  protected tableClientService = inject(TableClientService);
+  private utilityService = inject(UtilityService);
 
-  // TABLE DATA
+  // Sidebar
+  openSideBar = this.sidebarStore.isOpen;
+
+  // Client Store
+  private selectedClient = this.clientStore.selectedClient;
+  private clientList = this.clientStore.clientList;
+  private formMode = this.clientStore.formMode;
+
+  // Filters
+  clientNameFilter = signal<string>('');
+
+  // Computed variables
+  filteredClients = computed(() => {
+    return this.clientList().filter(client => {
+      return client.name.toLowerCase().includes(this.clientNameFilter().toLowerCase());
+    })
+  })
+
   tableData= computed<TableData[]>(()=> {
     return this.filteredClients().map((client: ClientTableDto) => {
       return {
@@ -74,32 +77,19 @@ export class ClientsPage implements OnInit {
     })
   });
 
-  // DATA FILTER
-  clientNameFilter = signal<string>('');
-  filteredClients = computed(() => {
-    return this.clientsData().filter(client => {
-      return client.name.toLowerCase().includes(this.clientNameFilter().toLowerCase());
-    })
-  })
-
-  openNewSidebar (){
-    this.sidebarStore.setSelectedEntity(undefined)
-    this.sidebarStore.setMode("add");
-    this.sidebarStore.open();
+  ngOnInit() {
+    this.clientStore.loadClients();
   }
 
   openEditSidebar(client: ClientTableDto) {
-    this.sidebarStore.setSelectedEntity(client);
-    this.sidebarStore.setMode("edit");
-    this.sidebarStore.open();
+    this.selectedClient.set(client);
+    this.formMode.set("edit");
+    this.openSideBar.set(true);
   }
 
-  getClients() {
-    this.clientService.getClients().subscribe({
-      next: data => {
-        this.clientStore.setClientList(data)
-        this.clientsData.set(data);
-      }
-    })
+  openNewSidebar(){
+    this.selectedClient.set(null);
+    this.formMode.set("add");
+    this.openSideBar.set(true);
   }
 }

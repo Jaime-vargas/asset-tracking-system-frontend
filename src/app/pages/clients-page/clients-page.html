@@ -1,18 +1,5 @@
-
 <div class="contentPage">
   <h2 nz-typography>Clients</h2>
-
-  <nz-divider></nz-divider>
-  <!-- SIDEBAR COMPONENT -->
-  @if(isOpenSidebar()){
-    <app-edit-side-bar>
-      <div body>
-        <app-client-form></app-client-form>
-      </div>
-    </app-edit-side-bar>
-  }
-  <!-- /SIDEBAR COMPONENT -->
-
 
   <div class="contentBody">
     <div nz-row [nzGutter]="[10,10]">
@@ -25,12 +12,14 @@
               <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
               <input nz-input [ngModel]="clientNameFilter()" (ngModelChange)="clientNameFilter.set($event)" placeholder=" Search clients..." />
             </nz-input-wrapper>
+            <!-- /SEARCH SECTION -->
+
             <button  nz-button class="form-btn primary-btn" nzType="primary" (click)="openNewSidebar()"><nz-icon nzType="plus" nzTheme="outline"/>Add Client</button>
+
           </div>
         </app-dasboard-box-component>
-        <!-- /SEARCH SECTION -->
-      </div>
 
+      </div>
 
       <!-- TABLE COMPONENT -->
       <div nz-col nzSpan="24">
@@ -45,3 +34,13 @@
     </div>
   </div>
 </div>
+
+<!-- SIDEBAR COMPONENT -->
+@if(openSideBar()){
+  <app-edit-side-bar>
+    <div body>
+      <app-client-form></app-client-form>
+    </div>
+  </app-edit-side-bar>
+}
+<!-- /SIDEBAR COMPONENT -->
