@@ -41,25 +41,38 @@ import {CameraForm} from '../../components/forms/camera-form/camera-form.compone
     NzDropdownMenuComponent,
     NzFlexDirective,
     NzMenuDirective,
-    NzMenuItemComponent
+    NzMenuItemComponent,
+    EditSideBar,
+    CameraForm
   ],
   templateUrl: './branch-hardware-page.html',
   styleUrl: './branch-hardware-page.css',
 })
-export class BranchHardwarePage {
+export class BranchHardwarePage implements OnInit {
 
-  route: ActivatedRoute = inject(ActivatedRoute);
-  routeContext = inject(RouteContextService)
+  protected hardwareStore = inject(HardwareStore);
+  private route: ActivatedRoute = inject(ActivatedRoute);
+  private routeContext = inject(RouteContextService);
+  private sidebarStore = inject(SidebarStore);
+  protected tableBranchHardwareService = inject(TableColumnsBranchHardwareService);
+  private utilityService = inject(UtilityService);
 
-  constructor(private branchService: BranchService,
-              protected utilityService: UtilityService,
-              protected tableBranchHardwareService: TableColumnsBranchHardwareService) {
-    this.routeContext.setFromRoute(this.route);
-    this.getHardwareDataByBranchId(this.branchId());
-  }
-  hardwareData = signal<HardwareTableDto[]>([]);
+  // Sidebar
+  openSideBar = this.sidebarStore.isOpen;
 
-  // BREADCRUMB
+  selectedHardware = this.hardwareStore.selectedHardware;
+  hardwareList = this.hardwareStore.hardwareList;
+  formMode = this.hardwareStore.formMode;
+
+  // Filters
+  typeFilter = signal<string>("");
+  nameFilter = signal<string>("");
+  modelFilter = signal<string>("");
+  serialNumberFilter = signal<string>("");
+  locationFilter = signal<string>("");
+  lastMaintenanceFilter = signal<string>("");
+
+  // Computed variables
   breadcrumb = computed<{label:string | null, link?:(string|number|null)[]}[]>(() =>
     [{label: 'Clients',
       link: ['/clients']},
@@ -68,31 +81,8 @@ export class BranchHardwarePage {
       {label: this.routeContext.branchSlug()}
     ]);
 
-  // TABLE DATA
-  tableData = computed<TableData[]>(() => {
-      return this.filteredHardware().map(hardware => {
-        return {
-          ...hardware,
-          actions: [
-            {label: 'View', type: 'link', link:['/clients',this.routeContext.clientId(), this.routeContext.clientSlug(),
-                'branches',this.routeContext.branchId(),this.routeContext.branchSlug(),
-                'hardware',hardware.id,this.utilityService.slugify(hardware.name)]},
-          ]
-        }
-      })
-  });
-
-
-  // TABLE INPUT FILTERS
-  typeFilter = signal<string>("");
-  nameFilter = signal<string>("");
-  modelFilter = signal<string>("");
-  serialNumberFilter = signal<string>("");
-  locationFilter = signal<string>("");
-  lastMaintenanceFilter = signal<string>("");
-  // TABLE FILTER
   filteredHardware = computed(() => {
-    return this.hardwareData().filter(hardware => {
+    return this.hardwareList().filter(hardware => {
       return (
         hardware.type.toLowerCase().includes(this.typeFilter().toLowerCase()) &&
         hardware.name.toLowerCase().includes(this.nameFilter().toLowerCase()) &&
@@ -104,42 +94,36 @@ export class BranchHardwarePage {
     });
   });
 
-  clientId = computed(() =>
-    this.routeContext.clientId() ?? 0);
-  branchId = computed(() =>
-    this.routeContext.branchId() ?? 0);
+  tableData = computed<TableData[]>(() => {
+    return this.filteredHardware().map(hardware => {
+      return {
+        ...hardware,
+        lastMaintenanceDate: this.utilityService.isValidDate(hardware.lastMaintenanceDate),
+        actions: [
+          {label: 'View', type: 'link', link:['/clients',this.routeContext.clientId(), this.routeContext.clientSlug(),
+              'branches',this.routeContext.branchId(),this.routeContext.branchSlug(),
+              'hardware',hardware.id,this.utilityService.slugify(hardware.name)]},
+          {label: "Edit", type: 'edit', onClick: (hardware: HardwareTableDto)=> this.openEditSidebar(hardware)},
+        ]
+      }
+    })
+  });
 
-  getPhotoReport(){
-    return this.branchService.getPhotoReport(this.branchId()).subscribe({
-      next: (blob: Blob) => {
-        const fileURL = URL.createObjectURL(blob);
-        window.open(fileURL, '_blank');
-      }
-    })
-  }
-  getTechnicalMemory(){
-    return this.branchService.getTechnicalMemory(this.branchId()).subscribe({
-      next: (blob: Blob) => {
-        const fileURL = URL.createObjectURL(blob);
-        window.open(fileURL, '_blank');
-      }
-    })
-  }
-  getQrCodes(){
-    return this.branchService.getQrCodes(this.branchId()).subscribe({
-      next: (blob: Blob) => {
-        const fileURL = URL.createObjectURL(blob);
-        window.open(fileURL, '_blank');
-      }
-    })
+  ngOnInit() {
+    this.routeContext.setFromRoute(this.route);
+    this.hardwareStore.currentBranchId.set(this.routeContext.branchId());
+    this.hardwareStore.loadHardware();
   }
 
-  getHardwareDataByBranchId(branchId : number) {
-    this.branchService.getHardwareTableFromBranch(branchId).subscribe({
-      next: (data) => {
-        this.hardwareData.set(data);
-      }
-    })
+  openEditSidebar(hardware: HardwareTableDto){
+    this.hardwareStore.getCameraEditData(hardware.id);
+    this.formMode.set("edit");
+    this.openSideBar.set(true);
   }
 
+  openNewSidebar(){
+    this.selectedHardware.set(null);
+    this.formMode.set("add");
+    this.openSideBar.set(true);
+  }
 }
