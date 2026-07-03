@@ -74,7 +74,7 @@ export class TableColumnsBranchHardwareService {
       label:'Last Update',
       colWidth:200,
       fixed: null,
-      type:'string',
+      type:'date',
       sortOrder: null,
       sortFn: createSortFn('lastMaintenanceDate',"string"),
       sortDirections: ['ascend', 'descend', null]

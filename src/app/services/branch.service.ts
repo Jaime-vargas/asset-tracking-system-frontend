@@ -1,26 +1,23 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {ApiUrlBaseService} from './api-url-base.service';
 import {Observable} from 'rxjs';
 import {HardwareTableDto} from '../interfaces/hardware/hardware-table.dto';
+import {BranchTableDto} from '../interfaces/branch-table.dto';
 
 @Injectable({providedIn: 'root'})
 export class BranchService {
-  constructor(private api: ApiUrlBaseService) {
+
+  private api = inject(ApiUrlBaseService);
+
+  getBranches(clientId:number):Observable<BranchTableDto[]>{
+    return this.api.get(`clients/${clientId}/branches`);
   }
 
-  getHardwareTableFromBranch(branchId:number): Observable<HardwareTableDto[]>{
-    return this.api.get(`branches/${branchId}/hardware`);
+  addBranch(clientId:number, branch: any):Observable<BranchTableDto>{
+    return this.api.post(`clients/${clientId}/branches`, branch);
   }
 
-  getPhotoReport(branchID:number): Observable<Blob>{
-    return this.api.getMultipart(`${branchID}/photoReport`);
-  }
-
-  getTechnicalMemory(branchID:number): Observable<Blob>{
-    return this.api.getMultipart(`${branchID}/technicalMemory`);
-  }
-
-  getQrCodes(branchID:number):Observable<Blob>{
-    return this.api.getMultipart(`jwt/qr/pdf/${branchID}`);
+  editBranch(branchid: number, branch: any):Observable<BranchTableDto>{
+    return this.api.put(`branches/${branchid}`, branch);
   }
 }
