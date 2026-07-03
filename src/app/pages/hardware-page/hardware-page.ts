@@ -1,7 +1,7 @@
 import {Component, computed, signal} from '@angular/core';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
-import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';
+import {DashboardBoxComponent} from '../../components/dasboard-box-component/dashboard-box.component';
 import {FormsModule} from '@angular/forms';
 import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
@@ -28,7 +28,7 @@ import {TableData} from '../../interfaces/table/table-data';
   imports: [
     NzButtonComponent,
     NzDividerComponent,
-    DasboardBoxComponent,
+    DashboardBoxComponent,
     FormsModule,
     NzEmptyComponent,
     NzIconDirective,
@@ -89,6 +89,7 @@ export class HardwarePage {
     new Set(this.hardwareData().map((hardware) =>
     hardware.type))
   );
+
   clientFilter = signal<string>("");
   branchFilter = signal("");
   typeFilter = signal<string>("");

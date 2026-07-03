@@ -2,7 +2,7 @@ import {Component, computed, inject, signal} from '@angular/core';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {RouteContextService} from '../../services/route-context.service';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
-import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';
+import {DashboardBoxComponent} from '../../components/dasboard-box-component/dashboard-box.component';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {HardwareService} from '../../services/hardware.service';
 import {ReportTableDto} from '../../interfaces/report/report-table.dto';
@@ -20,7 +20,7 @@ import {TableColumnsHardwareReportsService} from '../../services/table-columns-s
   selector: 'app-hardware-reports-page',
   imports: [
     NzButtonComponent,
-    DasboardBoxComponent,
+    DashboardBoxComponent,
     NzDividerComponent,
     NzRowDirective,
     NzColDirective,
