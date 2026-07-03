@@ -1,4 +1,4 @@
-import {Component, computed, inject, signal, TemplateRef, ViewChild} from '@angular/core';
+import {Component, computed, effect, inject, OnInit, signal, TemplateRef, ViewChild} from '@angular/core';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {ActivatedRoute} from '@angular/router';
@@ -6,7 +6,7 @@ import {RouteContextService} from '../../services/route-context.service';
 import {ReportsService} from '../../services/report.service';
 import {ReportDetailDto} from '../../interfaces/report/report-detail.dto';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
-import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';
+import {DashboardBoxComponent} from '../../components/dasboard-box-component/dashboard-box.component';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
@@ -30,6 +30,14 @@ import {NzPopconfirmDirective} from 'ng-zorro-antd/popconfirm';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import {NzNotificationService} from 'ng-zorro-antd/notification';
 import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcrumb-component';
+import {ReportStore} from '../../store/report.store';
+import {finalize} from 'rxjs';
+import {CommentStore} from '../../store/comment.store';
+import {CommentDto} from '../../interfaces/comment.dto';
+import {SidebarStore} from '../../store/sidebar.store';
+import {ClientForm} from '../../components/forms/client-form/client-form';
+import {EditSideBar} from '../../components/edit-side-bar/edit-side-bar';
+import {ReportForm} from '../../components/forms/report-form/report-form';
 
 
 @Component({
@@ -38,7 +46,7 @@ import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcr
     NzButtonComponent,
     NzDividerComponent,
     NzFlexDirective,
-    DasboardBoxComponent,
+    DashboardBoxComponent,
     NzTypographyComponent,
     NzRowDirective,
     NzColDirective,
@@ -57,31 +65,62 @@ import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcr
     NzUploadComponent,
     NzEmptyComponent,
     NzPopconfirmDirective,
-    BreadcrumbComponent
+    BreadcrumbComponent,
+    ClientForm,
+    EditSideBar,
+    ReportForm
   ],
   templateUrl: './report-detail-page.html',
   styleUrl: './report-detail-page.css',
 })
 
-export class ReportDetailPage {
-
-  route: ActivatedRoute = inject(ActivatedRoute)
-  routeContext = inject(RouteContextService)
+export class ReportDetailPage implements OnInit {
 
   constructor(private apiUrlBaseService: ApiUrlBaseService,
-              private commentService: CommentService,
-              private reportsService: ReportsService,
               private utilityService: UtilityService,
               private message: NzMessageService,
               private notification: NzNotificationService) {
     this.routeContext.setFromRoute(this.route);
-    this.getReportById();
+
+    effect(() => {
+      const comment = this.commentStore.commentSavedTrigger();
+      if (comment === null) return;
+      this.reportStore.updateReportComments(comment);
+    });
   }
+
+  /************************************************************/
+
+  private commentStore = inject(CommentStore);
+  private reportStore = inject(ReportStore);
+  private route: ActivatedRoute = inject(ActivatedRoute);
+  private routeContext = inject(RouteContextService);
+  private sidebarStore = inject(SidebarStore);
+
+  closeButtonLoading = signal<boolean>(false);
+  commentButtonLoading = signal<boolean>(false);
+  openSideBar = this.sidebarStore.isOpen;
+  selectedReport = this.reportStore.selectedReport;
+
+  reportId!: number
+
+  // Computed
+
+
+  ngOnInit() {
+    const reportId = this.routeContext.reportId();
+    if (reportId === null) return;
+    this.reportId = reportId;
+    this.reportStore.getReportDetails(this.reportId);
+  }
+
+  /************************************************************/
 
   @ViewChild('errorTpl', { static: false })
   errorTpl!: TemplateRef<any>;
 
-  // BREADCRUMB
+  // Computed
+  // Breadcrumb
   breadcrumb = computed<{label:string | number | null, link?:(string|number|null)[]}[]>(() =>
     [{label: 'Clients',
       link: ['/clients']},
@@ -93,28 +132,17 @@ export class ReportDetailPage {
         link: ['/clients', this.routeContext.clientId(), this.routeContext.clientSlug(),'branches', this.routeContext.branchId(), this.routeContext.branchSlug(),'hardware', this.routeContext.hardwareId(), this.routeContext.hardwareSlug()]},
       {label: 'Reports',
       link: ['/clients', this.routeContext.clientId(), this.routeContext.clientSlug(),'branches', this.routeContext.branchId(), this.routeContext.branchSlug(),'hardware', this.routeContext.hardwareId(), this.routeContext.hardwareSlug(), 'reports']},
-      {label: this.reportId()}
+      {label: this.routeContext.reportId()}
     ]);
 
-  reportData = signal<ReportDetailDto | undefined>(undefined);
-  reportView = computed(() => {
-    const report = this.reportData();
-    if (!report) return undefined;
-    return {
-      ...report,
-      createdAt: new Date(report.createdAt),
-      updatedAt: new Date(report.updatedAt),
-      closedAt: new Date(report.closedAt),
-      dueDate: new Date(report.dueDate)
-    }
-  });
+
   reportDetailsView = computed(() => {
-    const report = this.reportView();
+    const report = this.selectedReport();
     if (!report) return [];
-    const dueDate = new Date(report.dueDate).toDateString();
-    const createdAt = new Date(report.createdAt).toDateString();
-    const updatedAt = this.utilityService.isValidDate(report.updatedAt.toDateString());
-    const closedAt = this.utilityService.isValidDate(report.closedAt.toDateString());
+    const dueDate = this.utilityService.validLongDate(report.dueDate);
+    const createdAt = this.utilityService.validLongDate(report.createdAt);
+    const updatedAt = this.utilityService.validLongDate(report.updatedAt);
+    const closedAt = this.utilityService.validLongDate(report.closedAt);
     const isClosed = () =>
       report.status ? { label:"Last Update", value: updatedAt} :
         { label:"Closed At", value: closedAt};
@@ -131,7 +159,7 @@ export class ReportDetailPage {
 
   // REPORT PHOTOS
   reportPhotos = computed(() =>{
-    const reportPhotos = this.reportData()?.photos ?? [];
+    const reportPhotos = this.selectedReport()?.photos ?? [];
     return reportPhotos.map(photo => {
       return{
         ...photo,
@@ -140,24 +168,16 @@ export class ReportDetailPage {
     });
   });
 
-  // FORM AND FUNCTIONS FOR COMMENT SECTION
+  // Form for comments
   private fb = inject(NonNullableFormBuilder);
   protected commentForm = this.fb.group({
     text: ['', [Validators.required, Validators.maxLength(255)]]
   });
-  buttonLoading = signal(false);
-  submitComment(){
-    this.buttonLoading.set(true);
-    const comment = this.commentForm.getRawValue();
-    this.postComment(comment);
-    this.buttonLoading.set(false);
-    this.commentForm.reset();
-  }
 
   // FUNCTIONS FOR UPLOADING PHOTOS
   uploadFileList: NzUploadFile[] = [];
   uploadUrl(): string {
-    return `${this.apiUrlBaseService.baseUrl}/reports/${this.reportId()}/photos`;
+    return `${this.apiUrlBaseService.baseUrl}/reports/${this.routeContext.reportId()}/photos`;
   }
   onUploadChange(event: NzUploadChangeParam): void {
     let { file, fileList } = event;
@@ -183,39 +203,35 @@ export class ReportDetailPage {
         });
       }
       this.uploadFileList = [];
-      this.getReportById();
     }
   }
 
-  reportId = computed(()=>{
-    return this.routeContext.reportId() ?? 0
-  });
-
-  // FUNCTIONS TO GET DATA FROM SERVICE LAYER
-  getReportById(){
-    this.reportsService.getReportById(this.reportId()).subscribe({
-      next: data => {
-        this.reportData.set(data);
-      }
-    })
+  /************************************************************/
+  openEditForm(): void {
+    this.reportStore.formMode.set("edit");
+    this.sidebarStore.isOpen.set(true);
   }
 
-  closeReport(reportId: number) {
-    this.reportsService.closeReport(reportId).subscribe({
-      next: () => {
-        this.getReportById();
-        this.message.success('report closed successfully.');
-      }
-    })
+  closeReport() {
+    this.closeButtonLoading.set(true);
+    setTimeout(() => {
+      this.reportStore.closeReport()?.pipe(
+        finalize(() => this.closeButtonLoading.set(false)),
+      ).subscribe();
+    },1000)
   }
 
-  // @ts-ignore
-  postComment(comment: CommentRequestDTO) {
-    this.commentService.postComment(this.reportId(), comment).subscribe({
-      next: () => {
-        this.getReportById();
-        this.message.success('comment posted successfully.');
-      }
-    })
+  submitComment(){
+    this.commentButtonLoading.set(true);
+    const comment = this.commentForm.getRawValue();
+    setTimeout(()=>{
+      this.commentStore.saveComment(this.reportId, comment).pipe(
+        finalize(()=> this.commentButtonLoading.set(false)),
+      ).subscribe({
+        next: () => this.commentForm.reset(),
+      });
+    },1000)
   }
+  /************************************************************/
+
 }

@@ -3,7 +3,7 @@ import {ReportsService} from '../../services/report.service';
 import {ReportTableDto} from '../../interfaces/report/report-table.dto';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
-import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';
+import {DashboardBoxComponent} from '../../components/dasboard-box-component/dashboard-box.component';
 import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
 import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
@@ -26,7 +26,7 @@ import {TableColumnsReportsService} from '../../services/table-columns-service/t
   imports: [
     NzButtonComponent,
     NzDividerComponent,
-    DasboardBoxComponent,
+    DashboardBoxComponent,
     NzEmptyComponent,
     NzTableComponent,
     NzThMeasureDirective,

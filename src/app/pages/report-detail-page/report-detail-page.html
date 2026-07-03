@@ -2,7 +2,7 @@
   <app-breadcrumb-component [breadcrumb]="breadcrumb()"></app-breadcrumb-component>
   <nz-divider></nz-divider>
   <div class="contentBody">
-    @if (reportView(); as report) {
+    @if (selectedReport(); as report) {
       <div nz-row [nzGutter]="[10,10]">
         <div nz-col nzSpan="24">
           <!-- TITLE -->
@@ -14,12 +14,14 @@
               </div>
               <div nz-col nzSpan="8" nz-flex nzGap="small" nzJustify="flex-end">
                 @if (report.status != 'CLOSED'){
-                  <button nz-button nzType="primary">Edit Report</button>
-                  <button nz-button nzType="primary"
+                  <button nz-button class="form-btn" nzType="primary" (click)="openEditForm()">Edit Report</button>
+                  <button nz-button class="form-btn"
+                          nzType="primary"
+                          [nzLoading]="closeButtonLoading()"
                           nz-popconfirm
                           nzPopconfirmTitle="Are you shure you want to close this report?"
                           nzPopconfirmPlacement="bottomRight"
-                          (nzOnConfirm)="closeReport(report.id)"
+                          (nzOnConfirm)="closeReport()"
                           nzDanger>Close Report</button>
                 }
               </div>
@@ -140,7 +142,7 @@
                         <span>{{comment.createdAt | date }}</span>
                       </div>
                       <div>
-                        <p nz-typography>{{comment.text}}</p>
+                        <p nz-typography style="white-space: pre-wrap">{{comment.text}}</p>
                       </div>
                     </div>
                     <nz-divider nzSize="small"></nz-divider>
@@ -164,7 +166,12 @@
                       <textarea nz-input formControlName="text" placeholder="Write a comment" cdkTextareaAutosize maxlength="250"></textarea>
                     </nz-form-control>
                   </nz-form-item>
-                  <button nz-button nzType="primary" type="submit" [disabled]="commentForm.invalid" [nzLoading]="buttonLoading()">Send</button>
+                  <button nz-button
+                          class="form-btn"
+                          nzType="primary"
+                          type="submit"
+                          [disabled]="commentForm.invalid"
+                          [nzLoading]="commentButtonLoading()">Send</button>
                 </form>
               </div>
             }
@@ -175,3 +182,13 @@
     }
   </div>
 </div>
+
+<!-- SIDEBAR COMPONENT -->
+@if(openSideBar()){
+  <app-edit-side-bar>
+    <div body>
+      <app-report-form></app-report-form>
+    </div>
+  </app-edit-side-bar>
+}
+<!-- /SIDEBAR COMPONENT -->
