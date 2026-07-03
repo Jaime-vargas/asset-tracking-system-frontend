@@ -1,10 +1,11 @@
-import {inject, input, output, signal} from '@angular/core';
+import {Directive, inject, input, output, signal} from '@angular/core';
 import {NzMessageService} from 'ng-zorro-antd/message';
 import {NzModalService} from 'ng-zorro-antd/modal';
 import {NzNotificationService} from 'ng-zorro-antd/notification';
 import {NzUploadChangeParam} from 'ng-zorro-antd/upload';
 
-export abstract class BaseUploadService {
+@Directive()
+export abstract class AbstractUploadComponent {
 
   private message = inject(NzMessageService);
   private modal = inject(NzModalService);
@@ -21,7 +22,7 @@ export abstract class BaseUploadService {
   onUploadChange(event: NzUploadChangeParam): void {
     let {file} = event;
     if(file.status === "done") {
-      this.message.success("File uploaded successfully: " + file.name);
+      this.message.success("Photo updated successfully.");
       const response = file.response;
       this.uploadSuccess.emit(response);
     }
