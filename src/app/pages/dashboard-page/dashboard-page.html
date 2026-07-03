@@ -6,11 +6,11 @@
     <!-- TOP CARDS -->
     @for (card of topCardsView(); track card.label){
       <div nz-col nzSpan="6">
-        <app-dasboard-card-component  [cardTitle]="card.label">
+        <app-dashboard-card-component  [cardTitle]="card.label">
           <div body>
             <span class="bold-text" [style.color]="card.color">{{ card.value }}</span>
           </div>
-        </app-dasboard-card-component>
+        </app-dashboard-card-component>
       </div>
     }
     <nz-divider nzSize="small" ></nz-divider>
@@ -62,14 +62,14 @@
           <div nz-row [nzGutter]="[10,10]" >
             @for (client of clients(); track client.id){
               <div nz-col nzSpan="12">
-                <app-dasboard-card-component [cardTitle]="client.name">
+                <app-dashboard-card-component [cardTitle]="client.name">
                   <div body>
                     <button class="form-btn primary-btn" nz-button nzType="primary"
                             [routerLink]="['/clients', client.id, this.utilityService.slugify(client.name)]" >
                       View Branches
                       <nz-icon nzType="right" /></button>
                   </div>
-                </app-dasboard-card-component>
+                </app-dashboard-card-component>
               </div>
             }
           </div>

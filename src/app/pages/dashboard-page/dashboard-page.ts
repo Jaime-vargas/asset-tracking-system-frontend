@@ -1,15 +1,15 @@
 import {Component, computed, signal} from '@angular/core';
-import {DasboardCardComponent} from '../../components/dasboard-card-component/dasboard-card-component';
+import {DashboardCardComponent} from '../../components/dashboard-card-component/dashboard-card-component';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
-import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';
+import {DashboardBoxComponent} from '../../components/dasboard-box-component/dashboard-box.component';
 import {NzCellBreakWordDirective, NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import {NzTagComponent} from 'ng-zorro-antd/tag';
-import {DasboardGreyCardComponent} from '../../components/dasboard-grey-card-component/dasboard-grey-card-component';
+import {DashboardGreyCardComponent} from '../../components/dasboard-grey-card-component/dashboard-grey-card-component';
 import {DashboardService} from '../../services/dashboard.service';
 import {DashboardDataDto} from '../../interfaces/dashboard-data.dto';
 import {Observable} from 'rxjs';
@@ -20,7 +20,7 @@ import {SingleStatusTagsComponent} from '../../components/single-status-tags-com
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [DasboardCardComponent, DasboardGreyCardComponent, DasboardBoxComponent, NzTypographyComponent, NzDividerComponent, NzFlexDirective, NzIconModule, NzTableComponent, NzGridModule, NzButtonComponent, NzThMeasureDirective, NzCellBreakWordDirective, NzTagComponent, DasboardGreyCardComponent, RouterLink, PriorityTagsComponent, SingleStatusTagsComponent],
+  imports: [DashboardCardComponent, DashboardGreyCardComponent, DashboardBoxComponent, NzTypographyComponent, NzDividerComponent, NzFlexDirective, NzIconModule, NzTableComponent, NzGridModule, NzButtonComponent, NzThMeasureDirective, NzCellBreakWordDirective, NzTagComponent, DashboardGreyCardComponent, RouterLink, PriorityTagsComponent, SingleStatusTagsComponent],
   templateUrl: './dashboard-page.html',
   styleUrl: './dashboard-page.css',
 })
