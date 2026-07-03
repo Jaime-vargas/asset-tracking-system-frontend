@@ -82,7 +82,7 @@ export class TableColumnsBranchHardwareService {
     {
       key:'actions',
       label: 'Actions',
-      colWidth: 100,
+      colWidth: 200,
       fixed: null,
       type: 'button',
       sortOrder: null,
