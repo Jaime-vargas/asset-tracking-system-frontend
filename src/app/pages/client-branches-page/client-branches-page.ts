@@ -3,7 +3,7 @@ import {ActivatedRoute, RouterLink} from '@angular/router';
 import {inject} from '@angular/core';
 import {ClientService} from '../../services/client.service';
 import {BranchTableDto} from '../../interfaces/branch-table.dto';
-import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';
+import {DashboardBoxComponent} from '../../components/dasboard-box-component/dashboard-box.component';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
@@ -33,76 +33,60 @@ import {BranchForm} from '../../components/forms/branch-form/branch-form';
 @Component({
   selector: 'app-client-branches-page',
   imports: [
-    DasboardBoxComponent,
+    DashboardBoxComponent,
     NzButtonComponent,
     NzIconDirective,
-    NzTableComponent,
-    NzThMeasureDirective,
     NzDividerComponent,
-    NzEmptyComponent,
     NzFlexDirective,
     FormsModule,
     NzInputDirective,
     NzInputPrefixDirective,
     NzInputWrapperComponent,
-    RouterLink,
-    ReportCountTagsComponent,
     NzRowDirective,
     NzColDirective,
     BreadcrumbComponent,
     TableComponent,
-    NzDropdownDirective,
-    NzDropdownMenuComponent,
-    NzMenuDirective,
-    NzMenuItemComponent,
     EditSideBar,
-    ClientForm,
     BranchForm
   ],
   templateUrl: './client-branches-page.html',
   styleUrl: './client-branches-page.css',
 })
-export class ClientBranchesPage implements OnInit, OnDestroy {
-  route: ActivatedRoute = inject(ActivatedRoute);
-  routeContext = inject(RouteContextService)
-  constructor(private clientService: ClientService,
-              protected utilityService: UtilityService,
-              protected tableClientsBranchesService: TableColumnsClientsBranchesService,
-              private branchStore: BranchStore,
-              private sidebarStore: SidebarStore) {
-    this.routeContext.setFromRoute(this.route);
-    this.getBranches();
-  }
-  subscriptions = new Subscription();
-  ngOnInit(){
-    this.subscriptions.add(
-      this.sidebarStore.isOpen$.subscribe(isOpen => {
-        this.isOpenSidebar.set(isOpen);
-      })
-    );
-    this.subscriptions.add(
-      this.sidebarStore.refreshTable$.subscribe(() => {
-        this.getBranches();
-      })
-    )
-  }
-  ngOnDestroy(){
-    this.subscriptions.unsubscribe();
-  }
+export class ClientBranchesPage implements OnInit {
 
-  isOpenSidebar = signal<boolean>(false);
+  private branchStore = inject(BranchStore);
+  private sidebarStore = inject(SidebarStore);
+  protected tableClientsBranchesService = inject(TableColumnsClientsBranchesService);
+  private utilityService = inject(UtilityService);
+  private route: ActivatedRoute = inject(ActivatedRoute);
+  private routeContext = inject(RouteContextService);
 
-  branchesData = signal<BranchTableDto[]>([]);
+  // Sidebar
+  openSideBar = this.sidebarStore.isOpen;
 
-  // BREADCRUMB
+  // Branch store
+  selectedBranch = this.branchStore.selectedBranch;
+  branchList = this.branchStore.branchList;
+  formMode = this.branchStore.formMode;
+
+  // Filters
+  branchNameFilter = signal<string>('');
+
+  // Computed variables
   breadcrumb = computed<{label:string | null, link?:(string|number|null)[]}[]>(() =>
     [{label: 'Clients',
       link: ['/clients']},
       {label: this.routeContext.clientSlug()}
     ]);
 
-  // TABLE DATA
+  filteredBranches = computed(()=>
+    this.branchList().filter(branch =>
+       branch.name.toLowerCase().includes(this.branchNameFilter().toLowerCase())
+    )
+  );
+
   tableData = computed<TableData[]>(()=>{
+    // Edition
     return this.filteredBranches().map((branch: BranchTableDto) => {
       return {
         ...branch,
@@ -115,26 +99,21 @@ export class ClientBranchesPage implements OnInit, OnDestroy {
     })
   })
 
-  // DATA FILTER
-  branchNameFilter = signal<string>('');
-  filteredBranches = computed(()=> {
-      return this.branchesData().filter(branch => {
-        return branch.name.toLowerCase().includes(this.branchNameFilter().toLowerCase());
-      })
-  })
-
-  openEditSidebar(branch: BranchTableDto) {
-    this.sidebarStore.setSelectedEntity(branch);
-    this.sidebarStore.setMode("edit");
-    this.sidebarStore.open();
+  ngOnInit(){
+    this.routeContext.setFromRoute(this.route);
+    this.branchStore.currentClientId.set(this.routeContext.clientId());
+    this.branchStore.loadBranches();
   }
 
-  clientId = computed(() => this.routeContext.clientId() ?? 0);
-  getBranches() {
-    return this.clientService.getBranches(this.clientId()).subscribe({
-      next: data => {
-        this.branchesData.set(data);
-      }
-    })
+  openEditSidebar(branch: BranchTableDto) {
+    this.selectedBranch.set(branch);
+    this.formMode.set("edit");
+    this.openSideBar.set(true);
+  }
+
+  openNewSidebar(){
+    this.selectedBranch.set(null);
+    this.formMode.set("add");
+    this.openSideBar.set(true);
   }
 }
