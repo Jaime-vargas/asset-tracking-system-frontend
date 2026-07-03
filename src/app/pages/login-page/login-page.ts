@@ -1,5 +1,5 @@
 import {Component, inject, signal} from '@angular/core';
-import {DasboardBoxComponent} from '../../components/dasboard-box-component/dasboard-box-component';
+import {DashboardBoxComponent} from '../../components/dasboard-box-component/dashboard-box.component';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
@@ -12,11 +12,12 @@ import {form} from '@angular/forms/signals';
 import {HttpClient} from '@angular/common/http';
 import {AuthService} from '../../services/auth-service';
 import {Router} from '@angular/router';
+import {LoginResponse} from '../../interfaces/login-response.type';
 
 @Component({
   selector: 'app-login-page',
   imports: [
-    DasboardBoxComponent,
+    DashboardBoxComponent,
     FormsModule,
     NzButtonComponent,
     NzDividerComponent,
@@ -25,7 +26,6 @@ import {Router} from '@angular/router';
     NzFormDirective,
     NzFormItemComponent,
     NzFormLabelComponent,
-    NzIconDirective,
     NzInputDirective,
     ReactiveFormsModule,
     NzTypographyComponent
@@ -44,20 +44,20 @@ export class LoginPage {
 
   private fb: FormBuilder = inject(FormBuilder);
   protected loginForm: FormGroup = this.fb.group({
-    name: ['', Validators.required],
+    username: ['', Validators.required],
     password: ['', Validators.required]
   });
 
   logInFormSubmit(){
     console.log("submit " + this.loginForm.getRawValue().name);
     console.log("password " + this.loginForm.getRawValue().password);
-    this.http.get("http://localhost:3000/jwt?id=5",{
-      responseType: "text",
-    }).subscribe({
+    this.http.post<LoginResponse>("http://localhost:3000/api/v1/login", this.loginForm.getRawValue())
+      .subscribe({
       next: data => {
+
         console.log(data);
-        this.token.set(data);
-        this.service.setToken(data);
+        this.token.set(data.token);
+        this.service.setToken(data.token);
         this.router.navigate(['/dashboard']);
       }
     })
