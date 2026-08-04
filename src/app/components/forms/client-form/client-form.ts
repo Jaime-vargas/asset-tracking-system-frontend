@@ -1,26 +1,19 @@
-import {Component, inject, output, signal, OnInit, computed, effect, OnDestroy} from '@angular/core';
+import {Component, inject, OnInit, computed} from '@angular/core';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {form} from '@angular/forms/signals';
 import {NzInputDirective} from 'ng-zorro-antd/input';
 import {ClientTableDto} from '../../../interfaces/client-table.dto';
-import {withI18nSupport} from '@angular/platform-browser';
-import {ApiUrlBaseService} from '../../../services/api-url-base.service';
 import { NzImageModule } from 'ng-zorro-antd/image';
 import {UploadComponent} from '../../upload-drag-and-drop-component/upload-component';
 import {SidebarStore} from '../../../store/sidebar.store';
-import {ClientService} from '../../../services/client.service';
 import {ClientRequestDto} from '../../../interfaces/client/client-request.dto';
-import {NzMessageService} from 'ng-zorro-antd/message';
-import {NzNotificationService} from 'ng-zorro-antd/notification';
-import {Subscription} from 'rxjs';
 import {ClientStore} from '../../../store/client.store';
 import {UploadButtonComponent} from '../../upload-button-component/upload-button-component';
-import {ClientDto} from '../../../interfaces/client/client.dto';
+
 
 @Component({
   selector: 'app-client-form',

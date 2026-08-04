@@ -1,5 +1,4 @@
-import {Component, computed, effect, inject, OnDestroy, OnInit, signal} from '@angular/core';
-import {BranchService} from '../../../services/branch.service';
+import {Component, computed, inject, OnInit} from '@angular/core';
 import {SidebarStore} from '../../../store/sidebar.store';
 import {BranchStore} from '../../../store/branch.store';
 import {BranchTableDto} from '../../../interfaces/branch-table.dto';
@@ -40,13 +39,13 @@ export class BranchForm implements OnInit {
 
   // Computed variables
   formTitle = computed(() =>
-    this.formMode() === "add" ? "New Branch" : "Update Branch"
+    this.formMode() === "add" ? "New Project" : "Update Project"
   )
 
   ngOnInit() {
     const branch = this.selectedBranch();
     if (branch === null) return;
-    this.fillFieldsFromEntity(branch)
+    this.fillFieldsFromEntity(branch);
   }
 
   // Form

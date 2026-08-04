@@ -3,7 +3,7 @@ import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 
 @Component({
-  selector: 'app-dasboard-box-component',
+  selector: 'app-dashboard-box-component',
   imports: [
     NzDividerComponent,
     NzTypographyComponent,

@@ -5,15 +5,14 @@ import {NzFlexDirective} from 'ng-zorro-antd/flex';
 import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzInputDirective} from 'ng-zorro-antd/input';
-import {FormBuilder, NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
+import {NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {SidebarStore} from '../../../store/sidebar.store';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {HardwareStore} from '../../../store/hardware.store';
 import {CameraRequestDto} from '../../../interfaces/hardware/camera/camera-request.dto';
-import {HardwareTableDto} from '../../../interfaces/hardware/hardware-table.dto';
 import {CameraResponseDto} from '../../../interfaces/hardware/camera/camera-response.dto';
 import {finalize} from 'rxjs';
-import {HttpErrorResponse} from '@angular/common/http';
+
 
 @Component({
   selector: 'app-camera-form',

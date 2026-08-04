@@ -8,6 +8,7 @@
     <!-- UPLOAD MODAL -->
     <div style="height: 200px; width: 200px; ">
       <app-upload-drag-and-drop-component
+        [acceptedFiles]="'image/*'"
         [currentPhoto]="selectedClientImage()"
         [fallbackImage]="fallbackClientImage"
         [isDisabled]="uploadDisabled()"
@@ -20,6 +21,7 @@
     <!-- UPLOAD BUTTON MODAL -->
     @if(selectedClientImage()){
       <app-upload-button-component
+        [acceptedFiles]="'image/*'"
         [uploadUrl]="uploadUrl()"
         (manualUpload)="uploadClientPhoto($event)">
         <div body>
