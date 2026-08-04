@@ -3,9 +3,12 @@ import {NzTableSortFn, NzTableSortOrder} from 'ng-zorro-antd/table';
 type colType =
   'button' |
   'date'|
+  'file-icon' |
+  'formatted-date'|
   'icon-branch'|
   'icon-hardware'|
   'img-string'|
+  'size'|
   'priority-tag'|
   'report-count-tag'|
   'status-tag'|
