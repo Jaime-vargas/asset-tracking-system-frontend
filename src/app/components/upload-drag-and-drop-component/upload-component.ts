@@ -1,6 +1,6 @@
 import {Component, input, output, inject, signal} from '@angular/core';
 import {NzModalModule, NzModalService,} from 'ng-zorro-antd/modal';
-import {NzUploadChangeParam, NzUploadComponent} from 'ng-zorro-antd/upload';
+import {NzBeforeUploadFileType, NzUploadChangeParam, NzUploadComponent, NzUploadFile} from 'ng-zorro-antd/upload';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzImageDirective} from 'ng-zorro-antd/image';
@@ -24,7 +24,10 @@ import {AbstractUploadComponent} from '../../services/abstract-upload-component.
 })
 
 export class UploadComponent extends AbstractUploadComponent{
-  currentPhoto = input.required<string | null>();
-  fallbackImage = input.required<string>();
+  currentPhoto = input<string | null>(null);
+  fallbackImage = input<string>('');
   isDisabled = input<boolean>(false);
+  beforeUpload =
+    input<((file: NzUploadFile, fileList: NzUploadFile[]) => NzBeforeUploadFileType) | undefined>(undefined);
+
 }

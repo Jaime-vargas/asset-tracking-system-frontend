@@ -6,8 +6,9 @@
   } @else {
     <nz-upload
       nzType="drag"
-      [nzAccept]="'image/*'"
-      [nzMultiple]="false"
+      [nzAccept]="acceptedFiles()"
+      [nzMultiple]="multipleFiles()"
+      [nzBeforeUpload]="beforeUpload()"
       [nzName]="'file'"
       [nzShowUploadList]="false"
       [nzDisabled]="isDisabled()"
@@ -18,7 +19,8 @@
         <p class="ant-upload-drag-icon" >
           <nz-icon nzType="inbox" />
         </p>
-        <span class="ant-upload-text">Click or drag file to this area to upload</span>
+        <span style="font-size: 1rem">Drag and drop files here</span>
+        <span style="font-size: 1rem">or click to browse</span>
       </div>
     </nz-upload>
   }
