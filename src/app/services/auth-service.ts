@@ -1,28 +1,52 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject} from 'rxjs';
+import {inject, Injectable, OnInit, signal} from '@angular/core';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {UserData} from '../interfaces/users/current-user-data';
+import {Router} from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private token =
-    new BehaviorSubject<string>('');
+  router = inject(Router);
 
-  public token$ = this.token.asObservable();
+  public token = signal<boolean>(true);
 
   setToken(token: string): void  {
-    this.token.next(token);
-    console.log("set token: " + token);
     localStorage.setItem('token', token);
+    this.token.set(true);
   }
 
   logout(){
-    this.token.next('');
     localStorage.removeItem('token');
+    this.token.set(false);
   }
 
-  isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
+
+  isValidToken(): boolean{
+    const token = localStorage.getItem('token');
+    if (token === null) return false;
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const exp = payload.exp;
+    const now = Math.floor(Date.now() / 1000);
+    if (now >= exp) this.logout();
+    return exp >= now;
+  }
+
+  getAllUserDataOnToken(token: string | null): UserData | null {
+    if (token === null) return null;
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return {
+      username: payload.sub,
+      fullName: payload.fullName,
+      role: payload.role,
+    }
+  }
+
+  getUserRole():string{
+    const token = localStorage.getItem('token');
+    if (token === null) return '';
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.role;
   }
 }

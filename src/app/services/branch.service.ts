@@ -1,8 +1,9 @@
 import {inject, Injectable} from '@angular/core';
 import {ApiUrlBaseService} from './api-url-base.service';
 import {Observable} from 'rxjs';
-import {HardwareTableDto} from '../interfaces/hardware/hardware-table.dto';
 import {BranchTableDto} from '../interfaces/branch-table.dto';
+import {FileEntityDto} from '../interfaces/fileEntityDto';
+import {FileCategoryDto} from '../interfaces/file-category.dto';
 
 @Injectable({providedIn: 'root'})
 export class BranchService {

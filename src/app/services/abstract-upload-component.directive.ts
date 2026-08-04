@@ -12,6 +12,8 @@ export abstract class AbstractUploadComponent {
   private notification = inject(NzNotificationService);
 
   public uploadUrl = input.required<string>();
+  public multipleFiles = input<boolean>(false);
+  public acceptedFiles = input<string | undefined>(undefined);
 
   uploadSuccess = output<any>();
   manualUpload = output<any>();
@@ -22,19 +24,20 @@ export abstract class AbstractUploadComponent {
   onUploadChange(event: NzUploadChangeParam): void {
     let {file} = event;
     if(file.status === "done") {
-      this.message.success("Photo updated successfully.");
+      this.message.success("Updated successfully.");
       const response = file.response;
       this.uploadSuccess.emit(response);
     }
     if (file.status === "error") {
       const errorResponse = file.error;
-      const errorMessage: string = errorResponse?.error?.message;
+      const errorMessage: string = errorResponse?.error?.message ? errorResponse?.error?.message : errorResponse?.error;
+      console.error(errorResponse);
       // Message was set manually
       if (errorMessage.includes('FileAlreadyExists')) {
         this.failedFile.set(file.originFileObj);
         this.showReplaceModal()
       }else{
-        this.showNotificationError(errorMessage);
+        this.showNotificationError(errorMessage + " File name: " + file.name);
       }
     }
   }

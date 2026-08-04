@@ -1,4 +1,4 @@
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpResponse} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 
@@ -7,18 +7,26 @@ import {Observable} from 'rxjs';
 })
 export class ApiUrlBaseService {
 
-  // baseUrl = 'http://192.168.100.18:3000/api/v1';
-  // imageBaseUrl = 'http://192.168.100.18:3000/';
-  baseUrl = 'http://localhost:3000/api/v1';
-  imageBaseUrl = 'http://localhost:3000/';
+  baseUrl = '/api/v1';
+  imageBaseUrl = '/';
+  //baseUrl = 'http://localhost:3000/api/v1';
+  //imageBaseUrl = 'http://localhost:3000/';
 
   constructor(private http: HttpClient) {}
 
+  // TODO. Fix base url for multipart
   getMultipart<T>(endpoint: string): Observable<Blob> {
     return this.http.get(`${this.imageBaseUrl}${endpoint}`,
       {
         responseType: 'blob'
       });
+  }
+
+  getMultipartXLS (endpoint: string): Observable<HttpResponse<Blob>> {
+    return this.http.get(`${this.baseUrl}/${endpoint}`,{
+      responseType: 'blob',
+      observe: 'response'
+    });
   }
 
   get<T>(endpoint: string) {
@@ -29,7 +37,7 @@ export class ApiUrlBaseService {
     return this.http.post<T>(`${this.baseUrl}/${endpoint}`, body);
   }
 
-  put<T>(endpoint: string, body: any) {
+  put<T>(endpoint: string, body: any | null) {
     return this.http.put<T>(`${this.baseUrl}/${endpoint}`, body);
   }
 
