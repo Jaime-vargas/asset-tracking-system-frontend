@@ -1,1 +1,74 @@
-<p>user-row.component.ts works!</p>
+<app-dashboard-box-component [bgColor]="theme().background">
+  <div body>
+    <div nz-flex nzAlign="center" nzGap="small">
+      <h3 nz-typography [style.color]="theme().font" style=" margin: 0;">{{ theme().title}}</h3>
+      <span [style.color]="theme().font">{{userList().length}} Users</span>
+    </div>
+  </div>
+</app-dashboard-box-component>
+@for(user of userList(); track user.id){
+  <app-dashboard-card-component >
+    <div body>
+      <div nz-row [nzGutter]="15" nzAlign="middle" nzJustify="space-evenly">
+        <div nz-col nzFlex="50px">
+          <nz-avatar [nzSize]="45" nzIcon="user" [style.color]="theme().font" [style.background-color]="theme().background"/>
+        </div>
+        <div nz-col nzFlex="200px">
+          <h4 nz-typography style="margin: 0">{{user.username}}</h4>
+          <span nz-typography style="margin: 0">{{user.fullName}}</span>
+        </div>
+        <div nz-col nzFlex="auto">
+          <div [style.color]="theme().font" [style.background-color]="theme().background" style="border-radius: 5px; padding: 2px 10px; width: fit-content">
+            <span>{{user.role}}</span>
+          </div>
+        </div>
+        <div nz-col nzFlex="auto">
+          @if (user.active){
+            <div nz-flex nzAlign="center" nzGap="small"
+                 [style.background-color]="themeActiveTag.activeBg"
+                 style="border-radius: 5px; padding: 2px 10px; width: fit-content">
+              <span><div [style.background-color]="themeActiveTag.activeDot" style="width: 8px; height: 8px; border-radius: 50%;"></div></span>
+              <span >Active</span>
+            </div>
+          } @else {
+            <div nz-flex nzAlign="center" nzGap="small"
+                 [style.background-color]="themeActiveTag.inactiveBg"
+                 style="border-radius: 5px; padding: 2px 10px; width: fit-content">
+              <span><div [style.background-color]="themeActiveTag.inactiveDot" style="width: 8px; height: 8px; border-radius: 50%;"></div></span>
+              <span >Inactive</span>
+            </div>
+          }
+        </div>
+        <div nz-col nzFlex="auto">
+          <div nz-flex nzGap="small" nzJustify="flex-end">
+            <button nz-button class="form-btn default-btn"
+              (click)="editUser.emit(user)"
+            ><nz-icon nzType="edit" nzTheme="outline" /></button>
+            <button nz-button class="form-btn default-btn"
+                    nz-dropdown
+                    nzTrigger="click"
+                    [nzDropdownMenu]="userOptionsMenu" nzPlacement="topRight"
+                    [nzLoading]="LoadingOptionsMenu()"
+            ><nz-icon nzType="ellipsis" nzTheme="outline" /></button>
+          </div>
+          <nz-dropdown-menu #userOptionsMenu="nzDropdownMenu" >
+            <ul nz-menu>
+              <li nz-menu-item (click)="resetPassword.emit(user)">
+                Reset password
+              </li>
+              @if(user.active){
+                <li nz-menu-item (click)="disableUser.emit(user.id)">
+                  Disable User
+                </li>
+              } @else {
+                <li nz-menu-item (click)="enableUser.emit(user.id)">
+                  Enable User
+                </li>
+              }
+            </ul>
+          </nz-dropdown-menu>
+        </div>
+      </div>
+    </div>
+  </app-dashboard-card-component>
+}
