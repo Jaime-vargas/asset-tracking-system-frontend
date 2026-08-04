@@ -44,7 +44,7 @@ export class TableColumnsHardwareReportsService {
       label:'Created At',
       fixed: null,
       colWidth: 150,
-      type: 'date',
+      type: 'formatted-date',
       sortOrder: null,
       sortFn: createSortFn('createdDate', "date"),
       sortDirections: ['ascend', 'descend', null]
@@ -54,7 +54,7 @@ export class TableColumnsHardwareReportsService {
       label:'Due Date',
       fixed: null,
       colWidth: 150,
-      type: 'date',
+      type: 'formatted-date',
       sortOrder: null,
       sortFn: createSortFn('dueDate', "date"),
       sortDirections: ['ascend', 'descend', null]

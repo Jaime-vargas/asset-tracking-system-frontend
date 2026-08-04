@@ -2,7 +2,6 @@ import {inject, Injectable} from '@angular/core';
 import {ApiUrlBaseService} from './api-url-base.service';
 import {Observable} from 'rxjs';
 import {ClientTableDto} from '../interfaces/client-table.dto';
-import {BranchTableDto} from '../interfaces/branch-table.dto';
 import {ClientRequestDto} from '../interfaces/client/client-request.dto';
 import {ClientDto} from '../interfaces/client/client.dto';
 
@@ -23,8 +22,7 @@ export class ClientService{
     return this.api.put(`clients/${clientId}`, clientRequestDto);
   }
 
-  // Photo
-  // --------------------
+  /** Photo */
   uploadPhoto(clientId: number, formData: FormData, replaceExisting: boolean): Observable<ClientDto>{
     return this.api.post(`clients/${clientId}/photo?replaceExisting=${replaceExisting}`, formData);
   }

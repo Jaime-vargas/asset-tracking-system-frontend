@@ -40,7 +40,7 @@ export class TableColumnsReportsService {
     },
     {
       key:'branchName',
-      label:'Branch',
+      label:'Project',
       colWidth: 150,
       fixed: null,
       type: "string",
@@ -73,7 +73,7 @@ export class TableColumnsReportsService {
       label:'Created At',
       fixed: null,
       colWidth: 150,
-      type: 'date',
+      type: 'formatted-date',
       sortOrder: null,
       sortFn: createSortFn('createdDate', "date"),
       sortDirections: ['ascend', 'descend', null]
@@ -83,7 +83,7 @@ export class TableColumnsReportsService {
       label:'Due Date',
       fixed: null,
       colWidth: 150,
-      type: 'date',
+      type: 'formatted-date',
       sortOrder: null,
       sortFn: createSortFn('dueDate', "date"),
       sortDirections: ['ascend', 'descend', null]

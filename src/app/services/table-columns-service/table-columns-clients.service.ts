@@ -20,7 +20,7 @@ export class TableClientService {
       },
       {
         key:'branches',
-        label: 'Branches',
+        label: 'Projects',
         colWidth: 100,
         fixed: null,
         type: 'icon-branch',

@@ -8,6 +8,7 @@ import {CameraResponseDto} from '../interfaces/hardware/camera/camera-response.d
 import {CameraRequestDto} from '../interfaces/hardware/camera/camera-request.dto';
 import {ClientDto} from '../interfaces/client/client.dto';
 import {CameraDetailDto} from '../interfaces/camera-detail.dto';
+import {HttpResponse} from '@angular/common/http';
 
 @Injectable({providedIn: 'root'})
 export class HardwareService{
@@ -55,20 +56,19 @@ export class HardwareService{
   }
 
   // Generation of PDF documents
-  getPhotoReportByCameraId(cameraId: number):Observable<Blob>{
-    return this.api.getMultipart(`${cameraId}/photoReportByCameraID`)
+  getPhotoReportByCameraId(cameraId: number):Observable<HttpResponse<Blob>>{
+    return this.api.getMultipartXLS(`${cameraId}/photoReportByCameraID`)
   }
 
-  getPhotoReportByBranchId(branchID:number): Observable<Blob>{
-    return this.api.getMultipart(`${branchID}/photoReport`);
+  getPhotoReportByBranchId(branchID:number): Observable<HttpResponse<Blob>>{
+    return this.api.getMultipartXLS(`${branchID}/photoReport`);
   }
 
-  getTechnicalMemoryByBranchId(branchID:number): Observable<Blob>{
-    return this.api.getMultipart(`${branchID}/technicalMemory`);
+  getTechnicalMemoryByBranchId(branchID:number): Observable<HttpResponse<Blob>>{
+    return this.api.getMultipartXLS(`${branchID}/technicalMemory`);
   }
 
-  getQrCodesByBranchId(branchID:number):Observable<Blob>{
-    return this.api.getMultipart(`jwt/qr/pdf/${branchID}`);
+  getQrCodesByBranchId(branchID:number):Observable<HttpResponse<Blob>>{
+    return this.api.getMultipartXLS(`qr/pdf/${branchID}`);
   }
-
 }

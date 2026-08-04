@@ -20,7 +20,7 @@ export class TableColumnsHardwareService {
     },
     {
       key:'branchName',
-      label:'Branch',
+      label:'Project',
       colWidth: 200,
       fixed: null,
       type: "string",
@@ -93,7 +93,7 @@ export class TableColumnsHardwareService {
       label:'Last Update',
       colWidth:200,
       fixed: null,
-      type:'string',
+      type:'formatted-date',
       sortOrder: null,
       sortFn: createSortFn('lastMaintenanceDate',"string"),
       sortDirections: ['ascend', 'descend', null]
