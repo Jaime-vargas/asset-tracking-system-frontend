@@ -1,12 +1,12 @@
-import {computed, inject, Injectable, signal} from '@angular/core';
+import {computed, EventEmitter, inject, Injectable, signal} from '@angular/core';
 import {HardwareService} from '../services/hardware.service';
 import {NzMessageService} from 'ng-zorro-antd/message';
 import {NzNotificationService} from 'ng-zorro-antd/notification';
 import {HardwareTableDto} from '../interfaces/hardware/hardware-table.dto';
-import {HttpErrorResponse} from '@angular/common/http';
+import {HttpErrorResponse, HttpResponse} from '@angular/common/http';
 import {CameraResponseDto} from '../interfaces/hardware/camera/camera-response.dto';
 import {CameraRequestDto} from '../interfaces/hardware/camera/camera-request.dto';
-import {catchError, EMPTY, tap} from 'rxjs';
+import {catchError, EMPTY, finalize, tap} from 'rxjs';
 import {HardwareUnion} from '../interfaces/hardware/hardware-union';
 import {CameraDetailDto} from '../interfaces/camera-detail.dto';
 import {ReportHistoryDto} from '../interfaces/report/report-history.dto';
@@ -23,6 +23,8 @@ export class HardwareStore {
   public selectedHardwareId = signal<number | null>(null);
   public selectedHardware = signal<CameraResponseDto | null>(null);
   public selectedHardwareDetail = signal<HardwareUnion | null>(null);
+  // Table
+  public tableLoading = signal<boolean>(false);
 
   // Form
   public formMode = signal<"add" | "edit" | null>(null);
@@ -35,9 +37,11 @@ export class HardwareStore {
   loadHardware(){
     const branchId = this.currentBranchId();
     if(branchId === null) return;
+    this.tableLoading.set(true);
     this.hardwareService.getHardwareByBranchId(branchId).subscribe({
       next: (data: HardwareTableDto[]) => this.hardwareList.set(data),
       error: (err: HttpErrorResponse) => this.responseError(err),
+      complete: () => this.tableLoading.set(false),
     })
   }
 
@@ -137,11 +141,13 @@ export class HardwareStore {
     const cameraId = this.selectedHardwareId();
     if(cameraId === null) return;
     this.hardwareService.getPhotoReportByCameraId(cameraId).subscribe({
-      next: (blob: Blob) => {
-        const fileURL = URL.createObjectURL(blob);
-        window.open(fileURL, '_blank');
+      next: (response: HttpResponse<Blob>) => {
+        const blob = response.body!;
+        const fileName = this.getFileNameFromHeader(response)
+        this.downloadFromBlob(blob, fileName);
       },
       error: (err: HttpErrorResponse) => this.responseError(err),
+      complete:() => this.messageService.success('Generated successfully.'),
     })
   }
 
@@ -149,11 +155,13 @@ export class HardwareStore {
     const branchId  = this.currentBranchId();
     if(branchId === null) return;
     this.hardwareService.getPhotoReportByBranchId(branchId).subscribe({
-      next: (blob: Blob) => {
-        const fileURL = URL.createObjectURL(blob);
-        window.open(fileURL, '_blank');
+      next: (response: HttpResponse<Blob>) => {
+        const blob = response.body!;
+        const fileName = this.getFileNameFromHeader(response)
+        this.downloadFromBlob(blob, fileName);
       },
       error: (err: HttpErrorResponse) => this.responseError(err),
+      complete:() => this.messageService.success('Generated successfully.'),
     })
   }
 
@@ -161,11 +169,13 @@ export class HardwareStore {
     const branchId  = this.currentBranchId();
     if(branchId === null) return;
     this.hardwareService.getTechnicalMemoryByBranchId(branchId).subscribe({
-      next: (blob: Blob) => {
-        const fileURL = URL.createObjectURL(blob);
-        window.open(fileURL, '_blank');
+      next: (response: HttpResponse<Blob>) => {
+        const blob = response.body!;
+        const fileName = this.getFileNameFromHeader(response)
+        this.downloadFromBlob(blob, fileName);
       },
       error: (err: HttpErrorResponse) => this.responseError(err),
+      complete:() => this.messageService.success('Generated successfully.'),
     })
   }
 
@@ -173,12 +183,34 @@ export class HardwareStore {
     const branchId  = this.currentBranchId();
     if(branchId === null) return;
     this.hardwareService.getQrCodesByBranchId(branchId).subscribe({
-      next: (blob: Blob) => {
-        const fileURL = URL.createObjectURL(blob);
-        window.open(fileURL, '_blank');
+      next: (response: HttpResponse<Blob>) => {
+        const blob = response.body!;
+        const fileName = this.getFileNameFromHeader(response)
+        this.downloadFromBlob(blob, fileName);
       },
       error: (err: HttpErrorResponse) => this.responseError(err),
+      complete:() => this.messageService.success('Generated successfully.'),
     })
+  }
+
+  // TODO: Refactor this code and functions then get documents
+  getFileNameFromHeader(httpResponse: HttpResponse<any>):string{
+    const disposition = httpResponse.headers.get('Content-Disposition');
+    const match = disposition?.match(/filename="?([^"]+)"?/);
+    if (match){
+      return match[1];
+    }
+    return 'document';
+  }
+  downloadFromBlob(blob:Blob, fileName:string){
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    document.body.appendChild(a);
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   }
 
   responseError(error: HttpErrorResponse) {

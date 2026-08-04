@@ -24,6 +24,10 @@ export class ReportStore{
 
 
   // NO SERVICE LAYER
+  getUploadPhotoReportUrl(reportId:number){
+    return this.reportService.getUploadPhotoReportUrl(reportId);
+  }
+
   updateReportComments(comment: CommentDto){
     this.selectedReport.update((current) => {
       if(current === null) return current;
@@ -85,6 +89,16 @@ export class ReportStore{
         }
       })),
       tap(() => this.messageService.success('Report closed successfully.')),
+      catchError((err: HttpErrorResponse) => {
+        this.responseError(err);
+        return EMPTY;})
+    )
+  }
+
+  // Photos
+  deleteReportPhoto(reportId: number, photoId:number) {
+    return this.reportService.deleteReportPhoto(reportId, photoId).pipe(
+      tap(() => this.messageService.success('Photo deleted successfully.')),
       catchError((err: HttpErrorResponse) => {
         this.responseError(err);
         return EMPTY;})

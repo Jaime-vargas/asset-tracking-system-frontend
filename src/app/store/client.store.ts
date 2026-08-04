@@ -17,6 +17,9 @@ export class ClientStore {
   private message = inject(NzMessageService);
   private notification = inject(NzNotificationService);
 
+  // Table
+  public tableLoading = signal<boolean>(false);
+
   // Entity
   public clientList = signal<ClientTableDto[]>([]);
   public selectedClient = signal<ClientTableDto | null>(null);
@@ -24,6 +27,8 @@ export class ClientStore {
   // Computed
   public selectedClientImage = computed<string|null>(() => {
     const path = this.selectedClient()?.photo?.filePath;
+    console.log('path', path);
+    console.log(this.selectedClient());
     return (path) ? this.apiUrlBaseService.imageBaseUrl + path : null;
   });
 
@@ -55,10 +60,12 @@ export class ClientStore {
 
   // Store is the layer that shares data with services.
   public loadClients(){
+    this.tableLoading.set(true);
     this.clientService.getClients().subscribe({
       next: (clients: ClientTableDto[]) =>
         this.clientList.set(clients),
       error: (err: HttpErrorResponse) => this.responseError(err),
+      complete: () => this.tableLoading.set(false),
     })
   }
 
