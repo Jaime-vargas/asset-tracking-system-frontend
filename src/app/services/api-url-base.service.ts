@@ -7,10 +7,10 @@ import {Observable} from 'rxjs';
 })
 export class ApiUrlBaseService {
 
-  baseUrl = '/api/v1';
-  imageBaseUrl = '/';
-  //baseUrl = 'http://localhost:3000/api/v1';
-  //imageBaseUrl = 'http://localhost:3000/';
+  //baseUrl = '/api/v1';
+  //imageBaseUrl = '/';
+  baseUrl = 'http://localhost:3000/api/v1';
+  imageBaseUrl = 'http://localhost:3000/';
 
   constructor(private http: HttpClient) {}
 

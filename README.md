@@ -1,59 +1,144 @@
-# AssetTrackingSystemFrontend
+# Assets Control — Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.3.
+Aplicación web para administrar inventario tecnológico distribuido por clientes y proyectos. Centraliza la consulta de hardware, seguimiento de reportes, documentos técnicos y administración de usuarios en una interfaz única.
 
-## Development server
+> Proyecto de portafolio desarrollado con Angular. Consume la API REST de **Control de Activos** y presenta información operativa mediante una experiencia protegida por autenticación JWT.
 
-To start a local development server, run:
+## Vista previa
 
-```bash
-ng serve
+| Dashboard | Clientes |
+| --- | --- |
+| ![Dashboard con indicadores, accesos rápidos e inventario](docs/images/dashboard.png) | ![Lista de clientes y métricas de sus proyectos](docs/images/clients.png) |
+
+![Inventario de cámaras del cliente Yazaki](docs/images/hardware-yazaki.png)
+
+| Detalle del hardware | Reportes del hardware |
+| --- | --- |
+| ![Detalle de una cámara con información de red y reportes recientes](docs/images/hardware-detail.png) | ![Listado de reportes asociados a una cámara](docs/images/hardware-reports.png) |
+
+Las capturas emplean datos de demostración. El inventario mostrado pertenece al cliente **Yazaki**, que contiene hardware de prueba.
+
+## Funcionalidades
+
+- Inicio de sesión con token JWT y rutas protegidas.
+- Dashboard con indicadores de reportes, hardware, clientes y accesos rápidos a proyectos.
+- Gestión de clientes y sus proyectos/sucursales.
+- Inventario de equipos con búsqueda, ordenamiento, paginación y detalle de cámaras.
+- Importación y exportación de inventario en XLSX.
+- Carga, categorización y descarga de archivos asociados a proyectos.
+- Consulta, creación, actualización y seguimiento de reportes con comentarios y evidencia fotográfica.
+- Administración de usuarios, roles y contraseñas; la sección está restringida al rol administrador.
+- Lector de códigos QR para localizar equipos.
+
+## Tecnologías
+
+| Área | Tecnologías |
+| --- | --- |
+| Framework | Angular 21, TypeScript |
+| Interfaz | ng-zorro-antd, CSS |
+| Estado y asincronía | RxJS, servicios Angular |
+| Seguridad | Interceptor HTTP, guards de autenticación y roles, JWT |
+| Utilidades | ZXing para lectura de QR |
+| Herramientas | Angular CLI, npm, Vitest |
+
+## Arquitectura de la aplicación
+
+```text
+Pages / Components
+        │
+        ├── Services y stores → consumo de API y estado de interfaz
+        ├── HTTP interceptor  → agrega el JWT a solicitudes autenticadas
+        ├── Route guards      → control de sesión y roles
+        └── API REST          → backend de Control de Activos
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Las vistas se organizan por dominio (`dashboard`, `clients`, `hardware`, `reports` y `users`), mientras que los componentes reutilizables cubren tablas, formularios, tarjetas, etiquetas de estado, carga de archivos y navegación.
 
-## Code scaffolding
+## Requisitos
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- Node.js compatible con Angular 21.
+- npm 11 o compatible.
+- API de Control de Activos en ejecución. La configuración actual apunta a `http://localhost:3000/api/v1`.
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Instalación y ejecución
 
 ```bash
-ng generate --help
+git clone <URL_DEL_REPOSITORIO>
+cd asset-tracking-system-frontend
+npm install
+npm start
 ```
 
-## Building
+Después abre `http://localhost:4200`.
 
-To build the project run:
+Para ejecutar el servidor local con HTTPS usando los certificados incluidos en `certs/`:
 
 ```bash
-ng build
+npx ng serve --ssl --ssl-cert certs/localhost+3.pem --ssl-key certs/localhost+3-key.pem
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+La aplicación estará disponible en `https://localhost:4200`.
 
-## Running unit tests
+## Configuración del backend
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+La URL base de la API y de los archivos está centralizada en [api-url-base.service.ts](src/app/services/api-url-base.service.ts):
+
+```ts
+baseUrl = 'http://localhost:3000/api/v1';
+imageBaseUrl = 'http://localhost:3000/';
+```
+
+Actualiza esos valores para conectarte a otro entorno. El interceptor adjunta automáticamente el JWT almacenado después del inicio de sesión, y los guards impiden acceder a las rutas protegidas sin una sesión válida.
+
+## Rutas principales
+
+| Ruta | Descripción |
+| --- | --- |
+| `/login` | Autenticación de usuarios. |
+| `/dashboard` | Indicadores y accesos rápidos. |
+| `/clients` | Directorio de clientes. |
+| `/clients/:clientId/:clientSlug` | Proyectos o sucursales de un cliente. |
+| `/clients/.../hardware` | Inventario y documentos de un proyecto. |
+| `/hardware` | Catálogo global de hardware. |
+| `/reports` | Gestión de reportes. |
+| `/users` | Administración de usuarios; requiere rol `ADMIN`. |
+| `/qr` | Escáner QR. |
+
+## Comandos útiles
 
 ```bash
-ng test
+# Ejecutar pruebas unitarias
+npm test
+
+# Generar build de producción
+npm run build
+
+# Ejecutar compilación en modo observación
+npm run watch
 ```
 
-## Running end-to-end tests
+## Estructura del proyecto
 
-For end-to-end (e2e) testing, run:
+```text
+src/app/
+├── pages/        # Vistas por dominio
+├── components/   # Componentes, formularios y tablas reutilizables
+├── services/     # API, autenticación, guards e interceptor
+├── store/        # Estado de interfaz y recursos
+├── interfaces/   # Contratos TypeScript con el backend
+└── app.routes.ts # Rutas y protección de navegación
 
-```bash
-ng e2e
+public/           # Imágenes e iconos estáticos
+docs/images/      # Capturas del README
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Próximas mejoras
 
-## Additional Resources
+- Mover la configuración de la API a archivos `environment` por entorno.
+- Añadir pruebas de componentes y flujos críticos de interfaz.
+- Incorporar una demo desplegada y datos de ejemplo reproducibles.
+- Mejorar la adaptación a dispositivos móviles.
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Autor
+
+**Jaime** — Proyecto incluido en mi portafolio profesional.

@@ -1,7 +1,6 @@
 import {Component, computed, inject, signal} from '@angular/core';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {RouteContextService} from '../../services/route-context.service';
-import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {DashboardBoxComponent} from '../../components/dasboard-box-component/dashboard-box.component';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {HardwareService} from '../../services/hardware.service';
@@ -19,7 +18,6 @@ import {TableColumnsHardwareReportsService} from '../../services/table-columns-s
 @Component({
   selector: 'app-hardware-reports-page',
   imports: [
-    NzButtonComponent,
     DashboardBoxComponent,
     NzDividerComponent,
     NzRowDirective,
