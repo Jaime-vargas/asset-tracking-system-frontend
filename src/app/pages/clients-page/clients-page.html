@@ -6,7 +6,7 @@
       <div nz-col nzSpan="24">
 
         <!-- SEARCH SECTION -->
-        <app-dasboard-box-component>
+        <app-dashboard-box-component>
           <div body nz-flex nzGap="middle">
             <nz-input-wrapper nzAllowClear >
               <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
@@ -17,19 +17,20 @@
             <button  nz-button class="form-btn primary-btn" nzType="primary" (click)="openNewSidebar()"><nz-icon nzType="plus" nzTheme="outline"/>Add Client</button>
 
           </div>
-        </app-dasboard-box-component>
+        </app-dashboard-box-component>
 
       </div>
 
       <!-- TABLE COMPONENT -->
       <div nz-col nzSpan="24">
-        <app-dasboard-box-component>
+        <app-dashboard-box-component>
           <div body>
             <app-table-component
+              [tableLoading]="clientStore.tableLoading()"
               [tableColumns]="tableClientService.tableColumns"
               [tableData]="tableData()"></app-table-component>
           </div>
-        </app-dasboard-box-component>
+        </app-dashboard-box-component>
       </div>
     </div>
   </div>

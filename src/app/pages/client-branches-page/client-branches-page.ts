@@ -1,33 +1,23 @@
-import {Component, computed, OnDestroy, OnInit, signal} from '@angular/core';
-import {ActivatedRoute, RouterLink} from '@angular/router';
+import {Component, computed, OnInit, signal} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 import {inject} from '@angular/core';
-import {ClientService} from '../../services/client.service';
 import {BranchTableDto} from '../../interfaces/branch-table.dto';
 import {DashboardBoxComponent} from '../../components/dasboard-box-component/dashboard-box.component';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
-import {NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
-import {NzDividerComponent} from 'ng-zorro-antd/divider';
-import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
 import {FormsModule} from '@angular/forms';
 import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 'ng-zorro-antd/input';
 import {UtilityService} from '../../services/utility.service';
 import {RouteContextService} from '../../services/route-context.service';
-import {ReportCountTagsComponent} from '../../components/report-count-tags-component/report-count-tags-component';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcrumb-component';
 import {TableComponent} from '../../components/table-component/table-component';
 import {TableColumnsClientsBranchesService} from '../../services/table-columns-service/table-columns-clients-branches.service';
 import {TableData} from '../../interfaces/table/table-data';
-import {NzDropdownDirective, NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
-import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
 import {EditSideBar} from '../../components/edit-side-bar/edit-side-bar';
 import {BranchStore} from '../../store/branch.store';
 import {SidebarStore} from '../../store/sidebar.store';
-import {ClientTableDto} from '../../interfaces/client-table.dto';
-import {Subscription} from 'rxjs';
-import {ClientForm} from '../../components/forms/client-form/client-form';
 import {BranchForm} from '../../components/forms/branch-form/branch-form';
 
 @Component({
@@ -36,7 +26,6 @@ import {BranchForm} from '../../components/forms/branch-form/branch-form';
     DashboardBoxComponent,
     NzButtonComponent,
     NzIconDirective,
-    NzDividerComponent,
     NzFlexDirective,
     FormsModule,
     NzInputDirective,
@@ -54,7 +43,7 @@ import {BranchForm} from '../../components/forms/branch-form/branch-form';
 })
 export class ClientBranchesPage implements OnInit {
 
-  private branchStore = inject(BranchStore);
+  protected branchStore = inject(BranchStore);
   private sidebarStore = inject(SidebarStore);
   protected tableClientsBranchesService = inject(TableColumnsClientsBranchesService);
   private utilityService = inject(UtilityService);

@@ -4,13 +4,13 @@
     <div nz-row [nzGutter]="[10,10]">
       <div nz-col nzSpan="24">
 
-        <app-dasboard-box-component>
+        <app-dashboard-box-component>
           <div body nz-flex nzGap="middle">
             <!-- SEARCH SECTION -->
             <nz-input-wrapper nzAllowClear>
               <nz-icon nzInputPrefix nzType="search" nzTheme="outline"/>
               <input nz-input [ngModel]="branchNameFilter()" (ngModelChange)="branchNameFilter.set($event)"
-                     placeholder=" Search branches..."/>
+                     placeholder=" Search projects..."/>
             </nz-input-wrapper>
             <!-- /SEARCH SECTION -->
 
@@ -21,22 +21,23 @@
               (click)="openNewSidebar()"
               >
               <nz-icon nzType="plus" nzTheme="outline"/>
-              Add Branch
+              Add Project
             </button>
           </div>
-        </app-dasboard-box-component>
+        </app-dashboard-box-component>
       </div>
 
       <!-- TABLE COMPONENT -->
       <div nz-col nzSpan="24">
-        <app-dasboard-box-component>
+        <app-dashboard-box-component>
           <div body>
             <app-table-component
+              [tableLoading]="branchStore.tableLoading()"
               [tableColumns]="tableClientsBranchesService.tableColumns"
               [tableData]="tableData()">
             </app-table-component>
           </div>
-          </app-dasboard-box-component>
+          </app-dashboard-box-component>
       </div>
     </div>
   </div>

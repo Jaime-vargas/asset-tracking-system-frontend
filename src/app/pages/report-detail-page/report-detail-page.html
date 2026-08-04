@@ -6,7 +6,7 @@
       <div nz-row [nzGutter]="[10,10]">
         <div nz-col nzSpan="24">
           <!-- TITLE -->
-          <app-dasboard-box-component >
+          <app-dashboard-box-component >
             <div body nz-row>
               <div nz-col nzSpan="16" nz-flex nzAlign="center" nzGap="middle">
                 <h3 nz-typography style="margin: 0">Report # {{report.id}}</h3>
@@ -32,63 +32,61 @@
                 <app-priority-tags-component [priority]="report.priority"></app-priority-tags-component>
               </div>
             </div>
-          </app-dasboard-box-component>
+          </app-dashboard-box-component>
         </div>
 
         <div nz-col nzSpan="16" >
           <div nz-row [nzGutter]="[10,10]" style="height: 100%">
             <div nz-col nzSpan="24">
               <!-- REPORT DESCRIPTION -->
-              <app-dasboard-box-component [boxTitle]="'Report Description'" [flex]="true">
+              <app-dashboard-box-component [boxTitle]="'Report Description'" [flex]="true">
                 <div body>
-                  <p nz-typography style="font-size: 1.2rem; font-weight: bold">{{report.reportDetails ?? "no details"}}</p>
+                  <p nz-typography style="font-size: 1.2rem; white-space: pre-wrap">{{report.reportDetails ?? "no details"}}</p>
                 </div>
-              </app-dasboard-box-component>
+              </app-dashboard-box-component>
             </div>
+
             <!-- CAROUSEL -->
             <div nz-col nzSpan="24" >
-              <app-dasboard-box-component  [flex]="true" >
+              <app-dashboard-box-component  [flex]="true" >
                 <div body>
                   <div nz-row [nzGutter]="[10,10]">
                     @if (reportPhotos().length > 0){
                       <div nz-col nzSpan="24">
-                        <app-carousel-component [images]="reportPhotos()"></app-carousel-component>
+                        <app-carousel-component
+                          [images]="reportPhotos()"
+                          [showDeleteButton]="report.status != 'CLOSED'"
+                          (deleteEvent)="deletePhoto($event)"
+                        ></app-carousel-component>
+                      <!-- TODO: Make event delete the real photo -->
                       </div>
                     } @else {
                       <div nz-col nzSpan="24">
                         <nz-empty nzNotFoundImage="simple"></nz-empty>
                       </div>
                     }
-                    @if (report.status != 'CLOSED'){
-                      <div nz-col nzSpan="24" nz-flex nzJustify="flex-end">
-                        <nz-upload [nzAccept]="'image/*'"
-                                   [nzMultiple]="true"
-                                   [nzFileList]="uploadFileList"
-                                   [nzName]="'file'"
-                                   [nzShowUploadList]="false"
-                                   [nzAction]="uploadUrl()"
-                                   (nzChange)="onUploadChange($event)" >
-                          <button nz-button>
-                            <nz-icon nzType="upload" />
-                            Upload image
-                          </button>
-                        </nz-upload>
-                        <ng-template #errorTpl let-errors="data">
-
-                          <div style="font-size: 1rem; margin-bottom: 8px;">
-                            <nz-icon nzType="close-circle" nzTheme="outline" style="color: #e94748; font-size: 1.5rem; padding-right: 20px" /> Error uploading some files
-                          </div>
-                          <ul style="margin:0; padding: 0 50px;">
-                            @for (err of errors; track $index) {
-                              <li>{{ err }}</li>
-                            }
-                          </ul>
-                        </ng-template>
+                    <div nz-col nzSpan="24">
+                      <div nz-flex nzJustify="space-between" nzAlign="center">
+                        <h5 nz-typography nzType="secondary" style="margin: 0">Photos: {{reportPhotos().length}}</h5>
+                        @if (report.status != 'CLOSED'){
+                          <app-upload-button-component
+                            [acceptedFiles]="'image/*'"
+                            [uploadUrl]="uploadUrl()"
+                            [multipleFiles]="true"
+                            (uploadSuccess)="uploadSuccessPhoto()">
+                            <div body>
+                              <button nz-button class="form-btn">
+                                Upload image
+                                <nz-icon nzType="upload" />
+                              </button>
+                            </div>
+                          </app-upload-button-component>
+                        }
                       </div>
-                    }
+                    </div>
                   </div>
                 </div>
-              </app-dasboard-box-component>
+              </app-dashboard-box-component>
             </div>
 
           </div>
@@ -96,14 +94,14 @@
 
         <!-- OTHER REPORT DETAILS -->
         <div nz-col nzSpan="8" >
-          <app-dasboard-box-component [boxTitle]="'Report Details'" [flex]="true">
+          <app-dashboard-box-component [boxTitle]="'Report Details'" [flex]="true">
             <div body>
               @for (item of reportDetailsView(); track item.label){
                 <div nz-row>
                   <nz-col nzSpan="6">
                     <span>{{item.label}}: </span>
                   </nz-col>
-                  <nz-col nzSpan="8">
+                  <nz-col nzSpan="18">
                     @switch (item.type){
                       @case ('priority'){
                         <app-priority-tags-component [priority]="item.value">
@@ -123,12 +121,12 @@
                 </div>
               }
             </div>
-          </app-dasboard-box-component>
+          </app-dashboard-box-component>
         </div>
 
         <!-- COMMENTS SECTION -->
         <div nz-col nzSpan="24">
-          <app-dasboard-box-component [boxTitle]="'Comments'">
+          <app-dashboard-box-component [boxTitle]="'Comments'">
             <div body>
               <div nz-row>
                 @if (report.comments.length > 0){
@@ -175,7 +173,7 @@
                 </form>
               </div>
             }
-          </app-dasboard-box-component>
+          </app-dashboard-box-component>
         </div>
 
       </div>
@@ -192,3 +190,16 @@
   </app-edit-side-bar>
 }
 <!-- /SIDEBAR COMPONENT -->
+
+<ng-template #errorTpl let-errors="data">
+
+  <div style="font-size: 1rem; margin-bottom: 8px;">
+    <nz-icon nzType="close-circle" nzTheme="outline" style="color: #e94748; font-size: 1.5rem; padding-right: 20px" /> Error uploading some files
+  </div>
+  <ul style="margin:0; padding: 0 50px;">
+    @for (err of errors; track $index) {
+      <li>{{ err }}</li>
+    }
+  </ul>
+
+</ng-template>

@@ -1,22 +1,14 @@
 import {Component, computed, signal} from '@angular/core';
-import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {DashboardBoxComponent} from '../../components/dasboard-box-component/dashboard-box.component';
 import {FormsModule} from '@angular/forms';
-import {NzEmptyComponent} from 'ng-zorro-antd/empty';
-import {NzFlexDirective} from 'ng-zorro-antd/flex';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select'
-import {NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
-import {NzTagComponent} from 'ng-zorro-antd/tag';
 import {HardwareTableDto} from '../../interfaces/hardware/hardware-table.dto';
 import {UtilityService} from '../../services/utility.service';
 import {HardwareService} from '../../services/hardware.service';
-import {RouterLink} from '@angular/router';
 import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
-import {ne_NP} from 'ng-zorro-antd/i18n';
-import {ReportCountTagsComponent} from '../../components/report-count-tags-component/report-count-tags-component';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {TableComponent} from '../../components/table-component/table-component';
@@ -26,22 +18,16 @@ import {TableData} from '../../interfaces/table/table-data';
 @Component({
   selector: 'app-hardware-page',
   imports: [
-    NzButtonComponent,
     NzDividerComponent,
     DashboardBoxComponent,
     FormsModule,
-    NzEmptyComponent,
     NzIconDirective,
     NzInputDirective,
     NzInputPrefixDirective,
     NzInputWrapperComponent,
     NzSelectModule,
-    NzTableComponent,
-    NzThMeasureDirective,
-    RouterLink,
     NzSelectComponent,
     NzOptionComponent,
-    ReportCountTagsComponent,
     NzTypographyComponent,
     NzRowDirective,
     NzColDirective,
@@ -57,6 +43,7 @@ export class HardwarePage {
               protected tableHardwareService: TableColumnsHardwareService) {
     this.getAllHardwareData()
   }
+  tableLoading = signal<boolean>(false)
   hardwareData = signal<HardwareTableDto[]>([]);
 
   // TABLE DATA
@@ -123,9 +110,13 @@ export class HardwarePage {
   });
 
   getAllHardwareData(){
+    this.tableLoading.set(true);
     this.hardwareService.getAllHardware().subscribe({
       next: (data) => {
         this.hardwareData.set(data);
+      },
+      complete: () => {
+        this.tableLoading.set(false);
       }
     })
   }

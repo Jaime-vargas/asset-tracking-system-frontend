@@ -1,7 +1,5 @@
-import {Component, computed, ElementRef, inject, OnInit, signal, ViewChild} from '@angular/core';
-import {NzDividerComponent} from "ng-zorro-antd/divider";
+import {Component, computed, inject, OnInit, signal} from '@angular/core';
 import {DashboardBoxComponent} from '../../components/dasboard-box-component/dashboard-box.component';
-import {ClientService} from '../../services/client.service';
 import {ClientTableDto} from '../../interfaces/client-table.dto';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzIconDirective, NzIconModule} from 'ng-zorro-antd/icon';
@@ -22,7 +20,6 @@ import {ClientStore} from '../../store/client.store';
 @Component({
   selector: 'app-clients-page',
   imports: [
-    NzDividerComponent,
     DashboardBoxComponent,
     NzButtonComponent,
     NzIconDirective,
@@ -43,7 +40,7 @@ import {ClientStore} from '../../store/client.store';
 })
 export class ClientsPage implements OnInit {
 
-  private clientStore = inject(ClientStore);
+  protected clientStore = inject(ClientStore);
   private sidebarStore = inject(SidebarStore);
   protected tableClientService = inject(TableClientService);
   private utilityService = inject(UtilityService);

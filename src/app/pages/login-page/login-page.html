@@ -1,6 +1,6 @@
-<div nz-flex nzJustify="center" nzAlign="center" style="height: 100%">
+<div nz-flex nzJustify="center" nzAlign="center" style="height: 100%;">
   <div class="login-container">
-    <app-dasboard-box-component>
+    <app-dashboard-box-component>
       <div body>
         <h3 nz-typography>Login</h3>
         <form nz-form [formGroup]="loginForm" (ngSubmit)="logInFormSubmit()" style="height: stretch" >
@@ -16,6 +16,10 @@
               <input nz-input type="password" formControlName="password" >
             </nz-form-control>
           </nz-form-item>
+          @if (loginResponseError()){
+            <span nz-typography nzType="danger">{{loginResponseError()}}</span>
+          }
+
           <nz-divider></nz-divider>
           <div class="buttons-container" nz-flex nzAlign="center" nzJustify="flex-start"
                style="width: 100%; gap: 20px">
@@ -23,10 +27,7 @@
           </div>
         </form>
       </div>
-    </app-dasboard-box-component>
-
-    Token Recived:
-    <span>{{token()}}</span>
+    </app-dashboard-box-component>
   </div>
 </div>
 

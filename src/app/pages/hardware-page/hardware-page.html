@@ -4,7 +4,7 @@
   <div class="contentBody">
     <div nz-row [nzGutter]="[10,10]">
       <div nz-col nzSpan="24">
-        <app-dasboard-box-component>
+        <app-dashboard-box-component>
           <div body nz-row [nzGutter]="[5,5]">
             <div nz-col nzFlex="1 0 100px">
               <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select a client" [ngModel]="clientFilter()" (ngModelChange)="clientFilter.set($event)">
@@ -14,7 +14,7 @@
               </nz-select>
             </div>
             <div nz-col nzFlex="1 0 100px">
-              <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select a branch" [ngModel]="branchFilter()" (ngModelChange)="branchFilter.set($event)" >
+              <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select a project" [ngModel]="branchFilter()" (ngModelChange)="branchFilter.set($event)" >
                 @for (branch of branchList(); track $index){
                   <nz-option [nzLabel]="branch" [nzValue]="branch" />
                 }
@@ -58,18 +58,19 @@
               </nz-input-wrapper>
             </div>
           </div>
-        </app-dasboard-box-component>
+        </app-dashboard-box-component>
       </div>
       <!-- TABLE COMPONENT -->
       <div nz-col nzSpan="24">
-        <app-dasboard-box-component >
+        <app-dashboard-box-component >
           <div body>
             <app-table-component
-            [tableColumns]="tableHardwareService.tableColumns"
-            [tableData]="tableData()">
+              [tableLoading]="tableLoading()"
+              [tableColumns]="tableHardwareService.tableColumns"
+              [tableData]="tableData()">
             </app-table-component>
           </div>
-        </app-dasboard-box-component>
+        </app-dashboard-box-component>
       </div>
     </div>
   </div>

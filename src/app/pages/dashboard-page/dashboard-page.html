@@ -16,7 +16,7 @@
     <nz-divider nzSize="small" ></nz-divider>
     <!-- Table RECENT ACTIVE REPORTS -->
     <div nz-col nzSpan="12">
-      <app-dasboard-box-component [boxTitle]="'Recent Active Reports'">
+      <app-dashboard-box-component [boxTitle]="'Recent Active Reports'">
         <div body>
           <nz-table #tableData [nzShowPagination]="false" nzSize="default" [nzData]="recentReports()" [nzScroll]="{ x: 'max-content' }" >
             <colgroup>
@@ -53,20 +53,21 @@
           <button nz-button  nzType="text" class="bg-blue"
                   [routerLink]="['/reports']" style="font-size: 20px"> View All Reports <nz-icon nzType="right" /></button>
         </div>
-      </app-dasboard-box-component >
+      </app-dashboard-box-component >
     </div>
     <!-- QUICK ACCESS CLIENTS -->
     <div nz-col nzSpan="12">
-      <app-dasboard-box-component  [boxTitle]="'Quick Access'" [flex]="true" >
+      <app-dashboard-box-component [boxTitle]="'Quick Access'" [flex]="true" >
         <div body>
           <div nz-row [nzGutter]="[10,10]" >
             @for (client of clients(); track client.id){
               <div nz-col nzSpan="12">
-                <app-dashboard-card-component [cardTitle]="client.name">
+                <app-dashboard-card-component>
                   <div body>
+                    <h2 nz-typography style="margin: 0;">{{client.name}}</h2>
                     <button class="form-btn primary-btn" nz-button nzType="primary"
                             [routerLink]="['/clients', client.id, this.utilityService.slugify(client.name)]" >
-                      View Branches
+                      View Projects
                       <nz-icon nzType="right" /></button>
                   </div>
                 </app-dashboard-card-component>
@@ -74,11 +75,11 @@
             }
           </div>
         </div>
-      </app-dasboard-box-component>
+      </app-dashboard-box-component>
     </div>
     <!-- HARDWARE OVERVIEW -->
     <div nz-col nzSpan="24">
-      <app-dasboard-box-component [boxTitle]="'Hardware Overview'" [flex]="true">
+      <app-dashboard-box-component [boxTitle]="'Hardware Overview'" [flex]="true">
         <div body>
           <div nz-row nzGutter="10" >
             <app-dasboard-grey-card-component nz-col nzSpan="8">
@@ -112,7 +113,7 @@
             </div>
           </div>
         </div>
-      </app-dasboard-box-component>
+      </app-dashboard-box-component>
     </div>
   </div>
 </div>

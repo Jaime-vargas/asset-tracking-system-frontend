@@ -4,15 +4,13 @@ import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
 import {DashboardBoxComponent} from '../../components/dasboard-box-component/dashboard-box.component';
-import {NzCellBreakWordDirective, NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
+import {NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
-import {NzTagComponent} from 'ng-zorro-antd/tag';
 import {DashboardGreyCardComponent} from '../../components/dasboard-grey-card-component/dashboard-grey-card-component';
 import {DashboardService} from '../../services/dashboard.service';
 import {DashboardDataDto} from '../../interfaces/dashboard-data.dto';
-import {Observable} from 'rxjs';
 import {RouterLink} from '@angular/router';
 import {UtilityService} from '../../services/utility.service';
 import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
@@ -20,7 +18,7 @@ import {SingleStatusTagsComponent} from '../../components/single-status-tags-com
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [DashboardCardComponent, DashboardGreyCardComponent, DashboardBoxComponent, NzTypographyComponent, NzDividerComponent, NzFlexDirective, NzIconModule, NzTableComponent, NzGridModule, NzButtonComponent, NzThMeasureDirective, NzCellBreakWordDirective, NzTagComponent, DashboardGreyCardComponent, RouterLink, PriorityTagsComponent, SingleStatusTagsComponent],
+  imports: [DashboardCardComponent, DashboardGreyCardComponent, DashboardBoxComponent, NzTypographyComponent, NzDividerComponent, NzFlexDirective, NzIconModule, NzTableComponent, NzGridModule, NzButtonComponent, NzThMeasureDirective, DashboardGreyCardComponent, RouterLink, PriorityTagsComponent, SingleStatusTagsComponent],
   templateUrl: './dashboard-page.html',
   styleUrl: './dashboard-page.css',
 })

@@ -6,7 +6,7 @@
     <div nz-row [nzGutter]="[10,10]">
       <!-- FILTERS -->
       <div nz-col nzSpan="24">
-        <app-dasboard-box-component>
+        <app-dashboard-box-component>
           <div body>
             <div nz-row [nzGutter]="[10,10]">
               <div nz-col nzFlex="1 0 150px">
@@ -47,24 +47,19 @@
                   }
                 </nz-select>
               </div>
-              <div nz-col nzFlex="1 1 200px" >
-                <button nz-button nzType="primary"><nz-icon nzType="plus" nzTheme="outline" />Add Report</button>
-              </div>
             </div>
-
-
           </div>
-        </app-dasboard-box-component>
+        </app-dashboard-box-component>
       </div>
       <!-- TABLE COMPONENT -->
       <div nz-col nzSpan="24">
-        <app-dasboard-box-component>
+        <app-dashboard-box-component>
           <div body>
             <app-table-component
               [tableColumns]="tableHardwareReportsService.tableColumns"
               [tableData]="tableData()"></app-table-component>
           </div>
-        </app-dasboard-box-component>
+        </app-dashboard-box-component>
       </div>
     </div>
   </div>
