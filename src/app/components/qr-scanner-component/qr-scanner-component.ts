@@ -8,7 +8,7 @@ import {BrowserMultiFormatReader} from '@zxing/browser';
   styleUrl: './qr-scanner-component.css',
 })
 
-export class QrScannerComponent implements AfterViewInit, OnDestroy {
+export class QrScannerComponent implements AfterViewInit {
 
   @ViewChild('video', { static: true })
   video!: ElementRef<HTMLVideoElement>;
@@ -19,6 +19,13 @@ export class QrScannerComponent implements AfterViewInit, OnDestroy {
   private codeReader = new BrowserMultiFormatReader();
 
   async ngAfterViewInit(): Promise<void> {
+
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: true
+    });
+
+    this.video.nativeElement.srcObject = stream;
+    this.video.nativeElement.play();
 
     try {
       const result =
@@ -43,7 +50,4 @@ export class QrScannerComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-
-  }
 }
