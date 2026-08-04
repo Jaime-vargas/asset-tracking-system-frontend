@@ -141,4 +141,4 @@ docs/images/      # Capturas del README
 
 ## Autor
 
-**Jaime** — Proyecto incluido en mi portafolio profesional.
+**Jaime Vargas** — Proyecto incluido en mi portafolio profesional.
