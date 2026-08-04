@@ -59,7 +59,9 @@ export class ReportForm implements OnInit {
   ngOnInit() {
     const report = this.reportStore.selectedReport();
     if (report === null) return;
-    this.fillFieldsFromEntity(report);
+    if(this.formMode() === "edit"){
+      this.fillFieldsFromEntity(report);
+    }
   }
 
   fillFieldsFromEntity(report: ReportDetailDto){
@@ -123,9 +125,8 @@ export class ReportForm implements OnInit {
     })
   }
 
-
   onClose(){
-    this.reportForm.reset();
+    this.reportForm.reset()
     this.sidebarStore.isOpen.set(false);
   }
 }

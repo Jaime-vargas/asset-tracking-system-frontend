@@ -1,1 +1,83 @@
-<p>user-form works!</p>
+<div class="main-container">
+  <span class="title">{{formTitle()}}</span>
+  <form nz-form [formGroup]="selectedUserForm()" (ngSubmit)="submitForm()" nzLayout="vertical" style="height: stretch">
+    <nz-divider nzText="User info" nzOrientation=left></nz-divider>
+    <nz-row [nzGutter]="16">
+      <nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label nzRequired>Full name</nz-form-label>
+          <nz-form-control [nzErrorTip] = "errorTpl">
+            <input nz-input formControlName="fullName" />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+      <nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label nzRequired>Username</nz-form-label>
+          <nz-form-control [nzErrorTip] = "errorTpl">
+            <input nz-input formControlName="username" />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+    </nz-row>
+
+    <nz-row [nzGutter]="16">
+      @if (formMode() === 'add'){
+        <nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label nzRequired>Password</nz-form-label>
+            <nz-form-control [nzErrorTip] = "errorTpl">
+              <input nz-input formControlName="password" />
+            </nz-form-control>
+          </nz-form-item>
+        </nz-col>
+      }
+
+      <nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label nzRequired>Role</nz-form-label>
+          <nz-form-control [nzErrorTip] = "errorTpl">
+            <nz-select style="width: 100%"
+                       formControlName="role">
+              @for(role of usersRoleList(); track role.name){
+                <nz-option
+                  [nzLabel]="role.label"
+                  [nzValue]="role.name">
+                </nz-option>
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+    </nz-row>
+    <nz-divider></nz-divider>
+    <div class="buttons-container" nz-flex nzAlign="center" nzJustify="flex-end"
+         style="width: 100%; gap: 20px">
+      <button nz-button class="form-btn default-btn" nzType="default" nzSize="large" type="button" (click)="onClose()" >Close</button>
+      <button nz-button class="form-btn primary-btn" nzType="primary" nzSize="large" type="submit"
+              [disabled]="selectedUserForm().invalid"
+              [nzLoading]="saveButtonLoading()">
+        <nz-icon nzType="save" nzTheme="outline" />Save Changes</button>
+    </div>
+  </form>
+</div>
+
+<!-- Template Errors -->
+<ng-template #errorTpl let-control>
+  @if (control.hasError('required')) {
+    This field is mandatory
+  }
+  @if (control.hasError('minlength')) {
+    This field is too short
+  }
+  @if (control.hasError('maxlength')) {
+    This field is too large
+  }
+  @if (control.hasError('pattern')) {
+    Password requirements
+      • At least 8 characters
+      • At least one uppercase letter (A–Z)
+      • At least one lowercase letter (a–z)
+      • At least one number (0–9)
+  }
+</ng-template>
