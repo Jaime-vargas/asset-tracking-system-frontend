@@ -6,15 +6,15 @@
       <div nz-col nzSpan="24">
         <nz-flex nzJustify="space-between" nzGap="small">
           <div nz-flex nzGap="small">
-            <button nz-button class="form-btn default-btn" nz-dropdown [nzDropdownMenu]="downloadMenu" nzPlacement="bottomLeft">Download <nz-icon nzType="download" nzTheme="outline" /></button>
-            <button nz-button class="form-btn default-btn" nz-dropdown [nzDropdownMenu]="importMenu" nzPlacement="bottomLeft">Import</button>
+            <button nz-button class="form-btn default-btn" nz-dropdown [nzDropdownMenu]="exportMenu" nzPlacement="bottomLeft">Export <nz-icon nzType="export" nzTheme="outline" /></button>
+            <button nz-button class="form-btn default-btn" nz-dropdown [nzDropdownMenu]="importMenu" nzPlacement="bottomLeft">Import <nz-icon nzType="import" nzTheme="outline" /></button>
           </div>
           <button nz-button class="form-btn primary-btn" nzType="primary" nz-dropdown [nzDropdownMenu]="newMenu" nzPlacement="bottomRight"><nz-icon nzType="plus" nzTheme="outline" />Add Hardware</button>
         </nz-flex>
       </div>
 
       <div nz-col nzSpan="24">
-        <app-dasboard-box-component>
+        <app-dashboard-box-component>
           <div body nz-row [nzGutter]="[5,5]">
             <div nz-col nzFlex="1 0 200px">
               <nz-input-wrapper nzAllowClear >
@@ -53,38 +53,115 @@
               </nz-input-wrapper>
             </div>
           </div>
-        </app-dasboard-box-component>
+        </app-dashboard-box-component>
       </div>
       <!-- TABLE COMPONENT -->
       <div nz-col nzSpan="24">
-        <app-dasboard-box-component>
+        <app-dashboard-box-component>
           <div body>
             <app-table-component
+              [tableLoading]="hardwareStore.tableLoading()"
               [tableColumns]="tableBranchHardwareService.tableColumns"
               [tableData]="tableData()"></app-table-component>
           </div>
-        </app-dasboard-box-component>
+        </app-dashboard-box-component>
       </div>
       <!-- /TABLE COMPONENT -->
+
+      <!-- /FILES SECTION -->
+      <div nz-col nzSpan="24">
+        <app-dashboard-box-component [flex]="true" [boxTitle]="'Files & Documents'">
+          <div body>
+            <div nz-row nzGutter="10">
+              <div nz-col nzSpan="6" nz-flex nzVertical nzGap="small" >
+                <app-dashboard-box-component>
+                  <div body>
+                    <div nz-flex nzJustify="space-between">
+                      <h4 nz-typography style="margin: 0">Categories</h4>
+                      @if (currentRole === 'ADMIN'){
+                        <button
+                          nz-button
+                          class="form-btn"
+                          nzType="text"
+                          (click)="saveCategory()">
+                          <nz-icon nzType="plus" nzTheme="outline" />
+                        </button>
+                      }
+                    </div>
+                  </div>
+                </app-dashboard-box-component>
+                <div nz-flex nzVertical nzJustify="start" nzGap="large" style="flex: 1;" >
+                  <nz-segmented
+                    nzVertical
+                    [nzBlock]="true"
+                    nzSize="large"
+                    (nzValueChange)="handleValueChange($event)">
+                    @for (category of categoryFilter(); track category.id){
+                      <label nz-segmented-item [nzValue]="category.name">
+                        <div nz-flex nzJustify="start" nzAlign="center" nzGap="large">
+                          <nz-icon nzType="folder" nzTheme="fill" />
+                          <div>
+                            {{ category.name }}
+                            @if (category.id !== 0 && currentRole === 'ADMIN') {
+                              <button nz-button nzType="text" (click)="updateCategory(category)" style="width: 15px" ><nz-icon style="font-size:10px" nzType="edit" nzTheme="outline" /></button>
+                            }
+                          </div>
+
+                        </div>
+                      </label>
+                    }
+                  </nz-segmented>
+                  <app-upload-drag-and-drop-component
+                    [multipleFiles]="true"
+                    [beforeUpload]="beforeUpload"
+                    uploadUrl="''">
+
+                  </app-upload-drag-and-drop-component>
+                </div>
+              </div>
+              <div nz-col nzSpan="18">
+                <app-table-component
+                  [tableColumns]="tableColumnsBranchFiles.tableColumns"
+                  [tableData]="filteredBranchFiles()">
+
+                </app-table-component>
+              </div>
+            </div>
+
+          </div>
+        </app-dashboard-box-component>
+      </div>
+
     </div>
   </div>
 </div>
 
 <!-- Drop down - Download button -->
-<nz-dropdown-menu #downloadMenu="nzDropdownMenu">
+<nz-dropdown-menu #exportMenu="nzDropdownMenu">
   <ul nz-menu>
     <li nz-menu-item (click)="hardwareStore.getPhotoReportByBranchId()">Photo report</li>
     <li nz-menu-item (click)="hardwareStore.getTechnicalMemoryByBranchId()">Technical memory</li>
     <li nz-menu-item (click)="hardwareStore.getQrCodesByBranchId()">QR codes</li>
+    <li nz-menu-item (click)="branchStore.exportCamerasToXLS(currentBranchId)">XLS document</li>
   </ul>
 </nz-dropdown-menu>
 
 <nz-dropdown-menu #importMenu="nzDropdownMenu">
   <ul nz-menu>
-    <li nz-menu-item>Import from .XLS</li>
-    <li nz-menu-item>Download template</li>
+    <li nz-menu-item>
+      <app-upload-button-component
+        [acceptedFiles]="'.xlsx'"
+        [uploadUrl]="branchStore.getImportCamerasUrl(currentBranchId)"
+        (uploadSuccess)="importSuccess($event)"
+      ><div body>
+        Import from XLS
+      </div>
+      </app-upload-button-component>
+    </li>
+    <li nz-menu-item (click)="branchStore.getImportTemplate()">Download template <nz-icon nzType="download" nzTheme="outline" /></li>
   </ul>
 </nz-dropdown-menu>
+
 <nz-dropdown-menu #newMenu="nzDropdownMenu">
   <ul nz-menu>
     <li nz-menu-item (click)="openNewSidebar()">Camera</li>
@@ -103,3 +180,35 @@
 }
 <!-- /SIDEBAR COMPONENT -->
 
+<!-- SAVE / UPDATE FILE CATEGORY MODAL -->
+<ng-template #saveUpdateModal>
+  <app-file-category-form
+    (close)="modalRef?.destroy()"></app-file-category-form>
+</ng-template>
+
+<!-- UPLOAD FILES MODAL -->
+<ng-template #uploadModal>
+  <h4 nz-typography>Upload Files</h4>
+  <nz-divider nzSize="small"></nz-divider>
+  <strong>{{ branchStore.fileUploadList().length }} files ready to upload</strong>
+  <nz-form-item style="display: flex; flex-direction: column; align-items: start">
+    <nz-form-label nzRequired>Categoría</nz-form-label>
+    <nz-form-control style="width: 100%;">
+      <nz-select style="width: 100%"
+        [(ngModel)]="selectedUploadCategory">
+        @for(category of branchStore.fileCategoryList(); track category){
+          <nz-option
+            [nzLabel]="category.name"
+            [nzValue]="category.id">
+          </nz-option>
+        }
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-divider nzSize="small"></nz-divider>
+  <ul>
+    @for (file of branchStore.fileUploadList(); track $index){
+      <li>{{file.name}}</li>
+    }
+  </ul>
+</ng-template>
