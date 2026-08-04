@@ -1,1 +1,40 @@
-<p>current-user-component works!</p>
+@if(authService.token()){
+  <div nz-flex nzGap="small" nzAlign="center"
+       nz-popover
+       [nzPopoverContent]="userMenu"
+       [nzPopoverPlacement]="'leftTop'"
+       nzPopoverTrigger="click"
+       nzPopoverTitle="User Data"
+       style="
+       border-radius: 5px;
+       background: white;
+       padding: 5px 10px;
+       box-shadow: 1px 1px 3px #cbc5c5;
+       cursor: pointer"
+  >
+    <span style="color: #1f3155; font-weight: bold">{{userData()?.fullName}}</span>
+  </div>
+}
+<!-- Drop down - Current User -->
+<ng-template #userMenu>
+  <div nz-menu nz-flex nzVertical>
+    <div style="height: 25px">
+      <span>username: </span>
+      <span><strong>{{userData()?.username}}</strong></span>
+    </div>
+    <div style="height: 25px">
+      <span>role: </span>
+      <span><strong>{{ userData()?.role}}</strong></span>
+    </div>
+    <div nz-flex nzVertical nzGap="small">
+    <button nz-button class="form-btn" (click)="changePassword()">Change password</button>
+    <button nz-button class="form-btn" (click)="logout()" nzDanger nzType="primary">Log Out</button>
+    </div>
+  </div>
+</ng-template>
+<!-- PASSWORD CHANGE MODAL -->
+<ng-template #changePasswordModal>
+  <app-user-change-password-form
+  (close)="modalRef?.close()"></app-user-change-password-form>
+</ng-template>
+
