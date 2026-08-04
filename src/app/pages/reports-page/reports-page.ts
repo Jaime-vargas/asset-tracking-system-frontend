@@ -1,16 +1,8 @@
 import {Component, computed, inject, signal} from '@angular/core';
 import {ReportsService} from '../../services/report.service';
 import {ReportTableDto} from '../../interfaces/report/report-table.dto';
-import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {DashboardBoxComponent} from '../../components/dasboard-box-component/dashboard-box.component';
-import {NzEmptyComponent} from 'ng-zorro-antd/empty';
-import {NzTableComponent, NzThMeasureDirective} from 'ng-zorro-antd/table';
-import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
-import {SingleStatusTagsComponent} from '../../components/single-status-tags-component/single-status-tags-component';
-import {ActivatedRoute, RouterLink} from '@angular/router';
-import {NzBreadCrumbComponent, NzBreadCrumbItemComponent} from 'ng-zorro-antd/breadcrumb';
-import {RouteContextService} from '../../services/route-context.service';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
@@ -20,19 +12,13 @@ import {FormsModule} from '@angular/forms';
 import {TableComponent} from '../../components/table-component/table-component';
 import {TableData} from '../../interfaces/table/table-data';
 import {TableColumnsReportsService} from '../../services/table-columns-service/table-columns-reports.service';
+import {UtilityService} from '../../services/utility.service';
 
 @Component({
   selector: 'app-reports-page',
   imports: [
-    NzButtonComponent,
     NzDividerComponent,
     DashboardBoxComponent,
-    NzEmptyComponent,
-    NzTableComponent,
-    NzThMeasureDirective,
-    PriorityTagsComponent,
-    SingleStatusTagsComponent,
-    RouterLink,
     NzTypographyComponent,
     NzRowDirective,
     NzColDirective,
@@ -146,8 +132,6 @@ export class ReportsPage {
           matchStatus
       );
     })
-
-
   )
 
   getReports(){
@@ -156,6 +140,4 @@ export class ReportsPage {
         return this.reportsData.set(data); },
     })
   }
-
-  protected readonly unescape = unescape;
 }
