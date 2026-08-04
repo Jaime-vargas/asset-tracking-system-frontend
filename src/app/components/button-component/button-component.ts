@@ -12,6 +12,6 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
   styleUrl: './button-component.css',
 })
 export class ButtonComponent {
-  type = input<'link' | 'edit'>('link');
-  buttonLabel = input.required()
+  type = input<'link' | 'edit' | 'download'>('link');
+  buttonLabel = input();
 }

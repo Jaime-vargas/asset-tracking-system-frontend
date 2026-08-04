@@ -1,9 +1,10 @@
-import {Component, ElementRef, input, ViewChild} from '@angular/core';
+import {Component, ElementRef, input, output, Output, ViewChild} from '@angular/core';
 import {NzFlexDirective} from "ng-zorro-antd/flex";
 import {NzImageDirective, NzImageGroupComponent} from "ng-zorro-antd/image";
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
-import {PhotoDto} from '../../interfaces/photo.dto';
+import {FileEntityDto} from '../../interfaces/fileEntityDto';
+import {NzPopconfirmDirective} from 'ng-zorro-antd/popconfirm';
 
 @Component({
   selector: 'app-carousel-component',
@@ -12,14 +13,20 @@ import {PhotoDto} from '../../interfaces/photo.dto';
     NzImageGroupComponent,
     NzImageDirective,
     NzButtonComponent,
-    NzIconDirective
+    NzIconDirective,
+    NzPopconfirmDirective
   ],
   templateUrl: './carousel-component.html',
   styleUrl: './carousel-component.css',
 })
 export class CarouselComponent {
-  images = input.required<PhotoDto[]>();
+
+  images = input.required<FileEntityDto[]>();
+  showDeleteButton = input<boolean>(false);
   imageSize = 180;
+
+  // Outputs
+  deleteEvent = output<number>();
 
   defaultImgPlaceholder: string = '/defaultImgPlaceholder.png';
 
@@ -37,4 +44,6 @@ export class CarouselComponent {
       behavior: 'smooth'
     });
   }
+
+  protected readonly console = console;
 }

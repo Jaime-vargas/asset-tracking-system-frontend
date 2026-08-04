@@ -3,11 +3,18 @@
         [nzType]="type() === 'edit' ? 'default' : 'primary'"
         [class]="type() === 'edit' ? 'edit-button default-btn': 'primary-btn'"
         >
-  @if (type() === 'link'){
-    {{buttonLabel()}}
-    <nz-icon nzType="right" />
-  } @else {
-    <nz-icon nzType="edit" nzTheme="fill" />
-    {{buttonLabel()}}
+
+  @switch (type()){
+    @case ('link'){
+      {{buttonLabel()}}
+      <nz-icon nzType="right" />
+    }
+    @case ("edit"){
+      <nz-icon nzType="edit" nzTheme="fill" />
+      {{buttonLabel()}}
+    }
+    @case ('download'){
+      <nz-icon nzType="download" nzTheme="outline" />
+    }
   }
 </button>
