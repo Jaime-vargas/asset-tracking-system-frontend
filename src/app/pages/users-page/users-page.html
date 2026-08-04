@@ -1,3 +1,49 @@
-<h2 nz-typography>Users</h2>
-<nz-divider></nz-divider>
-
+<div class="contentPage">
+  <h2 nz-typography>Users</h2>
+  <div nz-flex nzJustify="flex-end">
+    <button nz-button class="form-btn primary-btn" nzType="primary"
+      (click)="saveUser()">
+      <nz-icon nzType="user-add" nzTheme="outline" />
+      New User
+    </button>
+  </div>
+  <nz-divider></nz-divider>
+  <div nz-flex nzVertical nzGap="large">
+    <app-user-row-component
+      themeColors="yellow"
+      [title]="'Administrators'"
+      [userList]="adminUsersList()"
+      [LoadingOptionsMenu]="LoadingOptionsMenu()"
+      (disableUser)="disableUser($event)"
+      (editUser)="editUser($event)"
+      (enableUser)="enableUser($event)"
+      (resetPassword)="resetPassword($event)">
+    </app-user-row-component>
+    <app-user-row-component
+      themeColors="blue"
+      [title]="'Standard Users'"
+      [userList]="standardUsersList()"
+      [LoadingOptionsMenu]="LoadingOptionsMenu()"
+      (disableUser)="disableUser($event)"
+      (editUser)="editUser($event)"
+      (enableUser)="enableUser($event)"
+      (resetPassword)="resetPassword($event)">
+    </app-user-row-component>
+  </div>
+</div>
+<!-- SIDEBAR COMPONENT -->
+@if(openSideBar()){
+  <app-edit-side-bar>
+    <div body>
+      <app-user-form></app-user-form>
+    </div>
+  </app-edit-side-bar>
+}
+<!-- /SIDEBAR COMPONENT -->
+<!-- PASSWORD RESET MODAL -->
+<ng-template #resetPasswordModal>
+  <app-user-reset-password-form
+    (close)="modalRef?.close()">
+  </app-user-reset-password-form>
+</ng-template>
+<!-- /PASSWORD RESET MODAL -->
