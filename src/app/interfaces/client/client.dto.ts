@@ -1,7 +1,7 @@
-import {PhotoDto} from '../photo.dto';
+import {FileEntityDto} from '../fileEntityDto';
 
 export interface ClientDto {
   id: number;
   name: string;
-  photo: PhotoDto;
+  photo: FileEntityDto;
 }

@@ -1,5 +1,5 @@
 import {HardwareDetailDto} from './hardware/hardware-detail.dto';
-import {PhotoDto} from './photo.dto';
+import {FileEntityDto} from './fileEntityDto';
 
 export interface CameraDetailDto extends HardwareDetailDto {
   type: 'Camera';
@@ -9,6 +9,6 @@ export interface CameraDetailDto extends HardwareDetailDto {
   idf: string; // NEW
   username  : string; // NEW
   password: string; // NEW
-  viewFromCameraPhoto: PhotoDto; // NEW
-  viewToCameraPhoto: PhotoDto; // NEW
+  viewFromCameraPhoto: FileEntityDto; // NEW
+  viewToCameraPhoto: FileEntityDto; // NEW
 }

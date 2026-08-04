@@ -1,5 +1,5 @@
 import {ReportCountDTO} from './report/report-count.dto';
-import {PhotoDto} from './photo.dto';
+import {FileEntityDto} from './fileEntityDto';
 
 export interface ClientTableDto {
   id: number;
@@ -7,5 +7,5 @@ export interface ClientTableDto {
   branches: number;
   totalHardware : number;
   reportsActive: ReportCountDTO[];
-  photo: PhotoDto;
+  photo: FileEntityDto;
 }
