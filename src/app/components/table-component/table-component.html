@@ -3,7 +3,8 @@
           [nzScroll]="{ x: '100%', y: '500px'}"
           nzTableLayout="fixed"
           [nzShowSizeChanger]="true"
-          [nzData]="tableData()">
+          [nzData]="tableData()"
+          [nzLoading]="tableLoading()">
   <!-- TABLE HEAD LABELS -->
   <thead class="theadd">
     <tr>
@@ -23,7 +24,7 @@
   <!-- TABLE ROWS -->
     <tbody>
       @for (row of nzData.data; track row['id']){
-        <tr (click)="console.log(row['actions']['0'].link)">
+        <tr (click)="router.navigate(row['actions']['0'].link)">
           @for (column of tableColumns(); track column.key) {
             <td nzEllipsis [nzLeft]="column.fixed === 'nzLeft'">
               <!-- SWITCHING DATA DEPENDING OF TYPE -->
@@ -47,7 +48,14 @@
                   :  row[column.key]
                   }}
                 }
+                @case ('formatted-date'){
+                  {{utilityService.isValidDate(row[column.key])}}
+                }
                 <!-- ICON CASES -->
+                @case ('file-icon'){
+                  <img [ngSrc]="row['fileType'].icon" width="25" height="25" style="margin-right: 5px; object-fit: contain">
+                  <span>{{row[column.key]}}</span>
+                }
                 @case ('icon-branch'){
                   <nz-icon nzType="shop" nzTheme="fill" class="bg-green table-icon" />{{row[column.key]}}
                 }
@@ -70,7 +78,7 @@
                     <app-button-component [buttonLabel]="button.label"
                                           [type]="button.type"
                                           [routerLink]="button.link ? button.link : null"
-                                          (click)="button.onClick ? button.onClick(row) : null" ></app-button-component>
+                                          (click)="button.onClick ? button.onClick(row) : null; $event.stopPropagation()" ></app-button-component>
                   }
                 }
                 @default {
