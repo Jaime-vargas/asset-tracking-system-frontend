@@ -1,47 +1,147 @@
-<div class="contentPage">
-  <h2 nz-typography>Clients</h2>
-
-  <div class="contentBody">
-    <div nz-row [nzGutter]="[10,10]">
-      <div nz-col nzSpan="24">
-
-        <!-- SEARCH SECTION -->
-        <app-dashboard-box-component>
-          <div body nz-flex nzGap="middle">
-            <nz-input-wrapper nzAllowClear >
-              <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-              <input nz-input [ngModel]="clientNameFilter()" (ngModelChange)="clientNameFilter.set($event)" placeholder=" Search clients..." />
-            </nz-input-wrapper>
-            <!-- /SEARCH SECTION -->
-
-            <button  nz-button class="form-btn primary-btn" nzType="primary" (click)="openNewSidebar()"><nz-icon nzType="plus" nzTheme="outline"/>Add Client</button>
-
-          </div>
-        </app-dashboard-box-component>
-
-      </div>
-
-      <!-- TABLE COMPONENT -->
-      <div nz-col nzSpan="24">
-        <app-dashboard-box-component>
-          <div body>
-            <app-table-component
-              [tableLoading]="clientStore.tableLoading()"
-              [tableColumns]="tableClientService.tableColumns"
-              [tableData]="tableData()"></app-table-component>
-          </div>
-        </app-dashboard-box-component>
-      </div>
+<div class="contentPage clients-page">
+  <header class="page-heading">
+    <div>
+      <span class="eyebrow">WORKSPACE</span>
+      <h1>Clients</h1>
+      <p>Find a client. Everything you need is inside.</p>
     </div>
+    <button nz-button nzType="primary" class="add-client" (click)="openNewSidebar()">
+      <nz-icon nzType="plus" /> Add client
+    </button>
+  </header>
+  <div class="contentBody">
+    <section class="overview" aria-label="Client overview">
+      <div>
+        <span>Clients</span
+        ><strong>{{ clientStore.tableLoading() ? '—' : clientStore.clientList().length }}</strong>
+      </div>
+      <div>
+        <span>Equipment</span
+        ><strong>{{ clientStore.tableLoading() ? '—' : totals().hardware }}</strong>
+      </div>
+      <div>
+        <span>Open reports</span
+        ><strong>{{ clientStore.tableLoading() ? '—' : totals().reports }}</strong>
+      </div>
+    </section>
+    <section aria-label="Client directory">
+      <div class="directory-toolbar">
+        <nz-input-wrapper
+          ><nz-icon nzInputPrefix nzType="search" /><input
+            nz-input
+            aria-label="Search clients"
+            placeholder="Search clients by name…"
+            [ngModel]="clientNameFilter()"
+            (ngModelChange)="clientNameFilter.set($event)"
+        /></nz-input-wrapper>
+        <select aria-label="Sort clients" [ngModel]="sort()" (ngModelChange)="sort.set($event)">
+          <option value="name">Name A–Z</option>
+          <option value="hardware">Most equipment</option>
+          <option value="reports">Most open reports</option>
+        </select>
+        <button
+          class="report-filter"
+          [class.selected]="onlyOpenReports()"
+          [attr.aria-pressed]="onlyOpenReports()"
+          (click)="onlyOpenReports.set(!onlyOpenReports())"
+        >
+          With open reports
+        </button>
+      </div>
+      <p class="result-count" aria-live="polite">
+        {{ filteredClients().length }} clients{{
+          clientNameFilter() || onlyOpenReports() ? ' found' : ''
+        }}
+      </p>
+      @if (clientStore.tableLoading()) {
+        <div class="state" role="status">Loading clients…</div>
+      } @else if (clientStore.loadError()) {
+        <div class="state">
+          <h2>Clients could not be loaded</h2>
+          <button nz-button (click)="clientStore.loadClients()">Try again</button>
+        </div>
+      } @else if (!filteredClients().length) {
+        <div class="state">
+          <nz-icon nzType="team" />
+          <h2>
+            {{
+              clientStore.clientList().length ? 'No matching clients' : 'Your clients start here'
+            }}
+          </h2>
+          <p>
+            {{
+              clientStore.clientList().length
+                ? 'Try another name or clear the filters.'
+                : 'Add your first client to organize documents, equipment and projects.'
+            }}
+          </p>
+          @if (clientStore.clientList().length) {
+            <button nz-button (click)="clearFilters()">Clear filters</button>
+          } @else {
+            <button nz-button nzType="primary" (click)="openNewSidebar()">Add client</button>
+          }
+        </div>
+      } @else {
+        <div class="client-grid">
+          @for (client of visibleClients(); track client.id) {
+            <article class="client-card">
+              <a
+                [routerLink]="clientLink(client)"
+                class="client-link"
+                [attr.aria-label]="'Open ' + client.name"
+              >
+                <div class="client-identity">
+                  <div class="client-avatar">
+                    @if (photoUrl(client); as url) {
+                      <img [src]="url" alt="" (error)="imageFailed(url)" />
+                    } @else {
+                      <span>{{ initials(client.name) }}</span>
+                    }
+                  </div>
+                  <h2>{{ client.name }}</h2>
+                </div>
+                <dl class="client-metrics">
+                  <div>
+                    <dt>Equipment</dt>
+                    <dd>{{ client.totalHardware }}</dd>
+                  </div>
+                  <div>
+                    <dt>Projects</dt>
+                    <dd>{{ client.branches }}</dd>
+                  </div>
+                  <div>
+                    <dt>Open reports</dt>
+                    <dd [class.has-reports]="client.reportsActive.length > 0">
+                      {{ client.reportsActive.length }}
+                    </dd>
+                  </div>
+                </dl>
+                <span class="open-workspace"
+                  >Open workspace <span aria-hidden="true">↗</span></span
+                ></a
+              >
+              <button
+                class="edit-client"
+                (click)="openEditSidebar(client)"
+                [attr.aria-label]="'Edit ' + client.name"
+              >
+                <nz-icon nzType="edit" />
+              </button>
+            </article>
+          }
+        </div>
+        <app-list-pagination
+          [total]="filteredClients().length"
+          [page]="currentPage()"
+          [pageSize]="pageSize"
+          (pageChange)="page.set($event)"
+        />
+      }
+    </section>
   </div>
 </div>
-
-<!-- SIDEBAR COMPONENT -->
-@if(openSideBar()){
-  <app-edit-side-bar>
-    <div body>
-      <app-client-form></app-client-form>
-    </div>
-  </app-edit-side-bar>
+@if (openSideBar()) {
+  <app-edit-side-bar width="min(600px, 100vw)"
+    ><div body><app-client-form /></div
+  ></app-edit-side-bar>
 }
-<!-- /SIDEBAR COMPONENT -->

@@ -1,9 +1,36 @@
-<div class="mainframe" nz-row>
-  <div nz-col nzFlex="0 0 240px">
-    <app-menu-sidebar-component></app-menu-sidebar-component>
-  </div>
-  <div class="contentFrame" nz-col nzFlex="1 0 1040px">
-    <app-current-user-component></app-current-user-component>
-    <router-outlet></router-outlet>
-  </div>
+<div
+  class="mainframe"
+  [class.client-area]="clientArea()"
+  [class.login-area]="loginArea()"
+  [class.navigation-open]="menuOpen()"
+  (keydown.escape)="menuOpen.set(false)"
+>
+  @if (!loginArea()) {
+    <button
+      class="mobile-menu"
+      type="button"
+      (click)="menuOpen.set(!menuOpen())"
+      [attr.aria-expanded]="menuOpen()"
+      aria-controls="main-navigation"
+      aria-label="Toggle navigation"
+    >
+      ☰
+    </button>
+    @if (menuOpen()) {
+      <button
+        class="menu-backdrop"
+        (click)="menuOpen.set(false)"
+        aria-label="Close navigation"
+      ></button>
+    }
+    <div id="main-navigation" class="navigation-column" [class.menu-open]="menuOpen()">
+      <app-menu-sidebar-component />
+    </div>
+  }
+  <main class="contentFrame">
+    @if (!loginArea()) {
+      <app-current-user-component />
+    }
+    <router-outlet />
+  </main>
 </div>

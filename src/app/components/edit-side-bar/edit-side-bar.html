@@ -1,12 +1,10 @@
-<nz-drawer
-  [nzWidth]="600"
-  [nzClosable]="false"
+<nz-modal
+  [nzWidth]="width()"
   [nzVisible]="isOpen()"
-  (nzOnClose)="onClose()"
-  nzPlacement="right"
+  [nzFooter]="null"
+  [nzCentered]="true"
+  [nzMaskClosable]="false"
+  (nzOnCancel)="onClose()"
 >
-  <ng-container *nzDrawerContent>
-    <ng-content select="[body]">
-    </ng-content>
-  </ng-container>
-</nz-drawer>
+  <ng-container *nzModalContent><ng-content select="[body]" /></ng-container>
+</nz-modal>

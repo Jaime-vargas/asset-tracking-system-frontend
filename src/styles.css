@@ -1,3 +1,4 @@
+@import './theme.css';
 .mainframe {
   min-width: 1280px;
   background: rgba(252, 252, 252, 0.99) !important;
@@ -154,4 +155,9 @@ td{
   background: #3b5998;
   color: white;
 }
+
+.mainframe.client-area .contentFrame > router-outlet + * { display:block; height:100%; min-width:0; }
+.mainframe.client-area :is(button,a,input,nz-select):focus-visible { outline:3px solid #749ee9; outline-offset:3px; }
+.mainframe.client-area app-current-user-component { max-width:calc(100vw - 96px); }
+.mainframe.client-area app-current-user-component > div { min-height:40px; }
 

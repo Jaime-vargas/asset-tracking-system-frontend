@@ -1,5 +1,127 @@
-
-
-
-
-
+:host {
+  display: block;
+  padding: 14px;
+  height: 100dvh;
+  background: var(--app-surround);
+}
+.mainframe {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 208px minmax(0, 1fr);
+  height: 100%;
+  overflow: hidden;
+  border: 7px solid white;
+  border-radius: 25px;
+  background: var(--app-canvas) !important;
+  box-shadow: 0 16px 65px #63539f14;
+}
+.contentFrame {
+  min-width: 0;
+  padding: 64px 26px 20px;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+.navigation-column {
+  min-width: 0;
+  overflow: auto;
+  background: white;
+}
+.mobile-menu,
+.menu-backdrop {
+  display: none;
+}
+.mainframe.login-area {
+  display: block;
+  border: 0;
+  background: transparent !important;
+  box-shadow: none;
+}
+.login-area .contentFrame {
+  padding: 0;
+  overflow: auto;
+}
+@media (min-width: 1800px) {
+  .contentFrame {
+    padding: 64px 38px 24px;
+  }
+}
+@media (max-width: 900px) {
+  :host {
+    padding: 8px;
+  }
+  .mainframe {
+    grid-template-columns: minmax(0, 1fr);
+    border-width: 5px;
+    border-radius: 20px;
+  }
+  .contentFrame {
+    padding: 64px 18px 16px;
+  }
+  .navigation-column {
+    position: fixed;
+    inset: 13px auto 13px 13px;
+    width: 208px;
+    z-index: 1101;
+    border-radius: 16px;
+    box-shadow: 12px 0 40px #35266320;
+    transform: translateX(-115%);
+    visibility: hidden;
+    transition: transform 0.18s ease;
+  }
+  .navigation-column.menu-open {
+    transform: translateX(0);
+    visibility: visible;
+  }
+  .mobile-menu {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    z-index: 100;
+    top: 22px;
+    left: 26px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--app-border);
+    border-radius: 10px;
+    background: white;
+    color: var(--app-accent);
+    font-size: 19px;
+    cursor: pointer;
+  }
+  .navigation-open .mobile-menu {
+    position: fixed;
+    z-index: 1103;
+    left: 231px;
+  }
+  .menu-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    border: 0;
+    background: #33254d66;
+    z-index: 1100;
+    backdrop-filter: blur(3px);
+  }
+}
+@media (max-width: 500px) {
+  :host {
+    padding: 0;
+  }
+  .mainframe {
+    border: 0;
+    border-radius: 0;
+  }
+  .contentFrame {
+    padding: 60px 14px 12px;
+  }
+  .mobile-menu {
+    top: 14px;
+    left: 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .navigation-column {
+    transition: none;
+  }
+}

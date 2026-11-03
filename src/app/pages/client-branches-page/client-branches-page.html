@@ -1,54 +1,125 @@
-<div class="contentPage">
-  <app-breadcrumb-component [breadcrumb]="breadcrumb()"></app-breadcrumb-component>
-  <div class="contentBody">
-    <div nz-row [nzGutter]="[10,10]">
-      <div nz-col nzSpan="24">
-
-        <app-dashboard-box-component>
-          <div body nz-flex nzGap="middle">
-            <!-- SEARCH SECTION -->
-            <nz-input-wrapper nzAllowClear>
-              <nz-icon nzInputPrefix nzType="search" nzTheme="outline"/>
-              <input nz-input [ngModel]="branchNameFilter()" (ngModelChange)="branchNameFilter.set($event)"
-                     placeholder=" Search projects..."/>
-            </nz-input-wrapper>
-            <!-- /SEARCH SECTION -->
-
-            <button
-              nz-button
-              class="form-btn primary-btn"
-              nzType="primary"
-              (click)="openNewSidebar()"
-              >
-              <nz-icon nzType="plus" nzTheme="outline"/>
-              Add Project
-            </button>
-          </div>
-        </app-dashboard-box-component>
+<div class="contentPage workspace">
+  <header class="workspace-header">
+    <a routerLink="/clients" class="back-link">← All clients</a>
+    <div class="client-heading">
+      <div class="client-symbol">
+        @if (clientLogo(); as logo) {
+          <img [src]="logo" [alt]="clientName() + ' logo'" (error)="failedLogo.set(logo)" />
+        } @else {
+          <span aria-hidden="true">{{ clientInitials() }}</span>
+        }
       </div>
-
-      <!-- TABLE COMPONENT -->
-      <div nz-col nzSpan="24">
-        <app-dashboard-box-component>
-          <div body>
-            <app-table-component
-              [tableLoading]="branchStore.tableLoading()"
-              [tableColumns]="tableClientsBranchesService.tableColumns"
-              [tableData]="tableData()">
-            </app-table-component>
-          </div>
-          </app-dashboard-box-component>
+      <div>
+        <span class="eyebrow">CLIENT WORKSPACE</span>
+        <h1>{{ clientName() }}</h1>
+        <p>Documents, equipment and activity in one place.</p>
       </div>
     </div>
+  </header>
+  <div class="contentBody">
+    @if (clientId(); as id) {
+      <nz-tabs [nzSelectedIndex]="activeTab()" (nzSelectedIndexChange)="changeTab($event)">
+        <nz-tab [nzTitle]="documentsTitle"
+          ><ng-template #documentsTitle><nz-icon nzType="file-text" /> Documents</ng-template>
+          @if (activeTab() === 0) {
+            <app-client-documents
+              [clientId]="id"
+              [projects]="branchList()"
+              [initialProjectId]="documentProjectId()"
+              (projectFilterChange)="updateDocumentProject($event)"
+            />
+          }
+        </nz-tab>
+        <nz-tab [nzTitle]="hardwareTitle"
+          ><ng-template #hardwareTitle><nz-icon nzType="desktop" /> Hardware</ng-template>
+          @if (activeTab() === 1) {
+            <app-client-hardware [clientId]="id" />
+          }
+        </nz-tab>
+        <nz-tab [nzTitle]="projectsTitle"
+          ><ng-template #projectsTitle><nz-icon nzType="folder-open" /> Projects</ng-template>
+          @if (activeTab() === 2) {
+            <section class="projects-section">
+              <div class="section-heading">
+                <div>
+                  <h2>Projects</h2>
+                  <p>Document maintenance, installations and other activities.</p>
+                </div>
+                <button nz-button nzType="primary" (click)="openNewSidebar()">+ Add project</button>
+              </div>
+              <input
+                nz-input
+                class="project-search"
+                aria-label="Search projects"
+                placeholder="Search projects…"
+                [ngModel]="branchNameFilter()"
+                (ngModelChange)="branchNameFilter.set($event); page.set(1)"
+              />
+              <p class="result-count" aria-live="polite">
+                {{ filteredBranches().length }} projects
+              </p>
+              @if (branchStore.tableLoading()) {
+                <div class="empty-state" role="status">Loading projects…</div>
+              } @else if (branchStore.loadError()) {
+                <div class="empty-state" role="alert">
+                  <h3>Projects could not be loaded</h3>
+                  <button nz-button (click)="branchStore.loadBranches()">Try again</button>
+                </div>
+              } @else {
+                <div class="project-grid">
+                  @for (project of visibleProjects(); track project.id) {
+                    <article class="project-card">
+                      <div class="project-top">
+                        <span class="project-icon"><nz-icon nzType="folder-open" /></span
+                        ><button
+                          nz-button
+                          nzType="text"
+                          (click)="openEditSidebar(project)"
+                          [attr.aria-label]="'Edit ' + project.name"
+                        >
+                          <nz-icon nzType="edit" />
+                        </button>
+                      </div>
+                      <h3>
+                        <a [routerLink]="projectLink(project)">{{ project.name }}</a>
+                      </h3>
+                      <p class="project-description">Activity documentation and evidence</p>
+                      <div class="project-actions">
+                        <button nz-button (click)="showProjectDocuments(project)">
+                          View documents</button
+                        ><a [routerLink]="projectLink(project)" class="project-link"
+                          >Open project ↗</a
+                        >
+                      </div>
+                    </article>
+                  } @empty {
+                    <div class="empty-state">
+                      <h3>{{ branchNameFilter() ? 'No matching projects' : 'No projects yet' }}</h3>
+                      <p>
+                        {{
+                          branchNameFilter()
+                            ? 'Try another name.'
+                            : 'Create a project to keep reports and evidence of an activity together.'
+                        }}
+                      </p>
+                    </div>
+                  }
+                </div>
+                <app-list-pagination
+                  [total]="filteredBranches().length"
+                  [page]="currentPage()"
+                  [pageSize]="pageSize"
+                  (pageChange)="page.set($event)"
+                />
+              }
+            </section>
+          }</nz-tab
+      ></nz-tabs>
+    }
   </div>
 </div>
-
-<!-- SIDEBAR COMPONENT -->
-@if(openSideBar()){
-  <app-edit-side-bar>
-    <div body>
-      <app-branch-form></app-branch-form>
-    </div>
-  </app-edit-side-bar>
+@if (openSideBar() && activeTab() === 2) {
+  <app-edit-side-bar width="min(600px, 100vw)"
+    ><div body><app-branch-form /></div
+  ></app-edit-side-bar>
 }
-<!-- /SIDEBAR COMPONENT -->

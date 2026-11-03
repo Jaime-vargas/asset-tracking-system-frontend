@@ -1,0 +1,109 @@
+<section class="inventory">
+  <div class="inventory-header">
+    <div>
+      <h2>Hardware</h2>
+      <p>Equipment owned by this client, organized by site.</p>
+    </div>
+    <button nz-button nzType="primary" (click)="openNew()">+ Add camera</button>
+  </div>
+  <div class="inventory-filters">
+    <input
+      nz-input
+      placeholder="Search name, model or serial…"
+      aria-label="Search hardware"
+      [ngModel]="search()"
+      (ngModelChange)="search.set($event)"
+    />
+    <nz-select
+      nzAllowClear
+      nzShowSearch
+      nzPlaceHolder="All sites"
+      [ngModel]="siteFilter()"
+      (ngModelChange)="siteFilter.set($event)"
+    >
+      @for (tag of tags.tags(); track tag.id) {
+        <nz-option [nzValue]="tag.id" [nzLabel]="tag.name" />
+      }
+    </nz-select>
+  </div>
+  <div class="result-count">
+    <span aria-live="polite">{{ filteredHardware().length }} equipment</span>
+    @if (search() || siteFilter() !== null) {
+      <button nz-button nzType="link" (click)="clearFilters()">Clear filters</button>
+    }
+  </div>
+  @if (store.tableLoading()) {
+    <div class="empty-state" role="status">Loading equipment…</div>
+  } @else if (store.loadError()) {
+    <div class="empty-state" role="alert">
+      <h3>Equipment could not be loaded</h3>
+      <button nz-button (click)="store.loadHardware()">Try again</button>
+    </div>
+  } @else {
+    <div class="equipment-grid">
+      @for (hardware of visibleHardware(); track hardware.id) {
+        <article class="equipment-card">
+          <div class="equipment-top">
+            <span class="equipment-icon"><nz-icon nzType="video-camera" /></span
+            ><button class="site-tag" (click)="siteFilter.set(hardware.tagId)">
+              {{ hardware.tagName }}
+            </button>
+          </div>
+          <h3>
+            <a [routerLink]="['/hardware', hardware.id]">{{ hardware.name }}</a>
+          </h3>
+          <p class="equipment-type">{{ hardware.type }}</p>
+          <dl>
+            <div>
+              <dt>Model</dt>
+              <dd>{{ hardware.model || '—' }}</dd>
+            </div>
+            <div>
+              <dt>Serial</dt>
+              <dd>{{ hardware.serialNumber || '—' }}</dd>
+            </div>
+            <div>
+              <dt>Open reports</dt>
+              <dd>{{ hardware.reportsActive.length }}</dd>
+            </div>
+          </dl>
+          <div class="equipment-actions">
+            <a nz-button [routerLink]="['/hardware', hardware.id]">View equipment ↗</a
+            ><button
+              nz-button
+              nzType="text"
+              (click)="openEdit(hardware.id)"
+              [attr.aria-label]="'Edit ' + hardware.name"
+            >
+              Edit
+            </button>
+          </div>
+        </article>
+      } @empty {
+        <div class="empty-state">
+          <h3>
+            {{ search() || siteFilter() !== null ? 'No matching equipment' : 'No equipment yet' }}
+          </h3>
+          <p>
+            {{
+              search() || siteFilter() !== null
+                ? 'Try another search or clear the filters.'
+                : 'Register equipment and assign it to a site.'
+            }}
+          </p>
+        </div>
+      }
+    </div>
+    <app-list-pagination
+      [total]="filteredHardware().length"
+      [page]="currentPage()"
+      [pageSize]="pageSize"
+      (pageChange)="page.set($event)"
+    />
+  }
+</section>
+@if (sidebar.isOpen()) {
+  <app-edit-side-bar width="min(600px, 100vw)"
+    ><div body><app-camera-form /></div
+  ></app-edit-side-bar>
+}

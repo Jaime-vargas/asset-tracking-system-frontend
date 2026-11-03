@@ -1,35 +1,43 @@
-<div class="sidebar">
+<nav class="sidebar" aria-label="Main navigation">
   <div class="logo">
-    <nz-icon nzType="cloud-server" nzTheme="outline"></nz-icon>
-    <span>Assets Control</span>
+    <span class="brand-symbol"><nz-icon nzType="cloud-server" /></span>
+    <div>
+      <span class="brand-name">Assets Control</span
+      ><span class="brand-caption">CLIENT OPERATIONS</span>
+    </div>
   </div>
+  <div class="menu-label">WORKSPACE</div>
   <ul nz-menu nzMode="inline" class="menu-sidebar">
-    <li nz-menu-item routerLink="/dashboard" routerLinkActive="ant-menu-item-selected">
-      <nz-icon nzType="bar-chart" nzTheme="outline"></nz-icon>
-      <span>Dashboard</span>
+    <li nz-menu-item routerLinkActive="ant-menu-item-selected">
+      <a routerLink="/dashboard"><nz-icon nzType="bar-chart" /><span>Dashboard</span></a>
     </li>
-    <li nz-menu-item routerLink="/clients" [class.ant-menu-item-selected]="
-    router.url.startsWith('/clients') &&
-    !router.url.includes('/hardware')" >
-      <nz-icon nzType="apartment" nzTheme="outline"></nz-icon>
-      <span>Clients</span>
+    <li
+      nz-menu-item
+      [class.ant-menu-item-selected]="
+        router.url.startsWith('/clients') && !router.url.includes('/hardware')
+      "
+    >
+      <a routerLink="/clients"><nz-icon nzType="apartment" /><span>Clients</span></a>
     </li>
-    <li nz-menu-item routerLink="/hardware" [class.ant-menu-item-selected]="
-    router.url.includes('/hardware') &&
-    !router.url.includes('/reports')">
-      <nz-icon nzType="laptop" nzTheme="outline"></nz-icon>
-      <span>Hardware</span>
+    <li
+      nz-menu-item
+      [class.ant-menu-item-selected]="
+        router.url.includes('/hardware') && !router.url.includes('/reports')
+      "
+    >
+      <a routerLink="/hardware"><nz-icon nzType="laptop" /><span>Hardware</span></a>
     </li>
-    <li nz-menu-item routerLink="/reports" [class.ant-menu-item-selected]="
-      router.url.includes('/reports')" >
-      <nz-icon nzType="file-exclamation" nzTheme="outline"></nz-icon>
-      <span>Reports</span>
+    <li nz-menu-item [class.ant-menu-item-selected]="router.url.includes('/reports')">
+      <a routerLink="/reports"><nz-icon nzType="file-exclamation" /><span>Reports</span></a>
     </li>
-    @if (currentRole() === 'ADMIN'){
-      <li nz-menu-item routerLink="/users" routerLinkActive="ant-menu-item-selected">
-        <nz-icon nzType="user" nzTheme="outline"></nz-icon>
-        <span>Users</span>
+    @if (currentRole() === 'ADMIN') {
+      <li nz-menu-item routerLinkActive="ant-menu-item-selected">
+        <a routerLink="/users"><nz-icon nzType="user" /><span>Users</span></a>
       </li>
     }
   </ul>
-</div>
+  <div class="sidebar-note">
+    <nz-icon nzType="folder-open" /><strong>Everything in its place</strong>
+    <p>Documents, equipment and projects connected to your clients.</p>
+  </div>
+</nav>

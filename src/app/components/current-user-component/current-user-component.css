@@ -1,5 +1,50 @@
-:host{
+:host {
   position: absolute;
-  top: 24px;
-  right: 24px;
+  top: 18px;
+  right: 26px;
+  z-index: 10;
+  max-width: calc(100% - 90px);
+}
+.user-trigger {
+  border: 1px solid var(--app-border);
+  background: white;
+  padding: 6px 11px;
+  border-radius: 11px;
+  cursor: pointer;
+  box-shadow: 0 3px 10px #63539f04;
+  min-height: 34px;
+}
+.user-avatar {
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  border-radius: 8px;
+  color: var(--app-accent);
+  background: var(--app-accent-soft);
+  font-size: 10px;
+  font-weight: 650;
+}
+.user-name {
+  font-size: 11px;
+  font-weight: 500;
+  color: #7f748f;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 170px;
+}
+@media (max-width: 600px) {
+  :host {
+    top: 13px;
+    right: 14px;
+  }
+  .user-trigger {
+    min-height: 34px;
+    padding: 4px 8px;
+  }
+  .user-name {
+    max-width: 150px;
+    font-size: 10px;
+  }
 }

@@ -1,0 +1,278 @@
+/* Shared visual language: surfaces, controls, forms and feedback. */
+:root {
+  --app-accent: #7551ef;
+  --app-accent-hover: #613ed8;
+  --app-accent-soft: #f0eaff;
+  --app-text: #302b48;
+  --app-muted: #888099;
+  --app-border: #eae6f3;
+  --app-canvas: #f7f7fc;
+  --app-surround: #e4e0f7;
+}
+html,
+body {
+  margin: 0;
+  color: var(--app-text);
+  background: var(--app-surround);
+}
+a {
+  color: var(--app-accent);
+}
+a:hover {
+  color: var(--app-accent-hover);
+}
+.ant-btn {
+  border-radius: 9px;
+  font-size: 12px;
+  box-shadow: none;
+  font-weight: 500;
+}
+.ant-btn.ant-btn-primary:not(.ant-btn-dangerous),
+.ant-btn.primary-btn:not(.ant-btn-dangerous) {
+  background: var(--app-accent);
+  border-color: var(--app-accent);
+  color: white;
+  box-shadow: 0 4px 10px #7551ef16;
+}
+.ant-btn.ant-btn-primary:not(.ant-btn-dangerous):hover {
+  background: var(--app-accent-hover);
+  border-color: var(--app-accent-hover);
+}
+.ant-btn.ant-btn-primary:disabled,
+.ant-btn.primary-btn:disabled {
+  background: #dfd7f7;
+  border-color: #dfd7f7;
+  color: #9b8bbf;
+  box-shadow: none;
+}
+.ant-btn-default {
+  border-color: var(--app-border);
+  color: #716784;
+}
+.ant-btn-default:hover,
+.ant-btn-text:hover {
+  color: var(--app-accent);
+  border-color: #d4c7f9;
+  background: #faf8ff;
+}
+.ant-btn-link {
+  color: var(--app-accent);
+}
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-select:not(.ant-select-customize-input) .ant-select-selector {
+  border-color: var(--app-border);
+  border-radius: 9px;
+  font-size: 12px;
+  background: #fdfcfe;
+}
+.ant-input:hover,
+.ant-input-affix-wrapper:hover,
+.ant-select:not(.ant-select-disabled):hover .ant-select-selector {
+  border-color: #bfa9f6;
+}
+.ant-input:focus,
+.ant-input-affix-wrapper-focused,
+.ant-select-focused:not(.ant-select-disabled) .ant-select-selector {
+  border-color: var(--app-accent);
+  box-shadow: 0 0 0 3px #7551ef0e;
+}
+.ant-input::placeholder {
+  color: #aaa3b7;
+}
+.ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+  background: var(--app-accent-soft);
+  color: var(--app-accent);
+}
+.ant-select-dropdown,
+.ant-dropdown-menu,
+.ant-popover-inner {
+  border-radius: 12px;
+  box-shadow: 0 10px 35px #42325f16;
+}
+.ant-checkbox-checked .ant-checkbox-inner,
+.ant-switch-checked {
+  background: var(--app-accent);
+  border-color: var(--app-accent);
+}
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn,
+.ant-tabs-tab:hover {
+  color: var(--app-accent);
+}
+.ant-tabs-ink-bar {
+  background: var(--app-accent);
+}
+.ant-form-item-label > label {
+  color: #756b87;
+  font-size: 12px;
+}
+.ant-form-item-explain-error {
+  font-size: 11px;
+}
+.ant-form-item {
+  margin-bottom: 18px;
+}
+.ant-modal-mask {
+  background: #35294755;
+  backdrop-filter: blur(5px);
+}
+.ant-modal {
+  max-width: calc(100vw - 28px);
+  padding-bottom: 0;
+}
+.ant-modal-content {
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 20px 90px #33214a2b;
+  border: 1px solid #ffffffd9;
+}
+.ant-modal-header {
+  border-bottom: 1px solid #f0edf6;
+  padding: 22px 26px 16px;
+  background: #fff;
+}
+.ant-modal-title {
+  color: var(--app-text);
+  font-size: 17px;
+  font-weight: 650;
+}
+.ant-modal-close {
+  color: #9b91ac;
+}
+.ant-modal-close:hover {
+  color: var(--app-accent);
+  background: #f8f5ff;
+}
+.ant-modal-body {
+  padding: 26px;
+  max-height: 85dvh;
+  overflow: auto;
+}
+.ant-modal-footer {
+  border-top: 1px solid #f0edf6;
+  padding: 14px 26px 20px;
+}
+.ant-modal-footer .ant-btn,
+.ant-modal-confirm-btns .ant-btn {
+  min-height: 38px;
+  padding: 0 18px;
+}
+.ant-modal-confirm .ant-modal-body {
+  padding: 30px;
+}
+.ant-modal-confirm-title {
+  color: var(--app-text);
+  font-size: 18px;
+}
+.ant-modal-confirm-content {
+  color: var(--app-muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.ant-modal-confirm .anticon-info-circle,
+.ant-modal-confirm .anticon-question-circle {
+  color: var(--app-accent);
+}
+.ant-modal-body .main-container {
+  height: auto;
+  min-height: 0;
+}
+.ant-modal-body .main-container form {
+  height: auto !important;
+}
+.ant-modal-body .main-container .title {
+  color: var(--app-text);
+  font-size: 19px;
+  padding-right: 26px;
+}
+.ant-modal-body .main-container .buttons-container {
+  padding-top: 20px;
+  margin-top: 16px;
+}
+.ant-modal-body .main-container .ant-divider {
+  margin: 16px 0;
+  border-color: var(--app-border);
+}
+.ant-modal-body .main-container .ant-input {
+  min-height: 38px;
+}
+.ant-notification-notice {
+  border-radius: 16px;
+  border: 1px solid var(--app-border);
+  box-shadow: 0 12px 45px #42325f1c;
+  padding: 18px 22px;
+}
+.ant-notification-notice-message {
+  color: var(--app-text);
+  font-size: 14px;
+  font-weight: 600;
+}
+.ant-notification-notice-description {
+  color: var(--app-muted);
+  font-size: 12px;
+}
+.ant-message-notice-content {
+  border-radius: 12px;
+  padding: 12px 18px;
+  border: 1px solid var(--app-border);
+  box-shadow: 0 8px 30px #42325f18;
+}
+.ant-alert {
+  border-radius: 10px;
+  font-size: 12px;
+}
+.ant-tag {
+  border-radius: 6px;
+}
+:focus-visible {
+  outline: 3px solid #b7a2f6;
+  outline-offset: 3px;
+}
+@media (max-width: 600px) {
+  .ant-modal-body {
+    padding: 22px 18px;
+    max-height: 86dvh;
+  }
+  .ant-modal-header {
+    padding: 20px 18px 14px;
+  }
+  .ant-notification {
+    max-width: calc(100vw - 24px);
+    margin: 0 12px !important;
+  }
+  .ant-notification-notice {
+    width: 100%;
+  }
+  .ant-modal-body .main-container .buttons-container {
+    gap: 10px !important;
+  }
+  .ant-modal-body .ant-btn-lg {
+    font-size: 13px;
+    height: 40px;
+  }
+}
+
+.ant-upload.ant-upload-drag p.ant-upload-drag-icon .anticon {
+  color: var(--app-accent);
+}
+.ant-upload.ant-upload-drag {
+  border-color: #ded3f1;
+  border-radius: 14px;
+  background: #faf8ff;
+}
+.ant-upload.ant-upload-drag:not(.ant-upload-disabled):hover {
+  border-color: var(--app-accent);
+}
+.ant-btn-default:not(.ant-btn-dangerous):focus {
+  color: var(--app-accent);
+  border-color: #c5b1f3;
+}
+@media (max-width: 600px) {
+  .ant-modal-body .ant-col-12 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+  .ant-modal-body input {
+    min-width: 0;
+  }
+}
