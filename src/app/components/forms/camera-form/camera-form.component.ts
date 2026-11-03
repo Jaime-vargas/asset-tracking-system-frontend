@@ -12,6 +12,9 @@ import {HardwareStore} from '../../../store/hardware.store';
 import {CameraRequestDto} from '../../../interfaces/hardware/camera/camera-request.dto';
 import {CameraResponseDto} from '../../../interfaces/hardware/camera/camera-response.dto';
 import {finalize} from 'rxjs';
+import {NzSelectModule} from 'ng-zorro-antd/select';
+import {TagStore} from '../../../store/tag.store';
+import {RouteContextService} from '../../../services/route-context.service';
 
 
 @Component({
@@ -28,16 +31,23 @@ import {finalize} from 'rxjs';
     NzInputDirective,
     ReactiveFormsModule,
     NzRowDirective,
-    NzColDirective
+    NzColDirective,
+    NzSelectModule
   ],
   templateUrl: './camera-form.component.html',
   styleUrl: './camera-form.component.css',
+  providers: [TagStore],
 })
 export class CameraForm {
 
   private formBuilder = inject(NonNullableFormBuilder);
   private hardwareStore = inject(HardwareStore);
   private sidebarStore = inject(SidebarStore);
+  private routeContext = inject(RouteContextService);
+  protected tagStore = inject(TagStore);
+  clientId = computed(() => this.formMode() === 'edit'
+    ? this.selectedCamera()?.clientId ?? null : this.hardwareStore.currentClientId() ?? this.routeContext.clientId());
+  protected newSiteName = this.formBuilder.control('', [Validators.required, Validators.maxLength(255)]);
 
   currentBranchId = this.hardwareStore.currentBranchId;
   formMode = this.hardwareStore.formMode;
@@ -56,10 +66,18 @@ export class CameraForm {
       if (camera === null) return;
       this.fillFieldsFromEntity(camera)
     });
+    effect(onCleanup => {
+      const clientId = this.clientId();
+      this.tagStore.tags.set([]);
+      if (clientId === null) return;
+      const subscription = this.tagStore.loadTags(clientId).subscribe();
+      onCleanup(() => subscription.unsubscribe());
+    });
   }
 
   // Form
   protected cameraForm = this.formBuilder.group({
+    tagId: this.formBuilder.control<number | null>(null, Validators.required),
     cameraId: ['', [Validators.required, Validators.maxLength(25)]],
     name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(25)]],
     brand: ['', [Validators.required, Validators.maxLength(25)]],
@@ -75,6 +93,7 @@ export class CameraForm {
 
   fillFieldsFromEntity(camera: CameraResponseDto) {
     this.cameraForm.patchValue({
+      tagId: camera.tagId,
       cameraId: camera.cameraId,
       name: camera.name,
       brand: camera.brand,
@@ -90,8 +109,10 @@ export class CameraForm {
   }
 
   submitForm() {
-    if(this.cameraForm.invalid) return;
-    const hardware = this.cameraForm.getRawValue();
+    if(this.cameraForm.invalid || this.buttonLoading() || this.tagStore.loading() || this.tagStore.creating()) return;
+    const values = this.cameraForm.getRawValue();
+    if (values.tagId === null) return;
+    const hardware: CameraRequestDto = {...values, tagId: values.tagId};
     this.buttonLoading.set(true);
     switch (this.formMode()) {
       case 'add':
@@ -105,8 +126,14 @@ export class CameraForm {
 
   addRequest(hardware: CameraRequestDto){
     const currentBranchId = this.currentBranchId();
-    if (currentBranchId === null) return;
-    this.hardwareStore.saveCamera(currentBranchId,hardware).pipe(
+    const clientId = this.clientId();
+    if (currentBranchId === null && clientId === null) {
+      this.buttonLoading.set(false);
+      return;
+    }
+    const request = currentBranchId !== null ? this.hardwareStore.saveCamera(currentBranchId, hardware)
+      : this.hardwareStore.saveCameraForClient(clientId!, hardware);
+    request.pipe(
       finalize(()=>{
         this.buttonLoading.set(false);
       })
@@ -117,7 +144,10 @@ export class CameraForm {
 
   editRequest(hardware: CameraRequestDto){
     const selectedCamera = this.selectedCamera();
-    if (selectedCamera === null) return;
+    if (selectedCamera === null) {
+      this.buttonLoading.set(false);
+      return;
+    }
     this.hardwareStore.updateCamera(selectedCamera.id, hardware).pipe(
       finalize(()=>{
         this.buttonLoading.set(false);
@@ -131,5 +161,15 @@ export class CameraForm {
     this.cameraForm.reset();
     this.selectedCamera.set(null);
     this.sidebarStore.isOpen.set(false);
+  }
+
+  addSite() {
+    const clientId = this.clientId();
+    const name = this.newSiteName.value.trim();
+    if (clientId === null || !name || this.newSiteName.invalid || this.tagStore.creating()) return;
+    this.tagStore.addTag(clientId, name).subscribe(tag => {
+      this.cameraForm.controls.tagId.setValue(tag.id);
+      this.newSiteName.reset();
+    });
   }
 }

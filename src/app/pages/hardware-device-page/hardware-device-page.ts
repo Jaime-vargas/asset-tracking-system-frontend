@@ -88,15 +88,15 @@ export class HardwareDevicePage implements OnInit {
   sidebarContent = signal<'reportForm'|'cameraForm'>('cameraForm');
 
   // Computed
-  breadcrumb = computed<{label:string | null, link?:(string|number|null)[]}[]>(() =>
-    [{label: 'Clients',
-      link: ['/clients']},
-      {label: this.routeContext.clientSlug(),
-        link: ['/clients', this.routeContext.clientId(), this.routeContext.clientSlug()]},
-      {label: this.routeContext.branchSlug(),
-      link: ['/clients', this.routeContext.clientId(), this.routeContext.clientSlug(),'branches',this.routeContext.branchId(), this.routeContext.branchSlug(),'hardware']},
-      {label: this.routeContext.hardwareSlug()}
-    ]);
+  breadcrumb = computed<{label: string, link?: (string | number)[]}[]>(() => {
+    const hardware = this.selectedHardwareDetail();
+    if (!hardware) return [{label: 'Hardware', link: ['/hardware']}];
+    return [
+      {label: 'Hardware', link: ['/hardware']},
+      {label: hardware.clientName, link: ['/clients', hardware.clientId, this.utilityService.slugify(hardware.clientName)]},
+      {label: hardware.name}
+    ];
+  });
 
   activeReports = computed(() =>
   {
@@ -164,6 +164,8 @@ export class HardwareDevicePage implements OnInit {
     const hardware = this.selectedHardwareDetail();
     if (!hardware) return undefined;
     const hardwareGlobalDetails = [
+      {label: 'Client', value: hardware.clientName},
+      {label: 'Site', value: hardware.tagName},
       {label: 'Type', value: hardware.type},
       {label: 'Name', value: hardware.name },
       {label: 'Brand', value: hardware.brand},

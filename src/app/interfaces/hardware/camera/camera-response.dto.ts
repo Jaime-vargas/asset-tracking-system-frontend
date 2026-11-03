@@ -1,4 +1,7 @@
 export interface CameraResponseDto{
+  clientId: number;
+  tagId: number;
+  tagName: string;
   id: number;
   cameraId: string;
   name: string;

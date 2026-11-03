@@ -19,13 +19,13 @@ export class TableColumnsHardwareService {
       sortDirections: ['ascend', 'descend']
     },
     {
-      key:'branchName',
-      label:'Project',
+      key:'tagName',
+      label:'Site',
       colWidth: 200,
       fixed: null,
-      type: "string",
+      type: "tag",
       sortOrder: null,
-      sortFn: createSortFn('branchName', 'string'),
+      sortFn: createSortFn('tagName', 'string'),
       sortDirections: ['ascend', 'descend']
     },
     {

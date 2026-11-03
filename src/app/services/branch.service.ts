@@ -31,8 +31,8 @@ export class BranchService {
     return this.api.getMultipartXLS(`branches/${branchId}/export-cameras`)
   }
 
-  getImportCamerasUrl(branchId: number){
-    return `${this.api.baseUrl}/branches/${branchId}/import-cameras`;
+  getImportCamerasUrl(branchId: number, tagId: number){
+    return `${this.api.baseUrl}/branches/${branchId}/import-cameras?tagId=${tagId}`;
   }
 
   /** Project files */

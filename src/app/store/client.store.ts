@@ -8,6 +8,8 @@ import {ApiUrlBaseService} from '../services/api-url-base.service';
 import {ClientDto} from '../interfaces/client/client.dto';
 import {NzUploadFile} from 'ng-zorro-antd/upload';
 import {HttpErrorResponse} from '@angular/common/http';
+import {ClientSummaryDto} from '../interfaces/client/client-summary.dto';
+import {tap, catchError, EMPTY, finalize} from 'rxjs';
 
 @Injectable({providedIn: 'root',})
 export class ClientStore {
@@ -19,10 +21,20 @@ export class ClientStore {
 
   // Table
   public tableLoading = signal<boolean>(false);
+  public loadError = signal(false);
 
   // Entity
   public clientList = signal<ClientTableDto[]>([]);
   public selectedClient = signal<ClientTableDto | null>(null);
+  public summary = signal<ClientSummaryDto | null>(null);
+
+  loadClientSummary(clientId: number) {
+    this.summary.set(null);
+    return this.clientService.getClientSummary(clientId).pipe(
+      tap(summary => this.summary.set(summary)),
+      catchError((error: HttpErrorResponse) => { this.responseError(error); return EMPTY; })
+    );
+  }
 
   // Computed
   public selectedClientImage = computed<string|null>(() => {
@@ -61,11 +73,11 @@ export class ClientStore {
   // Store is the layer that shares data with services.
   public loadClients(){
     this.tableLoading.set(true);
-    this.clientService.getClients().subscribe({
+    this.loadError.set(false);
+    this.clientService.getClients().pipe(finalize(() => this.tableLoading.set(false))).subscribe({
       next: (clients: ClientTableDto[]) =>
         this.clientList.set(clients),
-      error: (err: HttpErrorResponse) => this.responseError(err),
-      complete: () => this.tableLoading.set(false),
+      error: (err: HttpErrorResponse) => { this.loadError.set(true); this.responseError(err); },
     })
   }
 

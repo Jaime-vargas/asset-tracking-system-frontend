@@ -3,8 +3,8 @@ export interface ReportTableDto{
   title: string;
   clientId: number;
   clientName: string;
-  branchId: number;
-  branchName: string;
+  branchId: number | null;
+  branchName: string | null;
   hardwareId: number;
   hardwareName: string;
   priority: string;

@@ -45,17 +45,11 @@ export class HardwareReportsPage {
     this.getHardwareReports();
   }
   // BREADCRUMB
-  breadcrumb = computed<{label:string | null, link?:(string|number|null)[]}[]>(() =>
-    [{label: 'Clients',
-      link: ['/clients']},
-      {label: this.routeContext.clientSlug(),
-        link: ['/clients', this.routeContext.clientId(), this.routeContext.clientSlug()]},
-      {label: this.routeContext.branchSlug(),
-        link: ['/clients', this.routeContext.clientId(), this.routeContext.clientSlug(),'branches',this.routeContext.branchId(), this.routeContext.branchSlug(),'hardware']},
-      {label: this.routeContext.hardwareSlug(),
-      link: ['/clients', this.routeContext.clientId(), this.routeContext.clientSlug(),'branches', this.routeContext.branchId(), this.routeContext.branchSlug(),'hardware', this.routeContext.hardwareId(), this.routeContext.hardwareSlug()]},
-      {label: 'Reports'}
-    ]);
+  breadcrumb = computed<{label: string, link?: (string | number)[]}[]>(() => [
+    {label: 'Hardware', link: ['/hardware']},
+    {label: 'Device', link: ['/hardware', this.hardwareId()]},
+    {label: 'Reports'}
+  ]);
 
 
   reportsData = signal<ReportTableDto[]>([]);
@@ -76,10 +70,7 @@ export class HardwareReportsPage {
         ...report,
         id: "# " + report.id,
         actions: [
-          {label: 'View', type: 'link', link:['/clients',report.clientId,report.clientName,
-              'branches',report.branchId,report.branchName,
-              'hardware',report.hardwareId,report.hardwareName,
-              'reports',report.id]}
+          {label: 'View', type: 'link', link: ['/reports', report.id]}
         ]
       };
     })

@@ -9,6 +9,8 @@ import {Injectable} from '@angular/core';
 
 export class TableColumnsBranchHardwareService {
   public tableColumns:ColumnItem[] = [
+    {key: 'tagName', label: 'Site', colWidth: 180, fixed: null, type: 'tag', sortOrder: null,
+      sortFn: createSortFn('tagName', 'string'), sortDirections: ['ascend', 'descend', null]},
     {
       key:'type',
       label:'Type',

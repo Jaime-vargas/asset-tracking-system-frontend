@@ -40,6 +40,9 @@ import {FileCategoryForm} from '../../components/forms/file-category-form/file-c
 import {FileCategoryStore} from '../../store/file-category.store';
 import {ApiUrlBaseService} from '../../services/api-url-base.service';
 import {AuthService} from '../../services/auth-service';
+import {TagStore} from '../../store/tag.store';
+import {ClientDocumentsStore} from '../../store/client-documents.store';
+import {FileEntityDto} from '../../interfaces/fileEntityDto';
 
 @Component({
   selector: 'app-branch-hardware-device-page',
@@ -77,8 +80,24 @@ import {AuthService} from '../../services/auth-service';
   standalone: true,
   templateUrl: './branch-hardware-page.html',
   styleUrl: './branch-hardware-page.css',
+  providers: [TagStore],
 })
 export class BranchHardwarePage implements OnInit {
+  protected tagStore = inject(TagStore);
+  private documents = inject(ClientDocumentsStore);
+  selectedImportTagId = signal<number | null>(null);
+  @ViewChild('importCamerasModal', {static: true}) importCamerasModal!: TemplateRef<void>;
+  private importModalRef?: NzModalRef;
+
+  openImportModal() {
+    const clientId = this.routeContext.clientId();
+    if (clientId === null) return;
+    this.selectedImportTagId.set(null);
+    this.tagStore.loadTags(clientId).subscribe();
+    this.importModalRef = this.modalService.create({
+      nzTitle: 'Import cameras', nzContent: this.importCamerasModal, nzFooter: null
+    });
+  }
 
   private apiService = inject(ApiUrlBaseService);
   protected authService = inject(AuthService);
@@ -178,18 +197,15 @@ export class BranchHardwarePage implements OnInit {
         contentType: type.type,
         size: this.utilityService.formatSize(file.size),
         actions: [
-          {label: "Download", type: 'download', link: "", onClick: ()=> this.downloadFile(this.apiService.imageBaseUrl + file.filePath)}
+          {label: "Download", type: 'download', link: "", onClick: ()=> this.downloadDocument(file)}
         ]
       }
     })
   })
 
-  downloadFile(url: string) {
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = '';
-    a.target = '_blank'; // opcional
-    a.click();
+  downloadDocument(file: FileEntityDto) {
+    const clientId = this.routeContext.clientId();
+    if (clientId !== null) this.documents.download(clientId, file.id, file.filename);
   }
 
   // File Categories Modal
@@ -280,6 +296,7 @@ export class BranchHardwarePage implements OnInit {
   }
 
   importSuccess(response:ImportTemplate){
+    this.importModalRef?.destroy();
     this.branchStore.importSuccess(response);
     this.hardwareStore.loadHardware();
   }

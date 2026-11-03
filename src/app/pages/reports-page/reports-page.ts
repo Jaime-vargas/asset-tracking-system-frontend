@@ -59,10 +59,7 @@ export class ReportsPage {
         ...report,
         id: '# ' + report.id,
         actions: [
-          {label: 'View', type: 'link', link:['/clients',report.clientId,report.clientName,
-              'branches',report.branchId,report.branchName,
-              'hardware',report.hardwareId,report.hardwareName,
-              'reports',report.id]}
+          {label: 'View', type: 'link', link: ['/reports', report.id]}
         ]
       }
     })

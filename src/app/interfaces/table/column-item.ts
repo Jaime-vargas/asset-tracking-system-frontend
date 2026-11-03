@@ -12,6 +12,7 @@ type colType =
   'priority-tag'|
   'report-count-tag'|
   'status-tag'|
+  'tag'|
   'string';
 
 export interface ColumnItem {

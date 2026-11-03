@@ -1,6 +1,10 @@
 import {ReportHistoryDto} from '../report/report-history.dto';
 
 export interface HardwareDetailDto {
+  clientId: number;
+  clientName: string;
+  tagId: number;
+  tagName: string;
   id: number;
   type: 'Camera' | 'Server';
   brand: string;  // NEW

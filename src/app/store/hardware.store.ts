@@ -19,12 +19,14 @@ export class HardwareStore {
   notificationService = inject(NzNotificationService);
 
   public currentBranchId = signal<number | null>(null);
+  public currentClientId = signal<number | null>(null);
   public hardwareList = signal<HardwareTableDto[]>([]);
   public selectedHardwareId = signal<number | null>(null);
   public selectedHardware = signal<CameraResponseDto | null>(null);
   public selectedHardwareDetail = signal<HardwareUnion | null>(null);
   // Table
   public tableLoading = signal<boolean>(false);
+  public loadError = signal(false);
 
   // Form
   public formMode = signal<"add" | "edit" | null>(null);
@@ -36,13 +38,24 @@ export class HardwareStore {
   // HARDWARE
   loadHardware(){
     const branchId = this.currentBranchId();
-    if(branchId === null) return;
+    const clientId = this.currentClientId();
+    if(branchId === null && clientId === null) return;
     this.tableLoading.set(true);
-    this.hardwareService.getHardwareByBranchId(branchId).subscribe({
+    this.loadError.set(false);
+    const request = clientId !== null ? this.hardwareService.getClientHardware(clientId)
+      : this.hardwareService.getHardwareByBranchId(branchId!);
+    return request.pipe(finalize(() => this.tableLoading.set(false))).subscribe({
       next: (data: HardwareTableDto[]) => this.hardwareList.set(data),
-      error: (err: HttpErrorResponse) => this.responseError(err),
-      complete: () => this.tableLoading.set(false),
+      error: (err: HttpErrorResponse) => { this.loadError.set(true); this.responseError(err); },
     })
+  }
+
+  saveCameraForClient(clientId: number, camera: CameraRequestDto) {
+    return this.hardwareService.saveCameraForClient(clientId, camera).pipe(
+      tap(() => this.loadHardware()),
+      tap(() => this.messageService.success('Camera created successfully.')),
+      catchError((error: HttpErrorResponse) => { this.responseError(error); return EMPTY; })
+    );
   }
 
   getHardwareDetail(hardwareId:number){
@@ -83,6 +96,8 @@ export class HardwareStore {
             model: data.model,
             serialNumber: data.serialNumber,
             location: data.location,
+            tagId: data.tagId,
+            tagName: data.tagName,
           } : hw
         ));
       }),

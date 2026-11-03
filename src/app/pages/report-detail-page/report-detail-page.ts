@@ -102,19 +102,15 @@ export class ReportDetailPage implements OnInit {
   }
 
   // Breadcrumb
-  breadcrumb = computed<{label:string | number | null, link?:(string|number|null)[]}[]>(() =>
-    [{label: 'Clients',
-      link: ['/clients']},
-      {label: this.routeContext.clientSlug(),
-        link: ['/clients', this.routeContext.clientId(), this.routeContext.clientSlug()]},
-      {label: this.routeContext.branchSlug(),
-        link: ['/clients', this.routeContext.clientId(), this.routeContext.clientSlug(),'branches',this.routeContext.branchId(), this.routeContext.branchSlug(),'hardware']},
-      {label: this.routeContext.hardwareSlug(),
-        link: ['/clients', this.routeContext.clientId(), this.routeContext.clientSlug(),'branches', this.routeContext.branchId(), this.routeContext.branchSlug(),'hardware', this.routeContext.hardwareId(), this.routeContext.hardwareSlug()]},
-      {label: 'Reports',
-        link: ['/clients', this.routeContext.clientId(), this.routeContext.clientSlug(),'branches', this.routeContext.branchId(), this.routeContext.branchSlug(),'hardware', this.routeContext.hardwareId(), this.routeContext.hardwareSlug(), 'reports']},
-      {label: this.routeContext.reportId()}
-    ]);
+  breadcrumb = computed<{label: string | number, link?: (string | number)[]}[]>(() => {
+    const report = this.selectedReport();
+    if (!report) return [{label: 'Reports', link: ['/reports']}];
+    return [
+      {label: 'Reports', link: ['/reports']},
+      {label: report.hardwareName, link: ['/hardware', report.hardwareId]},
+      {label: report.id}
+    ];
+  });
 
   // Photo
   uploadUrl(): string {

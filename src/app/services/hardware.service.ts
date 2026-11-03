@@ -20,6 +20,14 @@ export class HardwareService{
     return this.api.get(`hardware`);
   }
 
+  getClientHardware(clientId: number): Observable<HardwareTableDto[]> {
+    return this.api.get(`clients/${clientId}/hardware`);
+  }
+
+  saveCameraForClient(clientId: number, camera: CameraRequestDto): Observable<CameraResponseDto> {
+    return this.api.post(`clients/${clientId}/hardware/camera`, camera);
+  }
+
   getHardwareByBranchId(branchId:number): Observable<HardwareTableDto[]>{
     return this.api.get(`branches/${branchId}/hardware`);
   }

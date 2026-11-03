@@ -176,10 +176,7 @@
               <nz-empty nzNotFoundImage="simple"></nz-empty>
             } @else {
               @for (report of lastReports(); track report.id){
-                <app-dashboard-card-component class="recentReportCard" [routerLink]="['/clients',routeContext.clientId(),routeContext.clientSlug(),
-                'branches',routeContext.branchId(),routeContext.branchSlug(),
-                'hardware',routeContext.hardwareId(),routeContext.hardwareSlug(),
-                'reports',report.id]">
+                <app-dashboard-card-component class="recentReportCard" [routerLink]="['/reports', report.id]">
                   <div body>
                     <div nz-row [nzGutter]="[0,10]">
                       <div nz-col nzSpan="12">
@@ -203,9 +200,7 @@
                   </div>
                 </app-dashboard-card-component>
               }
-              <button nz-button class="form-btn default-btn" [routerLink]="['/clients',routeContext.clientId(), routeContext.clientSlug(),
-                        'branches',routeContext.branchId(), routeContext.branchSlug(),
-                        'hardware', routeContext.hardwareId(), routeContext.hardwareSlug(),'reports']" > View All Reports </button>
+              <button nz-button class="form-btn default-btn" [routerLink]="['/hardware', selectedHardwareId(), 'reports']" > View All Reports </button>
             }
           </div>
         </app-dashboard-box-component>

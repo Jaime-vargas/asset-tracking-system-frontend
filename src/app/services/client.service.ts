@@ -4,11 +4,16 @@ import {Observable} from 'rxjs';
 import {ClientTableDto} from '../interfaces/client-table.dto';
 import {ClientRequestDto} from '../interfaces/client/client-request.dto';
 import {ClientDto} from '../interfaces/client/client.dto';
+import {ClientSummaryDto} from '../interfaces/client/client-summary.dto';
 
 @Injectable({providedIn: 'root'})
 export class ClientService{
 
   private api = inject(ApiUrlBaseService);
+
+  getClientSummary(clientId: number): Observable<ClientSummaryDto> {
+    return this.api.get(`clients/${clientId}`);
+  }
 
   getClients(): Observable<ClientTableDto[]>{
     return this.api.get("clients");

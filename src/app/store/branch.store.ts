@@ -7,7 +7,7 @@ import {HttpErrorResponse, HttpResponse} from '@angular/common/http';
 import {ImportTemplate} from '../interfaces/importResponse.type';
 import {NzModalService} from 'ng-zorro-antd/modal';
 import {FileEntityDto} from '../interfaces/fileEntityDto';
-import {catchError, EMPTY, tap} from 'rxjs';
+import {catchError, EMPTY, tap, finalize} from 'rxjs';
 import {FileCategoryDto} from '../interfaces/file-category.dto';
 
 @Injectable({providedIn: "root"})
@@ -24,6 +24,7 @@ export class BranchStore {
 
   // Table
   public tableLoading = signal<boolean>(false);
+  public loadError = signal(false);
 
   // Entity
   public branchList = signal<BranchTableDto[]>([]);
@@ -41,11 +42,12 @@ export class BranchStore {
   public loadBranches(){
     const clientId = this.currentClientId();
     if (clientId === null) return
+    this.branchList.set([]);
     this.tableLoading.set(true);
-    this.branchService.getBranches(clientId).subscribe({
+    this.loadError.set(false);
+    return this.branchService.getBranches(clientId).pipe(finalize(() => this.tableLoading.set(false))).subscribe({
       next: (data: BranchTableDto[]) => this.branchList.set(data),
-      error: (err: HttpErrorResponse) => this.responseError(err),
-      complete: () => this.tableLoading.set(false),
+      error: (err: HttpErrorResponse) => { this.loadError.set(true); this.responseError(err); },
     });
   }
 
@@ -70,8 +72,8 @@ export class BranchStore {
   }
 
   /** Import/export XLS */
-  public getImportCamerasUrl(branchId: number):string {
-    return this.branchService.getImportCamerasUrl(branchId);
+  public getImportCamerasUrl(branchId: number, tagId: number):string {
+    return this.branchService.getImportCamerasUrl(branchId, tagId);
   }
 
   public importSuccess(response:ImportTemplate){

@@ -52,9 +52,7 @@ export class HardwarePage {
       return {
         ...hardware,
         actions: [
-          {label: 'View', type: 'link', link: ['/clients',hardware.clientId, this.utilityService.slugify(hardware.clientName),
-              'branches',hardware.branchId, this.utilityService.slugify(hardware.branchName),
-              'hardware', hardware.id, this.utilityService.slugify(hardware.name),]}
+          {label: 'View', type: 'link', link: ['/hardware', hardware.id]}
         ]
       }
     })
@@ -70,7 +68,7 @@ export class HardwarePage {
     const clientName = this.clientFilter();
     return new Set(this.hardwareData().filter((hardware) =>
       (!clientName || hardware.clientName === clientName)).map((hardware) =>
-      hardware.branchName))
+      hardware.tagName))
   });
   typeList = computed(() =>
     new Set(this.hardwareData().map((hardware) =>
@@ -93,7 +91,7 @@ export class HardwarePage {
       const typeFilter = this.typeFilter();
 
       const matchClient = (!clientFilter || hardware.clientName === clientFilter)
-      const matchBranch = (!branchFilter || hardware.branchName === branchFilter)
+      const matchBranch = (!branchFilter || hardware.tagName === branchFilter)
       const matchType = (!typeFilter || hardware.type === typeFilter)
 
       return (

@@ -1,4 +1,5 @@
 export interface CameraRequestDto {
+  tagId: number;
   cameraId: string;
   name: string;
   brand: string;

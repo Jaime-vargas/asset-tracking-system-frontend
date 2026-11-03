@@ -12,6 +12,8 @@ export interface HardwareTableDto{
 
   clientId: number;
   clientName: string;
-  branchId: number;
-  branchName: string;
+  branchId: number | null;
+  branchName: string | null;
+  tagId: number;
+  tagName: string;
 }

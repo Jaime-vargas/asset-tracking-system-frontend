@@ -15,6 +15,9 @@ import {QrScannerComponent} from './components/qr-scanner-component/qr-scanner-c
 import {RoleGuardService} from './services/security/role-guard.service';
 
 export const routes: Routes = [
+  {path: 'hardware/:hardwareId/reports', component: HardwareReportsPage, canActivate: [AuthGuardService]},
+  {path: 'hardware/:hardwareId', component: HardwareDevicePage, canActivate: [AuthGuardService]},
+  {path: 'reports/:reportId', component: ReportDetailPage, canActivate: [AuthGuardService]},
   {
     path: '', redirectTo: 'login', pathMatch: 'full'
 

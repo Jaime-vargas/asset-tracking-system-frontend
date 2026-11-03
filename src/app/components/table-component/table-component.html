@@ -24,11 +24,14 @@
   <!-- TABLE ROWS -->
     <tbody>
       @for (row of nzData.data; track row['id']){
-        <tr (click)="router.navigate(row['actions']['0'].link)">
+        <tr (click)="row['actions']?.[0]?.link ? router.navigate(row['actions'][0].link) : null">
           @for (column of tableColumns(); track column.key) {
             <td nzEllipsis [nzLeft]="column.fixed === 'nzLeft'">
               <!-- SWITCHING DATA DEPENDING OF TYPE -->
               @switch (column.type){
+                @case ('tag') {
+                  <nz-tag>{{ row[column.key] }}</nz-tag>
+                }
                 <!-- IMAGE + STRING -->
                 @case ('img-string'){
                 <div class="img-text">

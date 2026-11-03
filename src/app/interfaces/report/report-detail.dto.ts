@@ -9,6 +9,7 @@ export interface ReportDetailDto {
   comments: CommentDto[];
   status: string;
   hardwareName: string;
+  hardwareId: number;
   reportedBy: string;
   createdAt: string;
   updatedAt: string;

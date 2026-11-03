@@ -1,6 +1,25 @@
 <div class="main-container">
   <span class="title">{{formTitle()}}</span>
   <form nz-form [formGroup]="cameraForm" (ngSubmit)="submitForm()" style="height: stretch">
+    <nz-divider nzText="Site" nzOrientation="left"></nz-divider>
+    <nz-form-item>
+      <nz-form-label nzRequired>Site tag</nz-form-label>
+      <nz-form-control [nzErrorTip]="errorTpl">
+        <nz-select formControlName="tagId" nzShowSearch nzPlaceHolder="Select a site"
+                   [nzLoading]="tagStore.loading()" [nzDisabled]="tagStore.loading() || clientId() === null">
+          @for (tag of tagStore.tags(); track tag.id) {
+            <nz-option [nzValue]="tag.id" [nzLabel]="tag.name" />
+          }
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <div nz-flex nzGap="small" style="margin-bottom: 20px">
+      <input nz-input [formControl]="newSiteName" placeholder="New site name" aria-label="New site name" />
+      <button nz-button type="button" (click)="addSite()" [nzLoading]="tagStore.creating()"
+              [disabled]="newSiteName.invalid || !newSiteName.value.trim() || tagStore.loading() || clientId() === null">
+        Add site
+      </button>
+    </div>
     <nz-divider nzText="Camera info" nzOrientation=left></nz-divider>
     <nz-row [nzGutter]="16">
       <nz-col [nzSpan]="12">
@@ -122,7 +141,7 @@
          style="width: 100%; gap: 20px">
       <button nz-button class="form-btn default-btn" nzType="default" nzSize="large" type="button" (click)="onClose()" >Close</button>
       <button nz-button class="form-btn primary-btn" nzType="primary" nzSize="large" type="submit"
-              [disabled]="cameraForm.invalid"
+              [disabled]="cameraForm.invalid || tagStore.loading() || tagStore.creating()"
               [nzLoading]="buttonLoading()">
         <nz-icon nzType="save" nzTheme="outline" />Save Changes</button>
     </div>
