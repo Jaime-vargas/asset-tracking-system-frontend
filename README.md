@@ -23,8 +23,14 @@ Las capturas emplean datos de demostración. El inventario mostrado pertenece al
 - Inicio de sesión con token JWT y rutas protegidas.
 - Dashboard con indicadores de reportes, hardware, clientes y accesos rápidos a proyectos.
 - Gestión de clientes y sus proyectos/sucursales.
+- Espacio del cliente con Documents, Hardware y Projects; Documents es la entrada inicial.
+- Biblioteca con carga directa, alcance de todo el cliente o varias sucursales y filtros por categoría/proyecto/sucursal.
+- Descarga autenticada y organización de documentos sin volver a subir el archivo.
 - Inventario de equipos con búsqueda, ordenamiento, paginación y detalle de cámaras.
+- Tag de sucursal obligatorio al crear o editar cámaras, con alta de tags desde el formulario.
+- Filtro de sucursal y etiquetas visibles en el inventario global.
 - Importación y exportación de inventario en XLSX.
+- Selección explícita de sucursal antes de importar cámaras desde XLSX.
 - Carga, categorización y descarga de archivos asociados a proyectos.
 - Consulta, creación, actualización y seguimiento de reportes con comentarios y evidencia fotográfica.
 - Administración de usuarios, roles y contraseñas; la sección está restringida al rol administrador.
@@ -97,9 +103,12 @@ Actualiza esos valores para conectarte a otro entorno. El interceptor adjunta au
 | `/login` | Autenticación de usuarios. |
 | `/dashboard` | Indicadores y accesos rápidos. |
 | `/clients` | Directorio de clientes. |
-| `/clients/:clientId/:clientSlug` | Proyectos o sucursales de un cliente. |
+| `/clients/:clientId/:clientSlug` | Espacio del cliente: documentos, hardware y proyectos. |
 | `/clients/.../hardware` | Inventario y documentos de un proyecto. |
 | `/hardware` | Catálogo global de hardware. |
+| `/hardware/:hardwareId` | Detalle de equipo sin depender de un proyecto. |
+| `/hardware/:hardwareId/reports` | Incidencias de un equipo. |
+| `/reports/:reportId` | Detalle de incidencia con navegación directa. |
 | `/reports` | Gestión de reportes. |
 | `/users` | Administración de usuarios; requiere rol `ADMIN`. |
 | `/qr` | Escáner QR. |
@@ -142,3 +151,7 @@ docs/images/      # Capturas del README
 ## Autor
 
 **Jaime** — Proyecto incluido en mi portafolio profesional.
+
+## Diseño de Clientes
+
+El listado y el espacio del cliente incluyen tarjetas, filtros y navegación adaptable para PC y móvil. Consulta [la organización y los componentes del rediseño](docs/client-workspace-design.md).
