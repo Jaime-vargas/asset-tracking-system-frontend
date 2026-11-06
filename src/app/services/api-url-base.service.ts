@@ -1,16 +1,15 @@
 import {HttpClient, HttpResponse} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
+import { backendOrigin } from '../deployment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiUrlBaseService {
 
-  //baseUrl = '/api/v1';
-  //imageBaseUrl = '/';
-  baseUrl = 'http://localhost:3000/api/v1';
-  imageBaseUrl = 'http://localhost:3000/';
+  readonly baseUrl = backendOrigin + '/api/v1';
+  readonly imageBaseUrl = backendOrigin + '/';
 
   constructor(private http: HttpClient) {}
 

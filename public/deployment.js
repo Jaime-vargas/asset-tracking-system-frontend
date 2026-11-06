@@ -1,0 +1,1 @@
+window.ASSETS_CONTROL_BACKEND_ORIGIN = '';
