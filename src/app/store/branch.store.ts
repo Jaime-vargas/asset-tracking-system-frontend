@@ -149,32 +149,38 @@ export class BranchStore {
   }
 
   // TODO. File Categories will be moved to it's own Store
-  getFilesCategories(){
-    return this.branchService.getFileCategories().subscribe({
+  getFilesCategories() {
+    const clientId = this.currentClientId();
+    if (clientId === null) return;
+    return this.branchService.getFileCategories(clientId).subscribe({
       next: (data: FileCategoryDto[]) => this.fileCategoryList.set(data),
       error: (err: HttpErrorResponse) => this.responseError(err),
     });
   }
 
-  saveFileCategory(fileCategoryDto: FileCategoryDto){
-    return this.branchService.saveFileCategory(fileCategoryDto).pipe(
-      tap(updated => this.fileCategoryList.update(curr =>
-        [...curr, updated])),
+  saveFileCategory(clientId: number, fileCategoryDto: FileCategoryDto) {
+    return this.branchService.saveFileCategory(clientId, fileCategoryDto).pipe(
+      tap((updated) => this.fileCategoryList.update((curr) => [...curr, updated])),
       tap(() => this.messageService.success('Category saved successfully.')),
       catchError((err: HttpErrorResponse) => {
         this.responseError(err);
-        return EMPTY;})
+        return EMPTY;
+      }),
     );
   }
 
-  updateFileCategory(categoryId:number, fileCategoryDto: FileCategoryDto){
-    return this.branchService.updateFileCategory(categoryId, fileCategoryDto).pipe(
-      tap(updated => this.fileCategoryList.update(curr =>
-        curr.map(category => category.id === updated.id ? updated : category ))),
+  updateFileCategory(clientId: number, categoryId: number, fileCategoryDto: FileCategoryDto) {
+    return this.branchService.updateFileCategory(clientId, categoryId, fileCategoryDto).pipe(
+      tap((updated) =>
+        this.fileCategoryList.update((curr) =>
+          curr.map((category) => (category.id === updated.id ? updated : category)),
+        ),
+      ),
       tap(() => this.messageService.success('Category updated successfully.')),
       catchError((err: HttpErrorResponse) => {
         this.responseError(err);
-        return EMPTY;})
+        return EMPTY;
+      }),
     );
   }
 

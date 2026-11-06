@@ -1,13 +1,22 @@
 /* Shared visual language: surfaces, controls, forms and feedback. */
 :root {
-  --app-accent: #7551ef;
-  --app-accent-hover: #613ed8;
-  --app-accent-soft: #f0eaff;
-  --app-text: #302b48;
-  --app-muted: #888099;
-  --app-border: #eae6f3;
-  --app-canvas: #f7f7fc;
-  --app-surround: #e4e0f7;
+  --app-accent: rgb(22, 62, 99);
+  --app-accent-hover: #102f4d;
+  --app-accent-light: #2b608a;
+  --app-accent-soft: #e8f0f7;
+  --app-accent-border: #bdcedd;
+  --app-on-accent-muted: #dceaf5;
+  --app-text: #203246;
+  --app-muted: #586b7e;
+  --app-icon: #748ca1;
+  --app-border: #dce5ee;
+  --app-canvas: #f3f6f9;
+  --app-surface-soft: #f9fbfd;
+  --app-focus: #4e7fa7;
+  --app-shadow: rgb(22 62 99 / 12%);
+  --app-shadow-soft: rgb(22 62 99 / 6%);
+  --app-overlay: rgb(16 39 62 / 36%);
+  --app-surround: var(--app-canvas);
 }
 html,
 body {

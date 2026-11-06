@@ -44,16 +44,22 @@ export class BranchService {
     return this.api.post(`branches/${branchId}/files`, fileRequest);
   }
 
-  getFileCategories():Observable<FileCategoryDto[]>{
-    return this.api.get(`file-categories`);
+  deleteFileCategory(clientId: number, categoryId: number): Observable<void> {
+    return this.api.delete(`clients/${clientId}/file-categories/${categoryId}`);
+  }
+  getFileCategories(clientId: number): Observable<FileCategoryDto[]> {
+    return this.api.get(`clients/${clientId}/file-categories`);
   }
 
-  saveFileCategory(fileCategory: FileCategoryDto):Observable<FileCategoryDto>{
-    return this.api.post(`file-categories`, fileCategory);
+  saveFileCategory(clientId: number, fileCategory: FileCategoryDto): Observable<FileCategoryDto> {
+    return this.api.post(`clients/${clientId}/file-categories`, fileCategory);
   }
 
-  updateFileCategory(categoryId: number, fileCategory: FileCategoryDto):Observable<FileCategoryDto>{
-    return this.api.put(`file-categories/${categoryId}`, fileCategory);
+  updateFileCategory(
+    clientId: number,
+    categoryId: number,
+    fileCategory: FileCategoryDto,
+  ): Observable<FileCategoryDto> {
+    return this.api.put(`clients/${clientId}/file-categories/${categoryId}`, fileCategory);
   }
-
 }

@@ -22,12 +22,7 @@
         <nz-tab [nzTitle]="documentsTitle"
           ><ng-template #documentsTitle><nz-icon nzType="file-text" /> Documents</ng-template>
           @if (activeTab() === 0) {
-            <app-client-documents
-              [clientId]="id"
-              [projects]="branchList()"
-              [initialProjectId]="documentProjectId()"
-              (projectFilterChange)="updateDocumentProject($event)"
-            />
+            <app-client-documents [clientId]="id" />
           }
         </nz-tab>
         <nz-tab [nzTitle]="hardwareTitle"

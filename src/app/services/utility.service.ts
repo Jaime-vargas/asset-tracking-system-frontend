@@ -51,30 +51,33 @@ export class UtilityService{
   }
 
   /** Get file content type and set an icon */
-  getType(contentType: string):{icon:string, type:string} {
-    switch (contentType) {
+  getType(contentType: string): { icon: string; type: string } {
+    const mime = contentType.toLowerCase().split(';')[0].trim();
+    if (mime.startsWith('image/')) return { icon: '/file-icons/img.webp', type: 'IMG' };
+    switch (mime) {
       case 'application/pdf':
-        return {icon:'/file-icons/pdf.webp', type: 'PDF'};
+        return { icon: '/file-icons/pdf.webp', type: 'PDF' };
 
       case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
       case 'application/msword':
-        return {icon:'/file-icons/doc.webp', type: 'DOC'};
+        return { icon: '/file-icons/doc.webp', type: 'DOC' };
 
       case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
       case 'application/vnd.ms-excel':
-        return {icon:'/file-icons/xls.webp', type: 'XLS'};
+        return { icon: '/file-icons/xls.webp', type: 'XLS' };
 
       case 'application/zip':
       case 'application/x-zip-compressed':
       case 'application/x-7z-compressed':
       case 'application/x-rar-compressed':
-        return {icon: 'file-icons/zip.webp', type: 'ZIP'};
+        return { icon: '/file-icons/zip.webp', type: 'ZIP' };
 
       case 'image/png':
       case 'image/jpeg':
       case 'image/gif':
-            return {icon: 'file-icons/img.webp', type: 'IMG'};
-      default: return {icon: 'file-icons/other.webp', type: 'OTHER'};
+        return { icon: '/file-icons/img.webp', type: 'IMG' };
+      default:
+        return { icon: '/file-icons/other.webp', type: 'OTHER' };
     }
   }
 

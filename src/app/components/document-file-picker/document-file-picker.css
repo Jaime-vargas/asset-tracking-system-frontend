@@ -1,0 +1,9 @@
+:host { display: block; width: 100%; }
+.file-drop-zone { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 12px; border: 1px dashed var(--app-accent-border); border-radius: 12px; background: var(--app-surface-soft); text-align: center; }
+.file-drop-zone.drag-active { background: var(--app-accent-soft); border: 2px dashed var(--app-accent); padding: 11px; }
+.upload-icon { font-size: 22px; color: var(--app-accent); }
+strong { font-size: 12px; color: var(--app-text); overflow-wrap: anywhere; max-width: 100%; }
+span { font-size: 11px; color: var(--app-muted); }
+button { margin-top: 0; }
+.disabled { opacity: .6; }
+.file-error { color: #b64554; font-size: 11px; margin: 7px 0 0; }

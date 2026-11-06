@@ -68,69 +68,11 @@
       </div>
       <!-- /TABLE COMPONENT -->
 
-      <!-- /FILES SECTION -->
-      <div nz-col nzSpan="24">
-        <app-dashboard-box-component [flex]="true" [boxTitle]="'Files & Documents'">
-          <div body>
-            <div nz-row nzGutter="10">
-              <div nz-col nzSpan="6" nz-flex nzVertical nzGap="small" >
-                <app-dashboard-box-component>
-                  <div body>
-                    <div nz-flex nzJustify="space-between">
-                      <h4 nz-typography style="margin: 0">Categories</h4>
-                      @if (currentRole === 'ADMIN'){
-                        <button
-                          nz-button
-                          class="form-btn"
-                          nzType="text"
-                          (click)="saveCategory()">
-                          <nz-icon nzType="plus" nzTheme="outline" />
-                        </button>
-                      }
-                    </div>
-                  </div>
-                </app-dashboard-box-component>
-                <div nz-flex nzVertical nzJustify="start" nzGap="large" style="flex: 1;" >
-                  <nz-segmented
-                    nzVertical
-                    [nzBlock]="true"
-                    nzSize="large"
-                    (nzValueChange)="handleValueChange($event)">
-                    @for (category of categoryFilter(); track category.id){
-                      <label nz-segmented-item [nzValue]="category.name">
-                        <div nz-flex nzJustify="start" nzAlign="center" nzGap="large">
-                          <nz-icon nzType="folder" nzTheme="fill" />
-                          <div>
-                            {{ category.name }}
-                            @if (category.id !== 0 && currentRole === 'ADMIN') {
-                              <button nz-button nzType="text" (click)="updateCategory(category)" style="width: 15px" ><nz-icon style="font-size:10px" nzType="edit" nzTheme="outline" /></button>
-                            }
-                          </div>
-
-                        </div>
-                      </label>
-                    }
-                  </nz-segmented>
-                  <app-upload-drag-and-drop-component
-                    [multipleFiles]="true"
-                    [beforeUpload]="beforeUpload"
-                    uploadUrl="''">
-
-                  </app-upload-drag-and-drop-component>
-                </div>
-              </div>
-              <div nz-col nzSpan="18">
-                <app-table-component
-                  [tableColumns]="tableColumnsBranchFiles.tableColumns"
-                  [tableData]="filteredBranchFiles()">
-
-                </app-table-component>
-              </div>
-            </div>
-
-          </div>
-        </app-dashboard-box-component>
-      </div>
+      @if (documentClientId; as clientId) {
+        <div nz-col nzSpan="24">
+          <app-client-documents [clientId]="clientId" [projectId]="currentBranchId" />
+        </div>
+      }
 
     </div>
   </div>
@@ -191,36 +133,3 @@
   </app-edit-side-bar>
 }
 <!-- /SIDEBAR COMPONENT -->
-
-<!-- SAVE / UPDATE FILE CATEGORY MODAL -->
-<ng-template #saveUpdateModal>
-  <app-file-category-form
-    (close)="modalRef?.destroy()"></app-file-category-form>
-</ng-template>
-
-<!-- UPLOAD FILES MODAL -->
-<ng-template #uploadModal>
-  <h4 nz-typography>Upload Files</h4>
-  <nz-divider nzSize="small"></nz-divider>
-  <strong>{{ branchStore.fileUploadList().length }} files ready to upload</strong>
-  <nz-form-item style="display: flex; flex-direction: column; align-items: start">
-    <nz-form-label nzRequired>Categoría</nz-form-label>
-    <nz-form-control style="width: 100%;">
-      <nz-select style="width: 100%"
-        [(ngModel)]="selectedUploadCategory">
-        @for(category of branchStore.fileCategoryList(); track category){
-          <nz-option
-            [nzLabel]="category.name"
-            [nzValue]="category.id">
-          </nz-option>
-        }
-      </nz-select>
-    </nz-form-control>
-  </nz-form-item>
-  <nz-divider nzSize="small"></nz-divider>
-  <ul>
-    @for (file of branchStore.fileUploadList(); track $index){
-      <li>{{file.name}}</li>
-    }
-  </ul>
-</ng-template>

@@ -1,161 +1,79 @@
 <section class="document-library">
   <div class="library-header">
-    <div>
-      <h3>Documents</h3>
-      <p>Plans, manuals and evidence for this client.</p>
-    </div>
+    <div><h3>Document library</h3><p>{{ projectId() === null ? 'Shared files, organized by category and site.' : 'Reports, documents and evidence for this project.' }}</p></div>
     <div class="library-actions">
-      <button nz-button (click)="refresh()" [disabled]="store.loading()">Refresh</button>
-      <button nz-button nzType="primary" (click)="openDocument()">Upload document</button>
+      <button nz-button (click)="refresh()" [disabled]="store.loading()" aria-label="Refresh documents"><nz-icon nzType="reload" /></button>
+      <button nz-button nzType="primary" (click)="openDocument()"><nz-icon nzType="plus" />Upload document</button>
     </div>
   </div>
-  <div class="search-toolbar">
-    <input
-      nz-input
-      placeholder="Search documents..."
-      aria-label="Search documents"
-      [ngModel]="store.search()"
-      (ngModelChange)="store.search.set($event)"
-    />
-    <button
-      nz-button
-      class="filter-toggle"
-      [attr.aria-expanded]="filtersOpen()"
-      aria-controls="document-filters"
-      (click)="filtersOpen.set(!filtersOpen())"
-    >
-      Filters
-      @if (activeFilters()) {
-        ({{ activeFilters() }})
-      }
-    </button>
-  </div>
-  <div id="document-filters" class="library-filters" [class.filters-open]="filtersOpen()">
-    <nz-select
-      nzAllowClear
-      nzPlaceHolder="Category"
-      [ngModel]="store.categoryFilter()"
-      (ngModelChange)="store.categoryFilter.set($event)"
-    >
-      @for (category of store.categories(); track category.id) {
-        <nz-option [nzValue]="category.id" [nzLabel]="category.name" />
-      }
-    </nz-select>
-    <nz-select
-      nzAllowClear
-      nzShowSearch
-      nzPlaceHolder="Site"
-      [ngModel]="store.siteFilter()"
-      (ngModelChange)="store.siteFilter.set($event)"
-    >
-      <nz-option [nzValue]="0" nzLabel="All client documents" />
-      <nz-option [nzValue]="-1" nzLabel="Sites not assigned" />
-      @for (tag of tagStore.tags(); track tag.id) {
-        <nz-option [nzValue]="tag.id" [nzLabel]="tag.name" />
-      }
-    </nz-select>
-    <nz-select
-      nzAllowClear
-      nzShowSearch
-      nzPlaceHolder="Project"
-      [ngModel]="store.projectFilter()"
-      (ngModelChange)="selectProject($event)"
-    >
-      @for (project of projects(); track project.id) {
-        <nz-option [nzValue]="project.id" [nzLabel]="project.name" />
-      }
-    </nz-select>
-  </div>
-  @if (selectedProject(); as project) {
-    <p class="project-context">
-      Project: <strong>{{ project.name }}</strong>
-    </p>
-  }
-  <div class="results-toolbar">
-    <p class="library-count" aria-live="polite">{{ store.filteredDocuments().length }} documents</p>
-    @if (activeFilters() || store.search()) {
-      <button nz-button nzType="link" (click)="clearFilters()">Clear filters</button>
-    }
-  </div>
-  @if (store.loadError()) {
-    <div class="library-error" role="alert">
-      <p>Documents could not be loaded.</p>
-      <button nz-button (click)="refresh()">Try again</button>
-    </div>
-  } @else {
-    <nz-table
-      #documents
-      [nzData]="store.filteredDocuments()"
-      [nzLoading]="store.loading()"
-      nzSize="small"
-      [nzPageSize]="10"
-      nzTableLayout="fixed"
-      [nzHideOnSinglePage]="true"
-    >
-      <thead>
-        <tr>
-          <th>Document</th>
-          <th>Category</th>
-          <th>Sites</th>
-          <th>Project</th>
-          <th>Uploaded</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (document of documents.data; track document.id) {
-          <tr>
-            <td>
-              <button
-                nz-button
-                nzType="link"
-                class="document-name"
-                [nzLoading]="store.downloadingId() === document.id"
-                [disabled]="!document.downloadAvailable"
-                (click)="store.download(clientId(), document.id, document.filename)"
-              >
-                {{ document.filename }}
-              </button>
-              @if (!document.downloadAvailable) {
-                <small class="missing-file">File unavailable</small>
-              }
-            </td>
-            <td data-label="Category">{{ document.category ?? 'Not assigned' }}</td>
-            <td data-label="Sites">
-              @if (document.scope === 'ALL_CLIENT') {
-                <button class="tag-filter" (click)="store.siteFilter.set(0)">
-                  <nz-tag>All client</nz-tag>
-                </button>
-              } @else if (document.scope === 'UNASSIGNED') {
-                <button class="tag-filter" (click)="store.siteFilter.set(-1)">
-                  <nz-tag>Sites not assigned</nz-tag>
-                </button>
-              } @else {
-                @for (tag of document.tags; track tag.id) {
-                  <button class="tag-filter" (click)="store.siteFilter.set(tag.id)">
-                    <nz-tag nzColor="blue">{{ tag.name }}</nz-tag>
-                  </button>
-                }
-              }
-            </td>
-            <td data-label="Project" [class.no-project]="!document.projectId">
-              @if (document.projectId) {
-                <button nz-button nzType="link" (click)="selectProject(document.projectId)">
-                  {{ document.projectName }}
-                </button>
-              } @else {
-                —
-              }
-            </td>
-            <td data-label="Uploaded">{{ document.uploadedAt | date: 'mediumDate' }}</td>
-            <td class="document-actions">
-              <button nz-button (click)="openDocument(document)">Organize</button>
-            </td>
-          </tr>
+  <div class="library-layout">
+    <nav class="category-navigation" aria-label="Document categories">
+      <span class="navigation-label">BROWSE FILES</span>
+      <div class="category-links">
+        <button class="category-link" [class.selected]="store.categoryFilter() === null" [attr.aria-pressed]="store.categoryFilter() === null" (click)="selectCategory(null)">
+          <nz-icon nzType="file-text" /><span>All files</span><small>{{ libraryDocuments().length }}</small>
+        </button>
+        @for (category of categorySections(); track category.id) {
+          <button class="category-link" [class.selected]="store.categoryFilter() === category.id" [attr.aria-pressed]="store.categoryFilter() === category.id" (click)="selectCategory(category.id)">
+            <span class="category-symbol" [appTagColor]="category.color"><nz-icon nzType="folder-open" /></span><span>{{ category.name }}</span><small>{{ category.count }}</small>
+          </button>
         }
-      </tbody>
-    </nz-table>
-  }
+      </div>
+    </nav>
+    <div class="library-files">
+      <div class="file-section-heading"><h4>{{ selectedSection() }}</h4><span>Latest version of each document</span></div>
+      <div class="search-toolbar sticky-list-filters">
+        <nz-input-wrapper><nz-icon nzInputPrefix nzType="search" /><input nz-input placeholder="Search documents..." aria-label="Search documents" [ngModel]="store.search()" (ngModelChange)="store.search.set($event)" /></nz-input-wrapper>
+        <nz-select nzAllowClear nzShowSearch nzPlaceHolder="All sites" [ngModel]="store.siteFilter()" (ngModelChange)="store.siteFilter.set($event)">
+          <nz-option [nzValue]="0" nzLabel="All client documents" /><nz-option [nzValue]="-1" nzLabel="Sites not assigned" />
+          @for (tag of tagStore.tags(); track tag.id) { <nz-option [nzValue]="tag.id" [nzLabel]="tag.name" /> }
+        </nz-select>
+      </div>
+      <div class="results-toolbar">
+        <p class="library-count" aria-live="polite">{{ store.filteredDocuments().length }} {{ store.filteredDocuments().length === 1 ? 'document' : 'documents' }}</p>
+        @if (activeFilters() || store.search()) { <button nz-button nzType="link" (click)="clearFilters()">Clear filters</button> }
+      </div>
+      @if (store.loadError()) {
+        <div class="library-error" role="alert"><p>Documents could not be loaded.</p><button nz-button (click)="refresh()">Try again</button></div>
+      } @else if (!store.loading() && !store.filteredDocuments().length) {
+        <div class="library-empty"><nz-icon nzType="folder-open" /><h4>No documents here yet</h4><p>{{ store.search() || store.siteFilter() !== null ? 'Try another search or site, or clear the filters.' : 'Upload a document to this category to get started.' }}</p>
+          <button nz-button (click)="openDocument()">Upload document</button>
+        </div>
+      } @else {
+        <nz-table #documents [nzData]="store.filteredDocuments()" [nzLoading]="store.loading()" nzSize="small" [nzPageSize]="10" nzTableLayout="fixed" [nzHideOnSinglePage]="true">
+          <thead><tr><th>File</th><th class="actions-heading">Actions</th></tr></thead>
+          <tbody>
+            @for (document of documents.data; track document.id) {
+              <tr>
+                <td class="file-cell">
+                  <button nz-button nzType="link" class="document-name" [title]="document.filename" [nzLoading]="store.downloadingId() === document.id" [disabled]="!document.downloadAvailable" (click)="store.download(clientId(), document.id, document.filename)">
+                    <img class="document-icon" [src]="utility.getType(document.contentType).icon" alt="" /><span>{{ document.filename }}</span>
+                  </button>
+                  <div class="file-metadata">
+                    <app-ui-tag tone="ACCENT">v{{ document.currentVersion }}</app-ui-tag>
+                    @if (document.category) { <button type="button" class="tag-filter category-filter" [disabled]="document.categoryId === null" (click)="selectCategory(document.categoryId)"><app-ui-tag class="tag-chip" [tone]="categoryColor(document.categoryId)">{{ document.category }}</app-ui-tag></button> }
+                    <div class="file-sites">
+                      @if (document.scope === 'ALL_CLIENT') { <button class="tag-filter" (click)="store.siteFilter.set(0)"><app-ui-tag tone="ACCENT">All client</app-ui-tag></button> }
+                      @else if (document.scope === 'UNASSIGNED') { <button class="tag-filter" (click)="store.siteFilter.set(-1)"><app-ui-tag tone="ACCENT">Sites not assigned</app-ui-tag></button> }
+                      @else { @for (tag of document.tags; track tag.id) { <button class="tag-filter" (click)="store.siteFilter.set(tag.id)"><app-ui-tag [tone]="tag.color">{{ tag.name }}</app-ui-tag></button> } }
+                    </div>
+                    <span>{{ document.uploadedAt | date:'mediumDate' }}</span><span>{{ utility.formatSize(document.size) }}</span>
+                  </div>
+                  @if (!document.downloadAvailable) { <small class="missing-file">File unavailable</small> }
+                </td>
+                <td class="document-actions"><button nz-button nzType="text" nz-dropdown nzTrigger="click" [nzDropdownMenu]="documentMenu" nzPlacement="bottomRight" [attr.aria-label]="'Actions for ' + document.filename"><nz-icon nzType="ellipsis" /></button>
+                  <nz-dropdown-menu #documentMenu="nzDropdownMenu"><ul nz-menu>
+                    <li nz-menu-item (click)="openDocument(document)">Organize</li><li nz-menu-item (click)="openNewVersion(document)">Update file</li><li nz-menu-item (click)="openHistory(document)">Version history</li>
+                    @if (document.canDeleteCurrent || document.canDeleteAll) { <li nz-menu-item nzDanger (click)="openDelete(document)">Delete</li> }
+                  </ul></nz-dropdown-menu>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </nz-table>
+      }
+    </div>
+  </div>
 </section>
 
 <ng-template #documentForm>
@@ -164,22 +82,18 @@
       <p>
         <strong>{{ document.filename }}</strong>
       </p>
-    } @else {
-      <nz-form-item
-        ><nz-form-label nzRequired>File</nz-form-label>
-        <input
-          type="file"
-          aria-label="Document file"
-          (change)="selectFile($event)"
-          [disabled]="store.saving()"
-        />
-      </nz-form-item>
     }
+    @if (editorMode() !== 'organize') {
+      <nz-form-item><nz-form-label nzRequired>File</nz-form-label><nz-form-control>
+        <app-document-file-picker [file]="selectedFile()" [disabled]="store.saving()" (fileChange)="onFileSelected($event)" />
+      </nz-form-control></nz-form-item>
+    }
+    @if (editorMode() !== 'version') {
     <nz-form-item
       ><nz-form-label nzRequired>Category</nz-form-label
       ><nz-form-control>
         <div nz-flex nzGap="small">
-          <nz-select formControlName="categoryId" nzPlaceHolder="Select category" style="flex: 1">
+          <nz-select formControlName="categoryId" [nzDisabled]="store.saving()" nzPlaceHolder="Select category" style="flex: 1">
             @for (category of store.categories(); track category.id) {
               <nz-option [nzValue]="category.id" [nzLabel]="category.name" />
             }
@@ -190,19 +104,29 @@
         </div>
       </nz-form-control></nz-form-item
     >
-    <nz-form-item
-      ><nz-form-label>Project (optional)</nz-form-label
-      ><nz-form-control>
-        <nz-select formControlName="projectId" nzAllowClear nzShowSearch nzPlaceHolder="No project">
-          @for (project of projects(); track project.id) {
-            <nz-option [nzValue]="project.id" [nzLabel]="project.name" />
-          }
-        </nz-select> </nz-form-control
-    ></nz-form-item>
+    } @else {
+      <p>Category: <strong>{{ editingDocument()?.category || 'Not assigned' }}</strong></p>
+    }
+    <nz-form-item><nz-form-label nzRequired>File name</nz-form-label><nz-form-control>
+      <div class="document-name-editor">
+        @if (categoryPrefix()) { <span>{{ categoryPrefix() }}_</span> }
+        <input nz-input formControlName="name" [readonly]="store.saving()" aria-label="Document name" placeholder="Enter file name" maxlength="255" />
+        <span>_v{{ nextVersion() }}{{ fileExtension() }}</span>
+      </div>
+      <p class="filename-preview" aria-live="polite">
+        @if (filenamePreview()) { File name: <strong>{{ filenamePreview() }}</strong> }
+        @else { Select a file and category to preview its name. }
+      </p>
+      <small class="filename-hint">Only the name is editable. Category prefix, version and extension are automatic.</small>
+      @if (editorMode() === 'organize') { <p class="filename-hint">Name and category changes apply to all versions.</p> }
+      @if (form.controls.name.dirty && form.controls.name.invalid) { <p class="filename-error" role="alert">Enter a name without reserved characters.</p> }
+      @if (filenamePreview().length > 255) { <p class="filename-error" role="alert">The complete file name must not exceed 255 characters.</p> }
+    </nz-form-control></nz-form-item>
+    @if (editorMode() !== 'version') {
     <nz-form-item
       ><nz-form-label nzRequired>Applies to</nz-form-label
       ><nz-form-control>
-        <nz-select formControlName="scope" nzPlaceHolder="Choose document scope">
+        <nz-select formControlName="scope" [nzDisabled]="store.saving()" nzPlaceHolder="Choose document scope">
           <nz-option nzValue="ALL_CLIENT" nzLabel="All client" />
           <nz-option nzValue="SELECTED_SITES" nzLabel="Specific sites" />
         </nz-select> </nz-form-control
@@ -211,35 +135,42 @@
       <nz-form-item
         ><nz-form-label nzRequired>Sites</nz-form-label
         ><nz-form-control>
-          <nz-select
-            formControlName="tagIds"
-            nzMode="multiple"
-            nzShowSearch
-            nzPlaceHolder="Select sites"
-            [nzLoading]="tagStore.loading()"
-          >
-            @for (tag of tagStore.tags(); track tag.id) {
-              <nz-option [nzValue]="tag.id" [nzLabel]="tag.name" />
+          <div nz-flex nzGap="small" nzAlign="start">
+            <nz-select
+              formControlName="tagIds" style="flex: 1; min-width: 0"
+              nzMode="multiple"
+              nzShowSearch
+              nzPlaceHolder="Select sites"
+              [nzOpen]="sitesOpen()"
+              (nzOpenChange)="sitesOpen.set($event)"
+              [nzDropdownRender]="sitesFooter"
+              [nzLoading]="tagStore.loading()"
+            >
+              @for (tag of tagStore.tags(); track tag.id) {
+                <nz-option [nzValue]="tag.id" [nzLabel]="tag.name" />
+              }
+            </nz-select>
+            @if (isAdmin && !siteEditorOpen()) {
+              <button nz-button type="button" (click)="siteEditorOpen.set(true)">+ Add site</button>
             }
-          </nz-select> </nz-form-control
+          </div> </nz-form-control
       ></nz-form-item>
-      <div nz-flex nzGap="small" style="margin-bottom: 20px">
-        <input
-          nz-input
-          [formControl]="newSiteName"
-          placeholder="New site name"
-          aria-label="New site name"
-        />
-        <button
-          nz-button
-          type="button"
-          (click)="addSite()"
-          [nzLoading]="tagStore.creating()"
-          [disabled]="newSiteName.invalid || !newSiteName.value.trim()"
-        >
-          Add site
-        </button>
-      </div>
+      <ng-template #sitesFooter>
+        <div class="sites-dropdown-footer">
+          <button nz-button nzType="primary" type="button" (click)="sitesOpen.set(false)">Done</button>
+        </div>
+      </ng-template>
+      @if (isAdmin && siteEditorOpen()) {
+        <div class="site-creation">
+            <div nz-flex nzGap="small" nzWrap="wrap">
+              <input nz-input [formControl]="newSiteName" placeholder="New site name" aria-label="New site name" />
+              <button nz-button type="button" (click)="addSite()" [nzLoading]="tagStore.creating()"
+                [disabled]="newSiteName.invalid || !newSiteName.value.trim()">Add</button>
+              <button nz-button type="button" (click)="closeSiteEditor()" [disabled]="tagStore.creating()">Cancel</button>
+            </div>
+        </div>
+      }
+    }
     }
     <div class="library-actions">
       <button nz-button type="button" (click)="cancel()" [disabled]="store.saving()">Cancel</button>
@@ -248,11 +179,64 @@
         nzType="primary"
         type="submit"
         [nzLoading]="store.saving()"
-        [disabled]="form.invalid || tagStore.creating() || (!editingDocument() && !selectedFile())"
+        [disabled]="store.saving() || tagStore.creating() || form.controls.name.invalid || !filenamePreview() || filenamePreview().length > 255 || (editorMode() === 'version' ? !selectedFile() : form.invalid || (!editingDocument() && !selectedFile()))"
       >
-        Save
+        {{ editorMode() === 'version' ? 'Save new version' : 'Save' }}
       </button>
     </div>
   </form>
 </ng-template>
-<ng-template #categoryForm><app-file-category-form (close)="categoryClosed()" /></ng-template>
+<ng-template #categoryForm
+  ><app-file-category-form [clientId]="clientId()" (close)="categoryClosed()"
+/></ng-template>
+
+<ng-template #versionHistory>
+  @if (historyDocument(); as document) {
+    <p class="history-heading">{{ store.versions().length ? store.versions()[0].filename : document.filename }}</p>
+    @if (store.versionsLoading()) { <p role="status">Loading versions...</p> }
+    @else if (store.versionsError()) {
+      <p role="alert">Version history could not be loaded.</p><button nz-button (click)="loadHistory()">Try again</button>
+    } @else {
+      <ol class="version-list">
+        @for (version of store.versions(); track version.versionNumber) {
+          <li>
+            <div class="version-details">
+              <app-ui-tag tone="ACCENT">v{{ version.versionNumber }} @if (version.current) { &middot; Current }</app-ui-tag>
+              <strong>{{ version.filename }}</strong>
+              <small>{{ version.uploadedAt | date:'medium' }} &middot; {{ version.user }} &middot; {{ utility.formatSize(version.size) }}</small>
+              <small>Original: {{ version.originalFilename }}</small>
+              @if (!version.downloadAvailable) { <small class="missing-file">File unavailable</small> }
+            </div>
+            <button nz-button [nzLoading]="store.downloadingId() === document.id && store.downloadingVersion() === version.versionNumber"
+              [disabled]="!version.downloadAvailable" (click)="store.download(clientId(), document.id, version.filename, version.versionNumber)">Download</button>
+          </li>
+        } @empty { <li>No versions found.</li> }
+      </ol>
+    }
+    <div class="library-actions"><button nz-button (click)="closeHistory()">Close</button></div>
+  }
+</ng-template>
+
+<ng-template #deleteConfirmation>
+  @if (deletingDocument(); as document) {
+    <p class="history-heading"><strong>{{ document.filename }}</strong></p>
+    @if (document.versionCount > 1) {
+      <p>Choose what to delete:</p>
+      <nz-radio-group class="delete-options" [ngModel]="deleteMode()" (ngModelChange)="deleteMode.set($event)" [nzDisabled]="store.deleting()">
+        <label nz-radio nzValue="current" [nzDisabled]="!document.canDeleteCurrent">
+          Only current version (v{{ document.currentVersion }})
+        </label>
+        <p>The previous version will become current, keeping its original number.</p>
+        <label nz-radio nzValue="all" [nzDisabled]="!document.canDeleteAll">Document and all {{ document.versionCount }} versions</label>
+        <p>Only an Admin or the document creator can delete the entire history.</p>
+      </nz-radio-group>
+    } @else {
+      <p>This will delete the document and its only remaining version.</p>
+    }
+    <p role="note">Deleted files are permanently removed and cannot be recovered.</p>
+    <div class="library-actions">
+      <button nz-button [disabled]="store.deleting()" (click)="cancelDelete()">Cancel</button>
+      <button nz-button nzType="primary" nzDanger [nzLoading]="store.deleting()" [disabled]="!deleteMode() || store.deleting()" (click)="confirmDelete()">Delete permanently</button>
+    </div>
+  }
+</ng-template>

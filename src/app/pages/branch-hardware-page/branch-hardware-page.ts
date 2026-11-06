@@ -26,23 +26,11 @@ import {CameraForm} from '../../components/forms/camera-form/camera-form.compone
 import {BranchStore} from '../../store/branch.store';
 import {UploadButtonComponent} from '../../components/upload-button-component/upload-button-component';
 import {ImportTemplate} from '../../interfaces/importResponse.type';
-import {TableColumnsBranchFiles} from '../../services/table-columns-service/table-columns-branch-files.service';
-import {NzSegmentedComponent, NzSegmentedItemComponent} from 'ng-zorro-antd/segmented';
-import {NzTypographyComponent} from 'ng-zorro-antd/typography';
-import {UploadComponent} from '../../components/upload-drag-and-drop-component/upload-component';
-import {NzUploadFile} from 'ng-zorro-antd/upload';
 import {NzModalRef, NzModalService} from 'ng-zorro-antd/modal';
 import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
-import {NzFormLabelComponent} from 'ng-zorro-antd/form';
-import {NzDividerComponent} from 'ng-zorro-antd/divider';
-import {FileCategoryDto} from '../../interfaces/file-category.dto';
-import {FileCategoryForm} from '../../components/forms/file-category-form/file-category-form/file-category-form';
-import {FileCategoryStore} from '../../store/file-category.store';
-import {ApiUrlBaseService} from '../../services/api-url-base.service';
 import {AuthService} from '../../services/auth-service';
 import {TagStore} from '../../store/tag.store';
-import {ClientDocumentsStore} from '../../store/client-documents.store';
-import {FileEntityDto} from '../../interfaces/fileEntityDto';
+import { ClientDocuments } from '../../components/client-documents/client-documents';
 
 @Component({
   selector: 'app-branch-hardware-device-page',
@@ -67,15 +55,9 @@ import {FileEntityDto} from '../../interfaces/fileEntityDto';
     EditSideBar,
     CameraForm,
     UploadButtonComponent,
-    NzSegmentedComponent,
-    NzSegmentedItemComponent,
-    NzTypographyComponent,
-    UploadComponent,
     NzOptionComponent,
     NzSelectComponent,
-    NzFormLabelComponent,
-    NzDividerComponent,
-    FileCategoryForm
+    ClientDocuments
   ],
   standalone: true,
   templateUrl: './branch-hardware-page.html',
@@ -84,7 +66,6 @@ import {FileEntityDto} from '../../interfaces/fileEntityDto';
 })
 export class BranchHardwarePage implements OnInit {
   protected tagStore = inject(TagStore);
-  private documents = inject(ClientDocumentsStore);
   selectedImportTagId = signal<number | null>(null);
   @ViewChild('importCamerasModal', {static: true}) importCamerasModal!: TemplateRef<void>;
   private importModalRef?: NzModalRef;
@@ -99,16 +80,13 @@ export class BranchHardwarePage implements OnInit {
     });
   }
 
-  private apiService = inject(ApiUrlBaseService);
   protected authService = inject(AuthService);
   protected branchStore = inject(BranchStore);
-  protected fileCategoryStore = inject(FileCategoryStore);
   protected hardwareStore = inject(HardwareStore);
   protected modalService = inject(NzModalService);
   private route: ActivatedRoute = inject(ActivatedRoute);
   private routeContext = inject(RouteContextService);
   private sidebarStore = inject(SidebarStore);
-  protected tableColumnsBranchFiles = inject(TableColumnsBranchFiles);
   protected tableBranchHardwareService = inject(TableColumnsBranchHardwareService);
   private utilityService = inject(UtilityService);
 
@@ -167,100 +145,8 @@ export class BranchHardwarePage implements OnInit {
     })
   });
 
-  categoryFilter = computed(() => [
-    { id: 0, name: 'All Files' },
-    ...this.branchStore.fileCategoryList().map(c => ({
-      id: c.id,
-      name: c.name,
-    }))
-  ])
-  selectedCategoryFilter = signal<string>('');
-  handleValueChange(selectedCategory: string | number){
-    selectedCategory = selectedCategory.toString();
-    if (selectedCategory === 'All Files') this.selectedCategoryFilter.set('');
-    else this.selectedCategoryFilter.set(selectedCategory);
-  }
-
-  filteredBranchFiles = computed(() => {
-    const category = this.selectedCategoryFilter();
-    return this.branchFiles().filter(file => {
-      return category === '' || file.category === category;
-    });
-  })
-
-  branchFiles = computed(()=>{
-    return this.branchStore.projectFiles().map(file => {
-      const type = this.utilityService.getType(file.contentType);
-      return {
-        ...file,
-        fileType: type,
-        contentType: type.type,
-        size: this.utilityService.formatSize(file.size),
-        actions: [
-          {label: "Download", type: 'download', link: "", onClick: ()=> this.downloadDocument(file)}
-        ]
-      }
-    })
-  })
-
-  downloadDocument(file: FileEntityDto) {
-    const clientId = this.routeContext.clientId();
-    if (clientId !== null) this.documents.download(clientId, file.id, file.filename);
-  }
-
-  // File Categories Modal
-  // TODO. Implement this on a Category Store
-  @ViewChild('saveUpdateModal',{static:true})
-  saveUpdateModal!: TemplateRef<void>
-  modalRef?: NzModalRef;
-  saveCategory(){
-    this.fileCategoryStore.formMode.set("add");
-    this.modalRef = this.modalService.create({
-      nzContent: this.saveUpdateModal,
-      nzFooter: null,
-      nzMaskClosable: false,
-    })
-  }
-
-  updateCategory(category: FileCategoryDto){
-    this.fileCategoryStore.formMode.set("edit");
-    this.fileCategoryStore.selectedCategory.set(category);
-    this.modalRef = this.modalService.create({
-      nzContent: this.saveUpdateModal,
-      nzFooter: null,
-      nzMaskClosable: false,
-    })
-  }
-
-  //Image Before Upload
-  selectedUploadCategory = signal<number | null >(null)
-  beforeUpload = (file:NzUploadFile, fileList: NzUploadFile[]) => {
-    if(file instanceof File) this.branchStore.fileUploadList.update(curr => [...curr, file]);
-    if( this.branchStore.fileUploadList().length === fileList.length) this.uploadFileList();
-    return false;
-  }
-
-  @ViewChild('uploadModal',{static:true})
-  uploadModal!: TemplateRef<void>;
-  uploadFileList(){
-    this.modalService.create({
-      nzContent: this.uploadModal,
-      nzOnOk: () => this.Upload(),
-      nzOnCancel: () => this.onCancelUpload(),
-    });
-  }
-
-  Upload(){
-    const categoryId = this.selectedUploadCategory();
-    if(categoryId === null) return;
-    this.branchStore.uploadFileList(this.currentBranchId, categoryId)
-    this.selectedUploadCategory.set(null);
-    this.branchStore.fileUploadList.set([]);
-  }
-
-  onCancelUpload(){
-    this.selectedUploadCategory.set(null);
-    this.branchStore.fileUploadList.set([]);
+  get documentClientId() {
+    return this.routeContext.clientId();
   }
 
   ngOnInit() {
@@ -275,12 +161,6 @@ export class BranchHardwarePage implements OnInit {
 
     this.currentRole = this.authService.getUserRole();
 
-    this.branchStore.getFilesByBranchId(currentBranchId).subscribe({
-      next: data =>
-        this.branchStore.projectFiles.set(data)
-    });
-
-    this.branchStore.getFilesCategories();
   }
 
   openEditSidebar(hardware: HardwareTableDto){

@@ -1,0 +1,9 @@
+<div class="file-drop-zone" role="group" [attr.aria-label]="label()" [class.drag-active]="dragging()" [class.disabled]="disabled()"
+  (dragover)="dragOver($event)" (dragleave)="dragLeave($event)" (drop)="drop($event)">
+  <nz-icon nzType="cloud-upload" class="upload-icon" />
+  <strong>{{ file()?.name || 'Drag a file here' }}</strong>
+  <span>{{ file() ? 'Drop another file to replace this selection.' : 'or choose a file from your device.' }}</span>
+  <input #fileInput type="file" hidden [attr.aria-label]="label()" [accept]="extension()" (change)="select($event)" [disabled]="disabled()" />
+  <button nz-button type="button" (click)="fileInput.click()" [disabled]="disabled()">Choose file</button>
+</div>
+@if (error()) { <p class="file-error" role="alert">{{ error() }}</p> }
