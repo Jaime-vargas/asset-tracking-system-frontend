@@ -1,4 +1,4 @@
-import {Component, computed, signal} from '@angular/core';
+import {Component, computed, inject, signal} from '@angular/core';
 import {DashboardCardComponent} from '../../components/dashboard-card-component/dashboard-card-component';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {NzDividerComponent} from 'ng-zorro-antd/divider';
@@ -16,6 +16,8 @@ import {UtilityService} from '../../services/utility.service';
 import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
 import {SingleStatusTagsComponent} from '../../components/single-status-tags-component/single-status-tags-component';
 
+import { AuthService } from '../../services/auth-service';
+
 @Component({
   selector: 'app-dashboard-page',
   imports: [DashboardCardComponent, DashboardGreyCardComponent, DashboardBoxComponent, NzTypographyComponent, NzDividerComponent, NzFlexDirective, NzIconModule, NzTableComponent, NzGridModule, NzButtonComponent, NzThMeasureDirective, DashboardGreyCardComponent, RouterLink, PriorityTagsComponent, SingleStatusTagsComponent],
@@ -23,6 +25,8 @@ import {SingleStatusTagsComponent} from '../../components/single-status-tags-com
   styleUrl: './dashboard-page.css',
 })
 export class DashboardPage {
+  protected readonly fullName = inject(AuthService)
+    .getAllUserDataOnToken(localStorage.getItem('token'))?.fullName?.trim();
 
   constructor(private dashboardService:DashboardService, protected utilityService: UtilityService) {
     this.getDashboardData();
