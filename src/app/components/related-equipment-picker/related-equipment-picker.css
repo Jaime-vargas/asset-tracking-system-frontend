@@ -1,0 +1,22 @@
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  gap: 8px;
+}
+.filter {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.selection-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+.filter span, .selection-tools span {
+  color: var(--app-muted);
+  font-size: 12px;
+}

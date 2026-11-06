@@ -1,0 +1,30 @@
+<div class="filters">
+  <div class="filter">
+    <span>Equipment type</span>
+    <nz-select aria-label="Equipment type" [ngModel]="type()" (ngModelChange)="type.set($event)"
+      [nzDisabled]="disabled() || loading()">
+      <nz-option [nzValue]="null" nzLabel="All types" />
+      @for (itemType of types(); track itemType) {
+        <nz-option [nzValue]="itemType" [nzLabel]="itemType" />
+      }
+    </nz-select>
+  </div>
+  <div class="filter">
+    <span>Site</span>
+    <nz-select aria-label="Site" [ngModel]="siteId()" (ngModelChange)="siteId.set($event)"
+      [nzDisabled]="disabled() || loading()">
+      <nz-option [nzValue]="null" nzLabel="All sites" />
+      @for (site of sites(); track site[0]) {
+        <nz-option [nzValue]="site[0]" [nzLabel]="site[1]" />
+      }
+    </nz-select>
+  </div>
+</div>
+<div class="selection-tools">
+  <span aria-live="polite">{{ matchingCount() }} matching · {{ selectedIds().length }} selected</span>
+  <button nz-button type="button" (click)="selectAllMatching()"
+    [disabled]="disabled() || loading() || !unselectedMatchingIds().length">Select all matching</button>
+</div>
+<app-multi-select-done label="Select client equipment" [options]="options()"
+  [loading]="loading()" [disabled]="disabled() || loading()"
+  [value]="selectedIds()" (valueChange)="selectedIds.set($event)" />

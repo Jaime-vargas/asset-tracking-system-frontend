@@ -12,7 +12,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
       [nzOpen]="open()" (nzOpenChange)="open.set($event)"
       [nzDropdownRender]="footer" [ngModel]="value()" (ngModelChange)="value.set($event)">
       @for (option of options(); track option.id) {
-        <nz-option [nzValue]="option.id" [nzLabel]="option.name" />
+        <nz-option [nzValue]="option.id" [nzLabel]="option.name" [nzHide]="option.hidden ?? false" />
       }
     </nz-select>
     <ng-template #footer>
@@ -28,7 +28,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
   `],
 })
 export class MultiSelectDone {
-  options = input.required<readonly { id: number; name: string }[]>();
+  options = input.required<readonly { id: number; name: string; hidden?: boolean }[]>();
   label = input.required<string>();
   loading = input(false);
   disabled = input(false);
