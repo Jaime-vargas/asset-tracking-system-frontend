@@ -89,12 +89,6 @@ td { padding: 12px 10px !important; overflow-wrap: anywhere; font-weight: 400; }
 .delete-options { display: grid; gap: 8px; width: 100%; margin-bottom: 16px; }
 .delete-options p { margin: 0 0 8px 24px; color: var(--text-secondary, var(--app-muted)); font-size: 12px; }
 
-.sites-dropdown-footer {
-  display: flex;
-  justify-content: flex-end;
-  border-top: 1px solid var(--app-border);
-  padding: 8px;
-}
 
 .site-creation {
   margin-bottom: 20px;

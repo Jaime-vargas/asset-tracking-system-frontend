@@ -1,3 +1,4 @@
+import { MultiSelectDone } from '../multi-select-done/multi-select-done';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzDropdownModule } from 'ng-zorro-antd/dropdown';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
@@ -32,13 +33,13 @@ import { NzFlexModule } from 'ng-zorro-antd/flex';
 import { ClientDocumentsStore } from '../../store/client-documents.store';
 import { TagStore } from '../../store/tag.store';
 import { DocumentDto } from '../../interfaces/document.dto';
-import { AuthService } from '../../services/auth-service';
 import { FileCategoryForm } from '../forms/file-category-form/file-category-form/file-category-form';
 import { FileCategoryStore } from '../../store/file-category.store';
 
 @Component({
   selector: 'app-client-documents',
   imports: [
+    MultiSelectDone,
     DatePipe,
     NzIconModule,
     NzDropdownModule,
@@ -73,7 +74,6 @@ export class ClientDocuments {
   private formBuilder = inject(FormBuilder);
   private destroyRef = inject(DestroyRef);
   private categoryStore = inject(FileCategoryStore);
-  protected isAdmin = inject(AuthService).getUserRole() === 'ADMIN';
   @ViewChild('documentForm', { static: true }) documentForm!: TemplateRef<void>;
   @ViewChild('categoryForm', { static: true }) categoryForm!: TemplateRef<void>;
   @ViewChild('versionHistory', { static: true }) versionHistory!: TemplateRef<void>;
@@ -111,7 +111,6 @@ export class ClientDocuments {
     this.store.siteFilter.set(null);
   }
 
-  protected sitesOpen = signal(false);
   protected siteEditorOpen = signal(false);
 
   protected closeSiteEditor() {
@@ -209,7 +208,6 @@ export class ClientDocuments {
     this.editorMode.set(mode);
     this.editingDocument.set(document);
     this.selectedFile.set(null);
-    this.sitesOpen.set(false);
     this.closeSiteEditor();
     this.form.reset({
       name: document?.name ?? (document ? this.stem(document.filename) : ''),
@@ -302,7 +300,7 @@ export class ClientDocuments {
 
   addSite() {
     const name = this.newSiteName.value.trim();
-    if (!this.isAdmin || !name || this.newSiteName.invalid || this.tagStore.creating()) return;
+    if (!name || this.newSiteName.invalid || this.tagStore.creating()) return;
     this.tagStore.addTag(this.clientId(), name).subscribe((tag) => {
       this.form.controls.tagIds.setValue([...this.form.controls.tagIds.value, tag.id]);
       this.closeSiteEditor();

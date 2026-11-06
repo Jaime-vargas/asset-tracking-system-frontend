@@ -10,6 +10,7 @@ export interface DocumentDto {
   nextVersion: number;
   versionCount: number;
   canDeleteCurrent: boolean;
+  canChangeCategory?: boolean;
   canDeleteAll: boolean;
   contentType: string;
   size: number;
