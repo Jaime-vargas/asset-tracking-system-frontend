@@ -1,3 +1,5 @@
+import { CloudUploadOutline } from '@ant-design/icons-angular/icons';
+import { provideNzIcons } from 'ng-zorro-antd/icon';
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
 
@@ -5,6 +7,7 @@ describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [provideNzIcons([CloudUploadOutline])],
     }).compileComponents();
   });
 
