@@ -16,7 +16,7 @@ import {HardwareUnion} from '../../interfaces/hardware/hardware-union';
 import {DoubleStatusTagComponent} from '../../components/double-status-tag-component/double-status-tag-component';
 import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
 import {NzModalModule} from 'ng-zorro-antd/modal';
-import {ApiUrlBaseService} from '../../services/api-url-base.service';
+import { evidencePhotoUrls } from '../../services/evidence-photo-urls';
 import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcrumb-component';
 import {NzDropdownDirective, NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
 import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
@@ -64,7 +64,6 @@ import {ReportStore} from '../../store/report.store';
 
 export class HardwareDevicePage implements OnInit {
 
-  apiUrlBaseService = inject(ApiUrlBaseService);
 
   hardwareStore = inject(HardwareStore);
   reportStore = inject(ReportStore);
@@ -77,6 +76,13 @@ export class HardwareDevicePage implements OnInit {
   openSidebar = this.sidebarStore.isOpen;
   selectedHardwareId = this.hardwareStore.selectedHardwareId;
   selectedHardwareDetail = this.hardwareStore.selectedHardwareDetail;
+  private photoIds = computed(() => {
+    const hardware = this.selectedHardwareDetail();
+    if (hardware?.type !== 'Camera') return [];
+    return [hardware.viewFromCameraPhoto?.id, hardware.viewToCameraPhoto?.id]
+      .filter((id): id is number => id !== undefined);
+  });
+  private photoUrls = evidencePhotoUrls(this.photoIds);
 
 
   showPassword = signal<boolean>(false);
@@ -192,8 +198,8 @@ export class HardwareDevicePage implements OnInit {
         return [
           {
             label: 'View from Camera',
-            filepath: hardware.viewFromCameraPhoto?.filePath
-              ? this.apiUrlBaseService.imageBaseUrl + hardware.viewFromCameraPhoto.filePath
+            filepath: hardware.viewFromCameraPhoto
+              ? this.photoUrls().get(hardware.viewFromCameraPhoto.id) ?? this.fallbackCameraImage
               : null,
             default: this.fallbackCameraImage,
             photoType: "VIEW_FROM_CAMERA",
@@ -201,8 +207,8 @@ export class HardwareDevicePage implements OnInit {
           },
           {
             label: 'View to Camera',
-            filepath: hardware.viewToCameraPhoto?.filePath
-              ? this.apiUrlBaseService.imageBaseUrl + hardware.viewToCameraPhoto.filePath
+            filepath: hardware.viewToCameraPhoto
+              ? this.photoUrls().get(hardware.viewToCameraPhoto.id) ?? this.fallbackCameraImage
               : null,
             default: this.fallbackCameraImage,
             photoType: "VIEW_TO_CAMERA",

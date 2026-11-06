@@ -19,7 +19,7 @@ import {UtilityService} from '../../services/utility.service';
 import {NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NzFormControlComponent, NzFormDirective} from 'ng-zorro-antd/form';
 import {NzEmptyComponent} from 'ng-zorro-antd/empty';
-import {ApiUrlBaseService} from '../../services/api-url-base.service';
+import { evidencePhotoUrls } from '../../services/evidence-photo-urls';
 import {NzPopconfirmDirective} from 'ng-zorro-antd/popconfirm';
 import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcrumb-component';
 import {ReportStore} from '../../store/report.store';
@@ -66,7 +66,6 @@ import {DatePipe} from '@angular/common';
 
 export class ReportDetailPage implements OnInit {
 
-  private apiUrlBaseService = inject(ApiUrlBaseService);
   private utilityService = inject(UtilityService);
 
   /************************************************************/
@@ -81,6 +80,8 @@ export class ReportDetailPage implements OnInit {
   commentButtonLoading = signal<boolean>(false);
   openSideBar = this.sidebarStore.isOpen;
   selectedReport = this.reportStore.selectedReport;
+  private photoIds = computed(() => this.selectedReport()?.photos.map(photo => photo.id) ?? []);
+  private photoUrls = evidencePhotoUrls(this.photoIds);
 
   reportId!: number
 
@@ -194,7 +195,7 @@ export class ReportDetailPage implements OnInit {
     return reportPhotos.map(photo => {
       return{
         ...photo,
-        filePath: this.apiUrlBaseService.imageBaseUrl + photo.filePath,
+        filePath: this.photoUrls().get(photo.id) ?? '/defaultImgPlaceholder.png',
       }
     });
   });
