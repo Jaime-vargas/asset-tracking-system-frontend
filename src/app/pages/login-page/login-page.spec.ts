@@ -28,7 +28,7 @@ describe('Login', () => {
     component.logInFormSubmit();
     component.logInFormSubmit();
     const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne('http://localhost:3000/api/v1/login');
+    const req = http.expectOne('/api/v1/login');
     expect(component.submitting()).toBe(true);
     req.flush({ message: 'Invalid credentials' }, { status: 401, statusText: 'Unauthorized' });
     fixture.detectChanges();
@@ -44,7 +44,7 @@ describe('Login', () => {
     component['loginForm'].setValue({ username: 'tester', password: 'example-password' });
     component.logInFormSubmit();
     const http = TestBed.inject(HttpTestingController);
-    http.expectOne('http://localhost:3000/api/v1/login').flush({ token: 'test-token' });
+    http.expectOne('/api/v1/login').flush({ token: 'test-token' });
     expect(auth.setToken).toHaveBeenCalledWith('test-token');
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
     expect(component.submitting()).toBe(false);

@@ -1,4 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { provideNzIcons } from 'ng-zorro-antd/icon';
+import {
+  ApartmentOutline,
+  BarChartOutline,
+  CloudServerOutline,
+  FileExclamationOutline,
+  FolderOpenOutline,
+  LaptopOutline,
+} from '@ant-design/icons-angular/icons';
 
 import { MenuSidebarComponent } from './menu-sidebar-component';
 
@@ -8,7 +18,14 @@ describe('MenuSidebarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MenuSidebarComponent]
+      imports: [MenuSidebarComponent],
+      providers: [
+        provideRouter([]),
+        provideNzIcons([
+          ApartmentOutline, BarChartOutline, CloudServerOutline,
+          FileExclamationOutline, FolderOpenOutline, LaptopOutline,
+        ]),
+      ],
     })
     .compileComponents();
 
