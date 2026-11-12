@@ -10,7 +10,7 @@
             <button nz-button class="form-btn default-btn" nz-dropdown [nzDropdownMenu]="importMenu" nzPlacement="bottomLeft">Import <nz-icon nzType="import" nzTheme="outline" /></button>
           </div>
           @if (maintenance(); as report) {
-            @if (!report.hasDraft()) {
+            @if (report.canCreate()) {
               <button nz-button type="button" (click)="report.openDraft()">+ Add maintenance report</button>
             }
           }
@@ -78,7 +78,7 @@
           <app-client-documents [clientId]="clientId" [projectId]="currentBranchId" />
         </div>
         <div nz-col nzSpan="24">
-          <app-project-maintenance [clientId]="clientId" [projectId]="currentBranchId" />
+          <app-project-maintenance [clientId]="clientId" [projectId]="currentBranchId" (equipmentLinked)="hardwareStore.loadHardware()" />
         </div>
       }
 

@@ -1,5 +1,4 @@
-import { formatDate } from '@angular/common';
-import { Component, computed, inject, input, linkedSignal, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, input, output, signal, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconDirective } from 'ng-zorro-antd/icon';
@@ -7,38 +6,23 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
+import { firstValueFrom } from 'rxjs';
 import { HardwareTableDto } from '../../interfaces/hardware/hardware-table.dto';
+import { HardwareService } from '../../services/hardware.service';
+import { MaintenanceChecklist, MaintenanceDetails, MaintenanceDraft, MaintenanceReview, MaintenanceService } from '../../services/maintenance.service';
 import { CarouselComponent } from '../carousel-component/carousel-component';
 import { RelatedEquipmentPicker } from '../related-equipment-picker/related-equipment-picker';
 import { UploadButtonComponent } from '../upload-button-component/upload-button-component';
-import { AuthService } from '../../services/auth-service';
 
-const equipment = [
-  { id: 1, name: 'Camera 001', site: 'Colima', type: 'Camera' },
-  { id: 2, name: 'Camera 002', site: 'Tecomán', type: 'Camera' },
-  { id: 3, name: 'Server 01', site: 'Colima', type: 'Server' },
-];
+const initialChecklist = {
+  cabling: 'PENDING',
+  comments: 'Funcionando correctamente',
+} satisfies Pick<MaintenanceChecklist, 'cabling' | 'comments'>;
 
-interface EvidencePhoto {
-  name: string;
-  url: string;
-}
-
-interface EquipmentReview {
-  equipmentId: number;
-  cleaning: boolean;
-  viewAdjustment: boolean;
-  cabling: 'Pending' | 'Correct' | 'Has an issue';
-  comments: string;
-  photos: EvidencePhoto[];
-  confirmed: boolean;
-}
-
-interface MaintenanceDraft {
-  created?: boolean;
-  title: string;
-  date: string;
-  reviews: EquipmentReview[];
+interface GalleryPhoto {
+  id: number;
+  filename: string;
+  filePath: string;
 }
 
 @Component({
@@ -50,206 +34,280 @@ interface MaintenanceDraft {
 export class ProjectMaintenance {
   readonly projectId = input.required<number>();
   readonly clientId = input.required<number>();
+  readonly equipmentLinked = output<void>();
 
+  private readonly api = inject(MaintenanceService);
+  private readonly hardware = inject(HardwareService);
   private readonly modal = inject(NzModalService);
-  private readonly user = inject(AuthService).getAllUserDataOnToken(localStorage.getItem('token'));
-  protected readonly author = this.user?.fullName;
-  private readonly storageKey = computed(() =>
-    `maintenance-preview:${this.user?.username ?? this.author}:${this.clientId()}:${this.projectId()}`,
-  );
+  private destroyed = false;
 
-  protected readonly draft = linkedSignal(() => this.loadDraft(this.storageKey()));
-  readonly hasDraft = computed(() => {
-    const draft = this.draft();
-    return !!(draft.created || draft.title || draft.date || draft.reviews.length);
-  });
-  protected readonly openEquipment = signal<number | null>(null);
+  protected readonly draft = signal<MaintenanceDraft | null>(null);
+  readonly hasDraft = computed(() => this.draft() !== null);
+  readonly canCreate = computed(() => !this.loading() && !this.busy() && !this.loadFailed() && !this.hasDraft());
+  protected readonly loading = signal(true);
+  protected readonly loadFailed = signal(false);
+  protected readonly busy = signal(false);
   protected readonly notice = signal('');
+  protected readonly details = signal<MaintenanceDetails>({ title: '', maintenanceDate: '' });
   protected readonly pickerOpen = signal(false);
+  protected readonly candidates = signal<HardwareTableDto[]>([]);
   protected readonly selectedIds = signal<number[]>([]);
+  protected readonly pickerError = signal('');
+
+  protected readonly openEquipment = signal<number | null>(null);
+  protected readonly activeReview = computed(() => this.draft()?.reviews.find(review => review.id === this.openEquipment()));
+  protected readonly checklist = signal<MaintenanceChecklist | null>(null);
+  protected readonly reviewError = signal('');
   protected readonly photoError = signal('');
+  protected readonly reviewPhotos = signal<GalleryPhoto[]>([]);
   private readonly pendingPhotos = signal(0);
   protected readonly savingPhotos = computed(() => this.pendingPhotos() > 0);
-  protected readonly activeReview = computed(() =>
-    this.draft().reviews.find(review => review.equipmentId === this.openEquipment()),
-  );
-  protected readonly reviewPhotos = computed(() =>
-    (this.activeReview()?.photos ?? []).map((photo, index) => ({
-      id: index,
-      filename: photo.name,
-      filePath: photo.url,
-    })),
-  );
-  protected readonly candidates = computed<HardwareTableDto[]>(() => this.availableEquipment().map(device => ({
-    id: device.id,
-    type: device.type,
-    name: device.name,
-    model: '',
-    serialNumber: '',
-    location: '',
-    lastMaintenanceDate: '',
-    reportsActive: [],
-    clientId: this.clientId(),
-    clientName: '',
-    branchId: null,
-    branchName: null,
-    tagId: device.site === 'Colima' ? 1 : 2,
-    tagName: device.site,
-  })));
-  protected readonly confirmedCount = computed(() => this.draft().reviews.filter(review => review.confirmed).length);
-  protected readonly availableEquipment = computed(() =>
-    equipment.filter(device => !this.draft().reviews.some(review => review.equipmentId === device.id)),
-  );
+  protected readonly confirmedCount = computed(() => this.draft()?.reviews.filter(review => review.confirmed).length ?? 0);
 
-  protected deviceFor(id: number) {
-    return equipment.find(device => device.id === id);
-  }
-
-  protected removePhoto(index: number) {
-    const review = this.activeReview();
-    if (!review || this.savingPhotos() || !review.photos[index]) return;
-    this.updateReview(review.equipmentId, { photos: review.photos.filter((_, position) => position !== index) });
-  }
-
-  protected updateDetails(details: Partial<Pick<MaintenanceDraft, 'created' | 'title' | 'date'>>) {
-    this.draft.update(draft => ({ ...draft, ...details }));
-    this.saveDraft();
-  }
-
-  openDraft() {
-    const { title, date } = this.draft();
-    this.updateDetails({
-      created: true,
-      title: title.trim() ? title : 'Maintenance report',
-      date: date || formatDate(new Date(), 'yyyy-MM-dd', 'en-US'),
+  constructor() {
+    effect(() => {
+      const projectId = this.projectId();
+      this.draft.set(null);
+      this.pickerOpen.set(false);
+      untracked(() => this.closeReview());
+      void this.loadDraft(projectId);
+    });
+    inject(DestroyRef).onDestroy(() => {
+      this.destroyed = true;
+      this.clearPhotos();
     });
   }
 
-  protected openPicker() {
+  protected async loadDraft(projectId = this.projectId()) {
+    this.loading.set(true);
+    this.loadFailed.set(false);
+    this.notice.set('');
+    try {
+      const draft = await firstValueFrom(this.api.get(projectId));
+      if (!this.isCurrent(projectId)) return;
+      this.draft.set(draft);
+      if (draft) this.details.set({ title: draft.title, maintenanceDate: draft.maintenanceDate });
+    } catch {
+      if (this.isCurrent(projectId)) {
+        this.loadFailed.set(true);
+        this.notice.set('Maintenance report could not be loaded.');
+      }
+    } finally {
+      if (this.isCurrent(projectId)) this.loading.set(false);
+    }
+  }
+
+  async openDraft() {
+    if (!this.canCreate()) return;
+    await this.run(async projectId => {
+      const draft = await firstValueFrom(this.api.create(projectId));
+      if (!this.isCurrent(projectId)) return;
+      this.draft.set(draft);
+      this.details.set({ title: draft.title, maintenanceDate: draft.maintenanceDate });
+    }, this.notice, 'Maintenance report could not be created.');
+  }
+
+  protected updateDetails(changes: Partial<MaintenanceDetails>) {
+    this.details.update(details => ({ ...details, ...changes }));
+  }
+
+  protected async saveDetails() {
+    const draft = this.draft();
+    const details = this.details();
+    if (!draft || this.busy()) return;
+    if (!details.title.trim() || !details.maintenanceDate) {
+      this.notice.set('Enter a title and maintenance date.');
+      return;
+    }
+    if (draft.title === details.title && draft.maintenanceDate === details.maintenanceDate) return;
+    await this.run(async projectId => {
+      const saved = await firstValueFrom(this.api.updateDetails(projectId, details));
+      if (!this.isCurrent(projectId)) return;
+      this.draft.set(saved);
+      this.details.set({ title: saved.title, maintenanceDate: saved.maintenanceDate });
+    }, this.notice, 'Report details could not be saved.');
+  }
+
+  protected async openPicker() {
     this.selectedIds.set([]);
+    this.candidates.set([]);
     this.pickerOpen.set(true);
+    await this.run(async projectId => {
+      const devices = await firstValueFrom(this.hardware.getClientHardware(this.clientId()));
+      if (!this.isCurrent(projectId)) return;
+      const linked = new Set(this.draft()?.reviews.map(review => review.hardwareId));
+      this.candidates.set(devices.filter(device => !linked.has(device.id)));
+    }, this.pickerError, 'Client equipment could not be loaded.');
   }
 
-  protected addSelectedEquipment() {
-    for (const id of this.selectedIds()) this.addEquipment(id);
-    this.saveDraft();
-    this.pickerOpen.set(false);
+  protected async addSelectedEquipment() {
+    if (!this.selectedIds().length) return;
+    await this.run(async projectId => {
+      const draft = await firstValueFrom(this.api.addEquipment(projectId, this.selectedIds(), initialChecklist));
+      if (!this.isCurrent(projectId)) return;
+      this.draft.set(draft);
+      this.pickerOpen.set(false);
+      this.equipmentLinked.emit();
+    }, this.pickerError, 'Equipment could not be added.');
   }
 
-  protected openReview(id: number) {
+  protected openReview(review: MaintenanceReview) {
+    this.clearPhotos();
     this.photoError.set('');
-    this.openEquipment.set(id);
+    this.reviewError.set('');
+    this.openEquipment.set(review.id);
+    const { cleaning, viewAdjustment, cabling, comments } = review;
+    this.checklist.set({ cleaning, viewAdjustment, cabling, comments });
+    void this.loadPhotos(this.projectId(), review.id);
   }
 
-  protected confirmReview() {
+  protected editChecklist(changes: Partial<MaintenanceChecklist>) {
+    this.checklist.update(checklist => checklist && { ...checklist, ...changes });
+  }
+
+  protected async finishReview(confirm: boolean) {
     const review = this.activeReview();
-    if (!review || this.savingPhotos()) return;
-    this.updateReview(review.equipmentId, { confirmed: true });
-    this.openEquipment.set(null);
+    const checklist = this.checklist();
+    if (!review || !checklist || this.savingPhotos()) return;
+    await this.run(async projectId => {
+      const { cleaning, viewAdjustment, cabling, comments } = review;
+      if (cleaning !== checklist.cleaning || viewAdjustment !== checklist.viewAdjustment ||
+          cabling !== checklist.cabling || comments !== checklist.comments) {
+        const updated = await firstValueFrom(this.api.updateReview(projectId, review.id, checklist));
+        if (!this.isCurrent(projectId)) return;
+        this.replaceReview(updated);
+      }
+      if (confirm) {
+        const updated = await firstValueFrom(this.api.confirmReview(projectId, review.id));
+        if (!this.isCurrent(projectId)) return;
+        this.replaceReview(updated);
+      }
+      this.closeReview();
+    }, this.reviewError, 'The checklist could not be saved.');
   }
 
-  private addEquipment(id: number) {
-    if (!this.availableEquipment().some(device => device.id === id)) return;
-    this.draft.update(draft => ({
-      ...draft,
-      reviews: [...draft.reviews, {
-        equipmentId: id,
-        cleaning: true,
-        viewAdjustment: false,
-        cabling: 'Pending',
-        comments: 'Funcionando correctamente',
-        photos: [],
-        confirmed: false,
-      }],
-    }));
-  }
-
-  protected confirmRemoveEquipment(id: number) {
-    const name = this.deviceFor(id)?.name ?? 'this equipment';
+  protected confirmRemoveEquipment(review: MaintenanceReview) {
     this.modal.confirm({
       nzTitle: 'Remove equipment?',
-      nzContent: `Remove ${name} and its checklist and photos from this draft?`,
+      nzContent: `Remove ${review.hardwareName} and its checklist and photos from this draft?`,
       nzOkText: 'Remove equipment',
       nzOkDanger: true,
       nzCancelText: 'Cancel',
-      nzOnOk: () => this.removeEquipment(id),
+      nzOnOk: () => this.run(async projectId => {
+        await firstValueFrom(this.api.removeEquipment(projectId, review.id));
+        if (!this.isCurrent(projectId)) return;
+        this.draft.update(draft => draft && { ...draft, reviews: draft.reviews.filter(item => item.id !== review.id) });
+      }, this.notice, 'Equipment could not be removed.'),
     });
-  }
-
-  private removeEquipment(id: number) {
-    this.draft.update(draft => ({
-      ...draft,
-      reviews: draft.reviews.filter(review => review.equipmentId !== id),
-    }));
-    if (this.openEquipment() === id) this.openEquipment.set(null);
-    this.saveDraft();
-  }
-
-  protected updateReview(id: number, changes: Partial<EquipmentReview>) {
-    this.draft.update(draft => ({
-      ...draft,
-      reviews: draft.reviews.map(review =>
-        review.equipmentId === id ? { ...review, confirmed: false, ...changes } : review,
-      ),
-    }));
-    this.saveDraft();
   }
 
   protected readonly selectPhoto = (file: NzUploadFile): false => {
     const review = this.activeReview();
     const image = file.originFileObj ?? file;
-    if (review && image instanceof File) void this.addPhoto(review.equipmentId, image);
+    if (review && image instanceof File) void this.addPhoto(review, image);
     return false;
   };
 
-  protected capturePhoto(id: number, picker: HTMLInputElement) {
+  protected capturePhoto(review: MaintenanceReview, picker: HTMLInputElement) {
     const file = picker.files?.[0];
     picker.value = '';
-    if (file) void this.addPhoto(id, file);
+    if (file) void this.addPhoto(review, file);
   }
 
-  private async addPhoto(id: number, file: File) {
-    if (!file.type.startsWith('image/')) {
-      this.photoError.set('Choose an image file.');
-      return;
-    }
-    const key = this.storageKey();
+  protected async removePhoto(photoId: number) {
+    const review = this.activeReview();
+    if (!review || this.savingPhotos()) return;
+    await this.run(async projectId => {
+      await firstValueFrom(this.api.removePhoto(projectId, review.id, photoId));
+      if (!this.isReviewCurrent(projectId, review.id)) return;
+      this.markPending(review.id);
+      this.reviewPhotos.update(photos => photos.filter(photo => {
+        if (photo.id !== photoId) return true;
+        URL.revokeObjectURL(photo.filePath);
+        return false;
+      }));
+    }, this.photoError, 'Photo could not be deleted.');
+  }
+
+  private async addPhoto(review: MaintenanceReview, file: File) {
+    const projectId = this.projectId();
     this.photoError.set('');
     this.pendingPhotos.update(count => count + 1);
     try {
-      const url = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result));
-        reader.onerror = () => reject(reader.error);
-        reader.readAsDataURL(file);
-      });
-      const review = this.activeReview();
-      if (this.storageKey() === key && review?.equipmentId === id) {
-        this.updateReview(id, { photos: [...review.photos, { name: file.name, url }] });
-      }
+      const photo = await firstValueFrom(this.api.addPhoto(projectId, review.id, file));
+      if (!this.isReviewCurrent(projectId, review.id)) return;
+      this.markPending(review.id);
+      await this.appendPhoto(projectId, review.id, photo.id, photo.filename);
     } catch {
-      this.photoError.set('The selected photo could not be read.');
+      if (this.isReviewCurrent(projectId, review.id)) {
+        this.photoError.set('Photo could not be loaded. Use JPEG, PNG or WebP up to 20 MB.');
+      }
     } finally {
       this.pendingPhotos.update(count => count - 1);
     }
   }
 
-  private saveDraft() {
+  private async loadPhotos(projectId: number, reviewId: number) {
+    this.pendingPhotos.update(count => count + 1);
     try {
-      localStorage.setItem(this.storageKey(), JSON.stringify(this.draft()));
-      this.notice.set('');
+      const photos = await firstValueFrom(this.api.listPhotos(projectId, reviewId));
+      const results = await Promise.allSettled(photos.map(photo =>
+        this.appendPhoto(projectId, reviewId, photo.id, photo.filename),
+      ));
+      if (results.some(result => result.status === 'rejected')) throw new Error('Photo download failed');
     } catch {
-      this.notice.set('The browser could not save this draft. Remove large photos and try again.');
+      if (this.isReviewCurrent(projectId, reviewId)) this.photoError.set('Some photos could not be loaded.');
+    } finally {
+      this.pendingPhotos.update(count => count - 1);
     }
   }
 
-  private loadDraft(key: string): MaintenanceDraft {
+  private async appendPhoto(projectId: number, reviewId: number, id: number, filename: string) {
+    const blob = await firstValueFrom(this.api.downloadPhoto(projectId, reviewId, id));
+    if (!this.isReviewCurrent(projectId, reviewId)) return;
+    const filePath = URL.createObjectURL(blob);
+    this.reviewPhotos.update(photos => [...photos, { id, filename, filePath }].sort((a, b) => a.id - b.id));
+  }
+
+  private closeReview() {
+    this.openEquipment.set(null);
+    this.checklist.set(null);
+    this.clearPhotos();
+  }
+
+  private clearPhotos() {
+    this.reviewPhotos().forEach(photo => URL.revokeObjectURL(photo.filePath));
+    this.reviewPhotos.set([]);
+  }
+
+  private replaceReview(review: MaintenanceReview) {
+    this.draft.update(draft => draft && { ...draft, reviews: draft.reviews.map(item => item.id === review.id ? review : item) });
+  }
+
+  private markPending(reviewId: number) {
+    const review = this.activeReview();
+    if (review?.id === reviewId) this.replaceReview({ ...review, confirmed: false });
+  }
+
+  private isCurrent(projectId: number) {
+    return !this.destroyed && this.projectId() === projectId;
+  }
+
+  private isReviewCurrent(projectId: number, reviewId: number) {
+    return this.isCurrent(projectId) && this.openEquipment() === reviewId;
+  }
+
+  private async run(action: (projectId: number) => Promise<void>, error: typeof this.notice, message: string) {
+    if (this.busy()) return;
+    const projectId = this.projectId();
+    this.busy.set(true);
+    error.set('');
     try {
-      const stored = localStorage.getItem(key);
-      if (stored) return JSON.parse(stored) as MaintenanceDraft;
+      await action(projectId);
     } catch {
-      return { title: '', date: '', reviews: [] };
+      if (this.isCurrent(projectId)) error.set(message);
+    } finally {
+      if (!this.destroyed) this.busy.set(false);
     }
-    return { title: '', date: '', reviews: [] };
   }
 }

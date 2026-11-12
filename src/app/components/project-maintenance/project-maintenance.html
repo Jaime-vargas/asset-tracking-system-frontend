@@ -1,37 +1,39 @@
-@if (hasDraft()) {
+@if (loadFailed() || (!hasDraft() && notice())) {
+  <p class="save-error" role="alert">{{ notice() }}</p>
+  @if (loadFailed()) { <button nz-button type="button" (click)="loadDraft()">Try again</button> }
+}
+@if (draft(); as report) {
   <section class="maintenance-panel" aria-labelledby="maintenance-heading">
     <header class="maintenance-heading">
       <div>
         <h2 id="maintenance-heading">Maintenance reports</h2>
-        @if (author) { <p>Created by <strong>{{ author }}</strong></p> }
+        <p>Created by <strong>{{ report.createdBy }}</strong></p>
       </div>
     </header>
 
     <div class="report-fields">
-      <label>Title <input nz-input [ngModel]="draft().title" (ngModelChange)="updateDetails({title: $event})" /></label>
-      <label>Maintenance date <input nz-input type="date" [ngModel]="draft().date" (ngModelChange)="updateDetails({date: $event})" /></label>
+      <label>Title <input nz-input maxlength="255" [ngModel]="details().title" (ngModelChange)="updateDetails({title: $event})" (blur)="saveDetails()" /></label>
+      <label>Maintenance date <input nz-input type="date" [ngModel]="details().maintenanceDate" (ngModelChange)="updateDetails({maintenanceDate: $event})" (blur)="saveDetails()" /></label>
     </div>
 
     <div class="equipment-heading">
-      <button nz-button type="button" (click)="openPicker()" [disabled]="!availableEquipment().length">Add equipment</button>
-      <p>{{ confirmedCount() }} of {{ draft().reviews.length }} confirmed</p>
+      <button nz-button type="button" (click)="openPicker()" [disabled]="busy()">Add equipment</button>
+      <p>{{ confirmedCount() }} of {{ report.reviews.length }} confirmed</p>
     </div>
 
     <div class="reviews">
-      @for (review of draft().reviews; track review.equipmentId) {
-        @if (deviceFor(review.equipmentId); as device) {
-          <div class="review-row">
-            <button type="button" class="review-heading" aria-haspopup="dialog" (click)="openReview(device.id)">
-              <span><strong>{{ device.name }}</strong><small>{{ device.type }} · {{ device.site }}</small></span>
-              <span class="review-status" [class.confirmed]="review.confirmed">{{ review.confirmed ? 'Confirmed' : 'Pending' }}</span>
-            </button>
-            <button nz-button nzType="text" type="button" class="remove-equipment"
-              title="Remove equipment" [attr.aria-label]="'Remove ' + device.name"
-              [disabled]="savingPhotos()" (click)="confirmRemoveEquipment(device.id)">
-              <nz-icon nzType="delete" aria-hidden="true" />
-            </button>
-          </div>
-        }
+      @for (review of report.reviews; track review.id) {
+        <div class="review-row">
+          <button type="button" class="review-heading" aria-haspopup="dialog" (click)="openReview(review)">
+            <span><strong>{{ review.hardwareName }}</strong><small>{{ review.site }}</small></span>
+            <span class="review-status" [class.confirmed]="review.confirmed">{{ review.confirmed ? 'Confirmed' : 'Pending' }}</span>
+          </button>
+          <button nz-button nzType="text" type="button" class="remove-equipment"
+            title="Remove equipment" [attr.aria-label]="'Remove ' + review.hardwareName"
+            [disabled]="busy()" (click)="confirmRemoveEquipment(review)">
+            <nz-icon nzType="delete" aria-hidden="true" />
+          </button>
+        </div>
       } @empty {
         <p>Select equipment to start the checklist.</p>
       }
@@ -41,64 +43,68 @@
 }
 
 <nz-modal nzTitle="Add equipment" [nzVisible]="pickerOpen()" [nzWidth]="540" [nzMaskClosable]="false"
-  nzOkText="Add equipment" [nzOkDisabled]="!selectedIds().length"
+  nzOkText="Add equipment" [nzOkDisabled]="busy() || !selectedIds().length" [nzCancelDisabled]="busy()" [nzClosable]="!busy()" [nzKeyboard]="!busy()"
   (nzOnOk)="addSelectedEquipment()" (nzOnCancel)="pickerOpen.set(false)">
   <ng-container *nzModalContent>
-    <app-related-equipment-picker [equipment]="candidates()" [(selectedIds)]="selectedIds" />
+    <app-related-equipment-picker [equipment]="candidates()" [disabled]="busy()" [(selectedIds)]="selectedIds" />
+    @if (pickerError()) { <p role="alert">{{ pickerError() }}</p> }
   </ng-container>
 </nz-modal>
 
-<nz-modal [nzTitle]="deviceFor(openEquipment() ?? 0)?.name ?? 'Equipment checklist'"
+<nz-modal [nzTitle]="activeReview()?.hardwareName ?? 'Equipment checklist'"
   [nzVisible]="!!activeReview()" [nzWidth]="620" [nzMaskClosable]="false"
-  [nzClosable]="!savingPhotos()" [nzKeyboard]="!savingPhotos()" [nzCancelDisabled]="savingPhotos()"
-  [nzOkDisabled]="!!activeReview()?.confirmed || savingPhotos()" nzOkText="Confirm equipment" nzCancelText="Close"
-  (nzOnOk)="confirmReview()" (nzOnCancel)="openEquipment.set(null)">
+  [nzClosable]="!savingPhotos() && !busy()" [nzKeyboard]="!savingPhotos() && !busy()" [nzCancelDisabled]="savingPhotos() || busy()"
+  [nzOkDisabled]="savingPhotos() || busy()" nzOkText="Confirm equipment" nzCancelText="Close"
+  (nzOnOk)="finishReview(true)" (nzOnCancel)="finishReview(false)">
   <ng-container *nzModalContent>
     @if (activeReview(); as review) {
+      @if (checklist(); as fields) {
       <div class="review-body">
         <div class="checklist">
           <div class="checklist-field"><span>Cleaning</span>
-            <nz-select aria-label="Cleaning" [ngModel]="review.cleaning" (ngModelChange)="updateReview(review.equipmentId, {cleaning: $event})">
+            <nz-select aria-label="Cleaning" [nzDisabled]="busy()" [ngModel]="fields.cleaning" (ngModelChange)="editChecklist({cleaning: $event})">
               <nz-option [nzValue]="true" nzLabel="Yes" /><nz-option [nzValue]="false" nzLabel="No" />
             </nz-select>
           </div>
-          @if (deviceFor(review.equipmentId)?.type === 'Camera') {
+          @if (review.camera) {
             <div class="checklist-field"><span>View adjustment</span>
-              <nz-select aria-label="View adjustment" [ngModel]="review.viewAdjustment" (ngModelChange)="updateReview(review.equipmentId, {viewAdjustment: $event})">
+              <nz-select aria-label="View adjustment" [nzDisabled]="busy()" [ngModel]="fields.viewAdjustment" (ngModelChange)="editChecklist({viewAdjustment: $event})">
                 <nz-option [nzValue]="true" nzLabel="Yes" /><nz-option [nzValue]="false" nzLabel="No" />
               </nz-select>
             </div>
           }
           <div class="checklist-field"><span>Cabling check</span>
-            <nz-select aria-label="Cabling check" [ngModel]="review.cabling" (ngModelChange)="updateReview(review.equipmentId, {cabling: $event})">
-              <nz-option nzValue="Pending" nzLabel="Pending" /><nz-option nzValue="Correct" nzLabel="Correct" />
-              <nz-option nzValue="Has an issue" nzLabel="Has an issue" />
+            <nz-select aria-label="Cabling check" [nzDisabled]="busy()" [ngModel]="fields.cabling" (ngModelChange)="editChecklist({cabling: $event})">
+              <nz-option nzValue="PENDING" nzLabel="Pending" /><nz-option nzValue="CORRECT" nzLabel="Correct" />
+              <nz-option nzValue="HAS_ISSUE" nzLabel="Has an issue" />
             </nz-select>
           </div>
         </div>
         <label>Comments
-          <textarea nz-input rows="2" [ngModel]="review.comments" (ngModelChange)="updateReview(review.equipmentId, {comments: $event})"></textarea>
+          <textarea nz-input rows="2" maxlength="4000" [disabled]="busy()" [ngModel]="fields.comments" (ngModelChange)="editChecklist({comments: $event})"></textarea>
         </label>
         <div>
           <p class="photos-label">Evidence photos (optional)</p>
           <div class="photo-actions">
             <app-upload-button-component uploadUrl="" acceptedFiles="image/*" [multipleFiles]="true"
-              [beforeUpload]="selectPhoto" [disabled]="savingPhotos()">
-              <div body><button nz-button type="button" [disabled]="savingPhotos()"><nz-icon nzType="upload" /> Upload images</button></div>
+              [beforeUpload]="selectPhoto" [disabled]="savingPhotos() || busy()">
+              <div body><button nz-button type="button" [disabled]="savingPhotos() || busy()"><nz-icon nzType="upload" /> Upload images</button></div>
             </app-upload-button-component>
             <input #cameraInput type="file" accept="image/*" capture="environment" hidden
-              (change)="capturePhoto(review.equipmentId, cameraInput)" />
-            <button nz-button class="camera-action" type="button" [disabled]="savingPhotos()" (click)="cameraInput.click()">
+              (change)="capturePhoto(review, cameraInput)" />
+            <button nz-button class="camera-action" type="button" [disabled]="savingPhotos() || busy()" (click)="cameraInput.click()">
               <nz-icon nzType="camera" aria-hidden="true" /> Take photo
             </button>
           </div>
           @if (photoError()) { <p role="alert">{{ photoError() }}</p> }
         </div>
         @if (reviewPhotos().length) {
-          <app-carousel-component [images]="reviewPhotos()" [showDeleteButton]="!savingPhotos()"
+          <app-carousel-component [images]="reviewPhotos()" [showDeleteButton]="!savingPhotos() && !busy()"
             (deleteEvent)="removePhoto($event)" />
         }
+        @if (reviewError()) { <p role="alert">{{ reviewError() }}</p> }
       </div>
+      }
     }
   </ng-container>
 </nz-modal>
