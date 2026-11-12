@@ -15,18 +15,28 @@ p, small { color: var(--app-muted); }
 .report-fields label, .checklist-field { flex: 1 1 135px; }
 label, .checklist-field { display: grid; gap: 5px; font-size: .875rem; min-width: 0; }
 .reviews, .review-body { display: grid; gap: 10px; }
+.review-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  background: var(--app-canvas);
+}
+.remove-equipment { color: var(--app-muted); margin-right: 4px; flex-shrink: 0; }
 .review-heading {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 8px;
-  width: 100%;
-  border: 1px solid var(--app-border);
+  flex: 1;
+  min-width: 0;
+  border: 0;
   border-radius: 10px;
   padding: 8px 10px;
   text-align: left;
   color: inherit;
-  background: var(--app-canvas);
+  background: transparent;
   cursor: pointer;
 }
 .review-heading small { display: block; }

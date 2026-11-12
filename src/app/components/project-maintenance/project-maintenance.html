@@ -1,11 +1,10 @@
-@if (editing()) {
+@if (hasDraft()) {
   <section class="maintenance-panel" aria-labelledby="maintenance-heading">
     <header class="maintenance-heading">
       <div>
         <h2 id="maintenance-heading">Maintenance reports</h2>
         @if (author) { <p>Created by <strong>{{ author }}</strong></p> }
       </div>
-      <button nz-button type="button" (click)="editing.set(false)">Hide draft</button>
     </header>
 
     <div class="report-fields">
@@ -21,10 +20,17 @@
     <div class="reviews">
       @for (review of draft().reviews; track review.equipmentId) {
         @if (deviceFor(review.equipmentId); as device) {
-          <button type="button" class="review-heading" aria-haspopup="dialog" (click)="openReview(device.id)">
-            <span><strong>{{ device.name }}</strong><small>{{ device.type }} · {{ device.site }}</small></span>
-            <span class="review-status" [class.confirmed]="review.confirmed">{{ review.confirmed ? 'Confirmed' : 'Pending' }}</span>
-          </button>
+          <div class="review-row">
+            <button type="button" class="review-heading" aria-haspopup="dialog" (click)="openReview(device.id)">
+              <span><strong>{{ device.name }}</strong><small>{{ device.type }} · {{ device.site }}</small></span>
+              <span class="review-status" [class.confirmed]="review.confirmed">{{ review.confirmed ? 'Confirmed' : 'Pending' }}</span>
+            </button>
+            <button nz-button nzType="text" type="button" class="remove-equipment"
+              title="Remove equipment" [attr.aria-label]="'Remove ' + device.name"
+              [disabled]="savingPhotos()" (click)="confirmRemoveEquipment(device.id)">
+              <nz-icon nzType="delete" aria-hidden="true" />
+            </button>
+          </div>
         }
       } @empty {
         <p>Select equipment to start the checklist.</p>
@@ -98,9 +104,6 @@
             }
           </div>
         }
-        <div>
-          <button nz-button nzDanger type="button" [disabled]="savingPhotos()" (click)="confirmRemoveEquipment(review.equipmentId)">Remove equipment</button>
-        </div>
       </div>
     }
   </ng-container>

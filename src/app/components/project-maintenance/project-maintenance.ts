@@ -34,6 +34,7 @@ interface EquipmentReview {
 }
 
 interface MaintenanceDraft {
+  created?: boolean;
   title: string;
   date: string;
   reviews: EquipmentReview[];
@@ -59,14 +60,7 @@ export class ProjectMaintenance {
   protected readonly draft = linkedSignal(() => this.loadDraft(this.storageKey()));
   readonly hasDraft = computed(() => {
     const draft = this.draft();
-    return !!(draft.title || draft.date || draft.reviews.length);
-  });
-  protected readonly editing = linkedSignal({
-    source: this.storageKey,
-    computation: key => {
-      const draft = this.loadDraft(key);
-      return !!(draft.title || draft.date || draft.reviews.length);
-    },
+    return !!(draft.created || draft.title || draft.date || draft.reviews.length);
   });
   protected readonly openEquipment = signal<number | null>(null);
   protected readonly notice = signal('');
@@ -107,7 +101,7 @@ export class ProjectMaintenance {
     this.updateReview(review.equipmentId, { photos: review.photos.filter((_, position) => position !== index) });
   }
 
-  protected updateDetails(details: Partial<Pick<MaintenanceDraft, 'title' | 'date'>>) {
+  protected updateDetails(details: Partial<Pick<MaintenanceDraft, 'created' | 'title' | 'date'>>) {
     this.draft.update(draft => ({ ...draft, ...details }));
     this.saveDraft();
   }
@@ -115,10 +109,10 @@ export class ProjectMaintenance {
   openDraft() {
     const { title, date } = this.draft();
     this.updateDetails({
+      created: true,
       title: title.trim() ? title : 'Maintenance report',
       date: date || formatDate(new Date(), 'yyyy-MM-dd', 'en-US'),
     });
-    this.editing.set(true);
   }
 
   protected openPicker() {

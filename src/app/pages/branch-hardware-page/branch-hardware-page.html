@@ -10,9 +10,9 @@
             <button nz-button class="form-btn default-btn" nz-dropdown [nzDropdownMenu]="importMenu" nzPlacement="bottomLeft">Import <nz-icon nzType="import" nzTheme="outline" /></button>
           </div>
           @if (maintenance(); as report) {
-            <button nz-button type="button" (click)="report.openDraft()">
-              {{ report.hasDraft() ? 'Maintenance report' : '+ Add maintenance report' }}
-            </button>
+            @if (!report.hasDraft()) {
+              <button nz-button type="button" (click)="report.openDraft()">+ Add maintenance report</button>
+            }
           }
           <button nz-button class="form-btn primary-btn" nzType="primary" nz-dropdown [nzDropdownMenu]="newMenu" nzPlacement="bottomRight"><nz-icon nzType="plus" nzTheme="outline" />Add Hardware</button>
         </nz-flex>
