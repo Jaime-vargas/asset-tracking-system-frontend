@@ -1,0 +1,93 @@
+<header class="maintenance-heading">
+  <div>
+    <h2>Maintenance reports</h2>
+    <p>Prototype · Drafts and example equipment are local to this browser.</p>
+  </div>
+  <button type="button" class="primary" (click)="editing.set(!editing())" [attr.aria-expanded]="editing()">
+    {{ editing() ? 'Hide draft' : 'Open maintenance draft' }}
+  </button>
+</header>
+
+@if (editing()) {
+  <div class="report-fields">
+    <label>Title <input type="text" [ngModel]="draft().title" (ngModelChange)="updateDetails({title: $event})" /></label>
+    <label>Maintenance date <input type="date" [ngModel]="draft().date" (ngModelChange)="updateDetails({date: $event})" /></label>
+    @if (author) { <p>Created by <strong>{{ author }}</strong></p> }
+  </div>
+
+  <div class="equipment-heading">
+    <label>Add equipment
+      <select #picker (change)="addEquipment(+picker.value, picker)" [disabled]="!availableEquipment().length">
+        <option value="">Select equipment</option>
+        @for (device of availableEquipment(); track device.id) {
+          <option [value]="device.id">{{ device.name }} · {{ device.type }} · {{ device.site }}</option>
+        }
+      </select>
+    </label>
+    <p>{{ confirmedCount() }} of {{ draft().reviews.length }} confirmed</p>
+  </div>
+
+  <div class="reviews">
+    @for (review of draft().reviews; track review.equipmentId) {
+      @let device = deviceFor(review.equipmentId);
+      @if (device) {
+        <article>
+          <button type="button" class="review-heading" [attr.aria-expanded]="openEquipment() === device.id"
+                  (click)="openEquipment.set(openEquipment() === device.id ? null : device.id)">
+            <span><strong>{{ device.name }}</strong><small>{{ device.type }} · {{ device.site }} · Linked to project in preview</small></span>
+            <span class="review-status" [class.confirmed]="review.confirmed">{{ review.confirmed ? 'Confirmed' : 'Pending' }}</span>
+          </button>
+          @if (openEquipment() === device.id) {
+            <div class="review-body">
+              <div class="checklist">
+                <label>Cleaning
+                  <select [ngModel]="review.cleaning" (ngModelChange)="updateReview(device.id, {cleaning: $event})">
+                    <option [ngValue]="true">Yes</option><option [ngValue]="false">No</option>
+                  </select>
+                </label>
+                @if (device.type === 'Camera') {
+                  <label>View adjustment
+                    <select [ngModel]="review.viewAdjustment" (ngModelChange)="updateReview(device.id, {viewAdjustment: $event})">
+                      <option [ngValue]="true">Yes</option><option [ngValue]="false">No</option>
+                    </select>
+                  </label>
+                }
+                <label>Cabling check
+                  <select [ngModel]="review.cabling" (ngModelChange)="updateReview(device.id, {cabling: $event})">
+                    <option>Pending</option><option>Correct</option><option>Has an issue</option>
+                  </select>
+                </label>
+              </div>
+              <label>Comments
+                <textarea rows="2" [ngModel]="review.comments" (ngModelChange)="updateReview(device.id, {comments: $event})"></textarea>
+              </label>
+              <label>Evidence photos (optional)
+                <input type="file" accept="image/*" multiple #photos [disabled]="savingPhotos()" (change)="addPhotos(review, photos)" />
+              </label>
+              @if (review.photos.length) {
+                <div class="photos">
+                  @for (photo of review.photos; track $index) {
+                    <figure>
+                      <img [src]="photo.url" [alt]="photo.name" />
+                      <button type="button" [disabled]="savingPhotos()" (click)="removePhoto(review, $index)" [attr.aria-label]="'Remove ' + photo.name">Remove</button>
+                    </figure>
+                  }
+                </div>
+              }
+              <div class="actions">
+                <button type="button" [disabled]="savingPhotos()" (click)="removeEquipment(device.id)">Remove equipment</button>
+                <button type="button" class="primary" [disabled]="review.confirmed || savingPhotos()" (click)="updateReview(device.id, {confirmed: true})">Confirm equipment</button>
+              </div>
+            </div>
+          }
+        </article>
+      }
+    } @empty {
+      <p>Select equipment to start the checklist.</p>
+    }
+  </div>
+  <footer class="actions">
+    <p role="status">{{ notice() }}</p>
+    <button type="button" class="primary" [disabled]="savingPhotos()" (click)="saveDraft()">Save draft</button>
+  </footer>
+}

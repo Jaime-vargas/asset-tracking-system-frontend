@@ -30,6 +30,7 @@ import {NzModalRef, NzModalService} from 'ng-zorro-antd/modal';
 import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
 import {AuthService} from '../../services/auth-service';
 import {TagStore} from '../../store/tag.store';
+import { ProjectMaintenance } from '../../components/project-maintenance/project-maintenance';
 import { ClientDocuments } from '../../components/client-documents/client-documents';
 
 @Component({
@@ -57,7 +58,8 @@ import { ClientDocuments } from '../../components/client-documents/client-docume
     UploadButtonComponent,
     NzOptionComponent,
     NzSelectComponent,
-    ClientDocuments
+    ClientDocuments,
+    ProjectMaintenance
   ],
   standalone: true,
   templateUrl: './branch-hardware-page.html',
