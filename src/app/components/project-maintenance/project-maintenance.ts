@@ -1,5 +1,15 @@
+import { formatDate } from '@angular/common';
 import { Component, computed, inject, input, linkedSignal, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzIconDirective } from 'ng-zorro-antd/icon';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzUploadFile } from 'ng-zorro-antd/upload';
+import { HardwareTableDto } from '../../interfaces/hardware/hardware-table.dto';
+import { RelatedEquipmentPicker } from '../related-equipment-picker/related-equipment-picker';
+import { UploadComponent } from '../upload-drag-and-drop-component/upload-component';
 import { AuthService } from '../../services/auth-service';
 
 const equipment = [
@@ -31,7 +41,7 @@ interface MaintenanceDraft {
 
 @Component({
   selector: 'app-project-maintenance',
-  imports: [FormsModule],
+  imports: [FormsModule, NzButtonModule, NzIconDirective, NzInputModule, NzModalModule, NzSelectModule, RelatedEquipmentPicker, UploadComponent],
   templateUrl: './project-maintenance.html',
   styleUrl: './project-maintenance.css',
 })
@@ -46,10 +56,33 @@ export class ProjectMaintenance {
   );
 
   protected readonly draft = linkedSignal(() => this.loadDraft(this.storageKey()));
-  protected readonly editing = signal(false);
+  readonly editing = linkedSignal({ source: this.storageKey, computation: () => false });
   protected readonly openEquipment = signal<number | null>(null);
   protected readonly notice = signal('');
-  protected readonly savingPhotos = signal(false);
+  protected readonly pickerOpen = signal(false);
+  protected readonly selectedIds = signal<number[]>([]);
+  protected readonly photoError = signal('');
+  private readonly pendingPhotos = signal(0);
+  protected readonly savingPhotos = computed(() => this.pendingPhotos() > 0);
+  protected readonly activeReview = computed(() =>
+    this.draft().reviews.find(review => review.equipmentId === this.openEquipment()),
+  );
+  protected readonly candidates = computed<HardwareTableDto[]>(() => this.availableEquipment().map(device => ({
+    id: device.id,
+    type: device.type,
+    name: device.name,
+    model: '',
+    serialNumber: '',
+    location: '',
+    lastMaintenanceDate: '',
+    reportsActive: [],
+    clientId: this.clientId(),
+    clientName: '',
+    branchId: null,
+    branchName: null,
+    tagId: device.site === 'Colima' ? 1 : 2,
+    tagName: device.site,
+  })));
   protected readonly confirmedCount = computed(() => this.draft().reviews.filter(review => review.confirmed).length);
   protected readonly availableEquipment = computed(() =>
     equipment.filter(device => !this.draft().reviews.some(review => review.equipmentId === device.id)),
@@ -68,7 +101,38 @@ export class ProjectMaintenance {
     this.notice.set('');
   }
 
-  protected addEquipment(id: number, picker: HTMLSelectElement) {
+  protected openDraft() {
+    const { title, date } = this.draft();
+    this.updateDetails({
+      title: title.trim() ? title : 'Maintenance report',
+      date: date || formatDate(new Date(), 'yyyy-MM-dd', 'en-US'),
+    });
+    this.editing.set(true);
+  }
+
+  protected openPicker() {
+    this.selectedIds.set([]);
+    this.pickerOpen.set(true);
+  }
+
+  protected addSelectedEquipment() {
+    for (const id of this.selectedIds()) this.addEquipment(id);
+    this.pickerOpen.set(false);
+  }
+
+  protected openReview(id: number) {
+    this.photoError.set('');
+    this.openEquipment.set(id);
+  }
+
+  protected confirmReview() {
+    const review = this.activeReview();
+    if (!review || this.savingPhotos()) return;
+    this.updateReview(review.equipmentId, { confirmed: true });
+    this.openEquipment.set(null);
+  }
+
+  private addEquipment(id: number) {
     if (!this.availableEquipment().some(device => device.id === id)) return;
     this.draft.update(draft => ({
       ...draft,
@@ -82,7 +146,6 @@ export class ProjectMaintenance {
         confirmed: false,
       }],
     }));
-    picker.value = '';
     this.notice.set('');
   }
 
@@ -105,23 +168,42 @@ export class ProjectMaintenance {
     this.notice.set('');
   }
 
-  protected async addPhotos(review: EquipmentReview, picker: HTMLInputElement) {
-    const files = Array.from(picker.files ?? []).filter(file => file.type.startsWith('image/'));
+  protected readonly selectPhoto = (file: NzUploadFile): false => {
+    const review = this.activeReview();
+    const image = file.originFileObj ?? file;
+    if (review && image instanceof File) void this.addPhoto(review.equipmentId, image);
+    return false;
+  };
+
+  protected capturePhoto(id: number, picker: HTMLInputElement) {
+    const file = picker.files?.[0];
     picker.value = '';
-    if (!files.length) return;
-    this.savingPhotos.set(true);
+    if (file) void this.addPhoto(id, file);
+  }
+
+  private async addPhoto(id: number, file: File) {
+    if (!file.type.startsWith('image/')) {
+      this.photoError.set('Choose an image file.');
+      return;
+    }
+    const key = this.storageKey();
+    this.photoError.set('');
+    this.pendingPhotos.update(count => count + 1);
     try {
-      const photos = await Promise.all(files.map(file => new Promise<EvidencePhoto>((resolve, reject) => {
+      const url = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = () => resolve({ name: file.name, url: String(reader.result) });
+        reader.onload = () => resolve(String(reader.result));
         reader.onerror = () => reject(reader.error);
         reader.readAsDataURL(file);
-      })));
-      this.updateReview(review.equipmentId, { photos: [...review.photos, ...photos] });
+      });
+      const review = this.activeReview();
+      if (this.storageKey() === key && review?.equipmentId === id) {
+        this.updateReview(id, { photos: [...review.photos, { name: file.name, url }] });
+      }
     } catch {
-      this.notice.set('The selected photos could not be read.');
+      this.photoError.set('The selected photo could not be read.');
     } finally {
-      this.savingPhotos.set(false);
+      this.pendingPhotos.update(count => count - 1);
     }
   }
 
