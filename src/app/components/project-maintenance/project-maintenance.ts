@@ -8,6 +8,7 @@ import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
 import { HardwareTableDto } from '../../interfaces/hardware/hardware-table.dto';
+import { CarouselComponent } from '../carousel-component/carousel-component';
 import { RelatedEquipmentPicker } from '../related-equipment-picker/related-equipment-picker';
 import { UploadButtonComponent } from '../upload-button-component/upload-button-component';
 import { AuthService } from '../../services/auth-service';
@@ -42,7 +43,7 @@ interface MaintenanceDraft {
 
 @Component({
   selector: 'app-project-maintenance',
-  imports: [FormsModule, NzButtonModule, NzIconDirective, NzInputModule, NzModalModule, NzSelectModule, RelatedEquipmentPicker, UploadButtonComponent],
+  imports: [FormsModule, NzButtonModule, NzIconDirective, NzInputModule, NzModalModule, NzSelectModule, RelatedEquipmentPicker, UploadButtonComponent, CarouselComponent],
   templateUrl: './project-maintenance.html',
   styleUrl: './project-maintenance.css',
 })
@@ -72,6 +73,13 @@ export class ProjectMaintenance {
   protected readonly activeReview = computed(() =>
     this.draft().reviews.find(review => review.equipmentId === this.openEquipment()),
   );
+  protected readonly reviewPhotos = computed(() =>
+    (this.activeReview()?.photos ?? []).map((photo, index) => ({
+      id: index,
+      filename: photo.name,
+      filePath: photo.url,
+    })),
+  );
   protected readonly candidates = computed<HardwareTableDto[]>(() => this.availableEquipment().map(device => ({
     id: device.id,
     type: device.type,
@@ -97,7 +105,9 @@ export class ProjectMaintenance {
     return equipment.find(device => device.id === id);
   }
 
-  protected removePhoto(review: EquipmentReview, index: number) {
+  protected removePhoto(index: number) {
+    const review = this.activeReview();
+    if (!review || this.savingPhotos() || !review.photos[index]) return;
     this.updateReview(review.equipmentId, { photos: review.photos.filter((_, position) => position !== index) });
   }
 

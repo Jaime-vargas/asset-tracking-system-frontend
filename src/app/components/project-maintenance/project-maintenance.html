@@ -94,15 +94,9 @@
           </div>
           @if (photoError()) { <p role="alert">{{ photoError() }}</p> }
         </div>
-        @if (review.photos.length) {
-          <div class="photos">
-            @for (photo of review.photos; track $index) {
-              <figure>
-                <img [src]="photo.url" [alt]="photo.name" />
-                <button nz-button type="button" [disabled]="savingPhotos()" (click)="removePhoto(review, $index)" [attr.aria-label]="'Remove ' + photo.name">Remove</button>
-              </figure>
-            }
-          </div>
+        @if (reviewPhotos().length) {
+          <app-carousel-component [images]="reviewPhotos()" [showDeleteButton]="!savingPhotos()"
+            (deleteEvent)="removePhoto($event)" />
         }
       </div>
     }

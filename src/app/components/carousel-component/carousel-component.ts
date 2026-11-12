@@ -21,7 +21,7 @@ import {NzPopconfirmDirective} from 'ng-zorro-antd/popconfirm';
 })
 export class CarouselComponent {
 
-  images = input.required<FileEntityDto[]>();
+  images = input.required<Pick<FileEntityDto, 'id' | 'filename' | 'filePath'>[]>();
   showDeleteButton = input<boolean>(false);
   imageSize = 180;
 

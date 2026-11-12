@@ -1,6 +1,6 @@
 :host { display: block; color: var(--app-text); }
 .maintenance-panel { margin-bottom: 12px; background: white; border: 1px solid var(--app-border); border-radius: 16px; padding: 16px 20px; }
-h2, p, figure { margin: 0; }
+h2, p { margin: 0; }
 h2 { font-size: 16px; }
 p, small { color: var(--app-muted); }
 .maintenance-heading, .equipment-heading, .photo-actions {
@@ -43,9 +43,6 @@ label, .checklist-field { display: grid; gap: 5px; font-size: .875rem; min-width
 .review-status { font-size: .8rem; padding: 3px 7px; border-radius: 6px; background: #fff3d6; color: #755300; }
 .review-status.confirmed { background: #e2f3e9; color: #235e42; }
 .photos-label { margin-bottom: 5px; }
-.photos { display: flex; flex-wrap: wrap; gap: 8px; }
-.photos figure { display: grid; gap: 4px; width: 90px; }
-.photos img { width: 90px; height: 64px; object-fit: contain; background: var(--app-canvas); }
 .photo-actions { justify-content: flex-start; }
 button.camera-action { display: none; }
 @media (max-width: 760px), (any-pointer: coarse) {
