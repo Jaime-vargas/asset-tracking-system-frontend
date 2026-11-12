@@ -2,6 +2,8 @@
   nzType="select"
   [nzAccept]="acceptedFiles()"
   [nzMultiple]="multipleFiles()"
+  [nzDisabled]="disabled()"
+  [nzBeforeUpload]="beforeUpload()"
   [nzName]="'file'"
   [nzShowUploadList]="false"
   [nzAction]="uploadUrl()"

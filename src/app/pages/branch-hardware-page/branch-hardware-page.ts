@@ -1,4 +1,4 @@
-import {Component, computed, inject, OnInit, signal, TemplateRef, ViewChild} from '@angular/core';
+import {Component, computed, inject, OnInit, signal, TemplateRef, ViewChild, viewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {DashboardBoxComponent} from '../../components/dasboard-box-component/dashboard-box.component';
 import {FormsModule} from '@angular/forms';
@@ -67,6 +67,7 @@ import { ClientDocuments } from '../../components/client-documents/client-docume
   providers: [TagStore],
 })
 export class BranchHardwarePage implements OnInit {
+  protected readonly maintenance = viewChild(ProjectMaintenance);
   protected tagStore = inject(TagStore);
   selectedImportTagId = signal<number | null>(null);
   @ViewChild('importCamerasModal', {static: true}) importCamerasModal!: TemplateRef<void>;

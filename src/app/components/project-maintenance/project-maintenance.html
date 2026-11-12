@@ -1,16 +1,16 @@
-@if (!editing()) {
-  <button nz-button type="button" (click)="openDraft()">Open maintenance draft</button>
-} @else {
+@if (editing()) {
   <section class="maintenance-panel" aria-labelledby="maintenance-heading">
     <header class="maintenance-heading">
-      <h2 id="maintenance-heading">Maintenance reports</h2>
+      <div>
+        <h2 id="maintenance-heading">Maintenance reports</h2>
+        @if (author) { <p>Created by <strong>{{ author }}</strong></p> }
+      </div>
       <button nz-button type="button" (click)="editing.set(false)">Hide draft</button>
     </header>
 
     <div class="report-fields">
       <label>Title <input nz-input [ngModel]="draft().title" (ngModelChange)="updateDetails({title: $event})" /></label>
       <label>Maintenance date <input nz-input type="date" [ngModel]="draft().date" (ngModelChange)="updateDetails({date: $event})" /></label>
-      @if (author) { <p>Created by <strong>{{ author }}</strong></p> }
     </div>
 
     <div class="equipment-heading">
@@ -30,10 +30,7 @@
         <p>Select equipment to start the checklist.</p>
       }
     </div>
-    <footer class="actions">
-      <p role="status">{{ notice() }}</p>
-      <button nz-button nzType="primary" type="button" (click)="saveDraft()">Save draft</button>
-    </footer>
+    @if (notice()) { <p class="save-error" role="alert">{{ notice() }}</p> }
   </section>
 }
 
@@ -54,37 +51,41 @@
     @if (activeReview(); as review) {
       <div class="review-body">
         <div class="checklist">
-          <label>Cleaning
+          <div class="checklist-field"><span>Cleaning</span>
             <nz-select aria-label="Cleaning" [ngModel]="review.cleaning" (ngModelChange)="updateReview(review.equipmentId, {cleaning: $event})">
               <nz-option [nzValue]="true" nzLabel="Yes" /><nz-option [nzValue]="false" nzLabel="No" />
             </nz-select>
-          </label>
+          </div>
           @if (deviceFor(review.equipmentId)?.type === 'Camera') {
-            <label>View adjustment
+            <div class="checklist-field"><span>View adjustment</span>
               <nz-select aria-label="View adjustment" [ngModel]="review.viewAdjustment" (ngModelChange)="updateReview(review.equipmentId, {viewAdjustment: $event})">
                 <nz-option [nzValue]="true" nzLabel="Yes" /><nz-option [nzValue]="false" nzLabel="No" />
               </nz-select>
-            </label>
+            </div>
           }
-          <label>Cabling check
+          <div class="checklist-field"><span>Cabling check</span>
             <nz-select aria-label="Cabling check" [ngModel]="review.cabling" (ngModelChange)="updateReview(review.equipmentId, {cabling: $event})">
               <nz-option nzValue="Pending" nzLabel="Pending" /><nz-option nzValue="Correct" nzLabel="Correct" />
               <nz-option nzValue="Has an issue" nzLabel="Has an issue" />
             </nz-select>
-          </label>
+          </div>
         </div>
         <label>Comments
           <textarea nz-input rows="2" [ngModel]="review.comments" (ngModelChange)="updateReview(review.equipmentId, {comments: $event})"></textarea>
         </label>
         <div>
           <p class="photos-label">Evidence photos (optional)</p>
-          <app-upload-drag-and-drop-component uploadUrl="" acceptedFiles="image/*" [multipleFiles]="true"
-            [beforeUpload]="selectPhoto" [isDisabled]="savingPhotos()" />
-          <input #cameraInput type="file" accept="image/*" capture="environment" hidden
-            (change)="capturePhoto(review.equipmentId, cameraInput)" />
-          <button nz-button class="camera-action" type="button" [disabled]="savingPhotos()" (click)="cameraInput.click()">
-            <nz-icon nzType="camera" aria-hidden="true" /> Take photo
-          </button>
+          <div class="photo-actions">
+            <app-upload-button-component uploadUrl="" acceptedFiles="image/*" [multipleFiles]="true"
+              [beforeUpload]="selectPhoto" [disabled]="savingPhotos()">
+              <div body><button nz-button type="button" [disabled]="savingPhotos()"><nz-icon nzType="upload" /> Upload images</button></div>
+            </app-upload-button-component>
+            <input #cameraInput type="file" accept="image/*" capture="environment" hidden
+              (change)="capturePhoto(review.equipmentId, cameraInput)" />
+            <button nz-button class="camera-action" type="button" [disabled]="savingPhotos()" (click)="cameraInput.click()">
+              <nz-icon nzType="camera" aria-hidden="true" /> Take photo
+            </button>
+          </div>
           @if (photoError()) { <p role="alert">{{ photoError() }}</p> }
         </div>
         @if (review.photos.length) {
@@ -98,7 +99,7 @@
           </div>
         }
         <div>
-          <button nz-button nzDanger type="button" [disabled]="savingPhotos()" (click)="removeEquipment(review.equipmentId)">Remove equipment</button>
+          <button nz-button nzDanger type="button" [disabled]="savingPhotos()" (click)="confirmRemoveEquipment(review.equipmentId)">Remove equipment</button>
         </div>
       </div>
     }

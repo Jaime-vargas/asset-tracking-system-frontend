@@ -4,12 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconDirective } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
 import { HardwareTableDto } from '../../interfaces/hardware/hardware-table.dto';
 import { RelatedEquipmentPicker } from '../related-equipment-picker/related-equipment-picker';
-import { UploadComponent } from '../upload-drag-and-drop-component/upload-component';
+import { UploadButtonComponent } from '../upload-button-component/upload-button-component';
 import { AuthService } from '../../services/auth-service';
 
 const equipment = [
@@ -41,7 +41,7 @@ interface MaintenanceDraft {
 
 @Component({
   selector: 'app-project-maintenance',
-  imports: [FormsModule, NzButtonModule, NzIconDirective, NzInputModule, NzModalModule, NzSelectModule, RelatedEquipmentPicker, UploadComponent],
+  imports: [FormsModule, NzButtonModule, NzIconDirective, NzInputModule, NzModalModule, NzSelectModule, RelatedEquipmentPicker, UploadButtonComponent],
   templateUrl: './project-maintenance.html',
   styleUrl: './project-maintenance.css',
 })
@@ -49,6 +49,7 @@ export class ProjectMaintenance {
   readonly projectId = input.required<number>();
   readonly clientId = input.required<number>();
 
+  private readonly modal = inject(NzModalService);
   private readonly user = inject(AuthService).getAllUserDataOnToken(localStorage.getItem('token'));
   protected readonly author = this.user?.fullName;
   private readonly storageKey = computed(() =>
@@ -56,7 +57,17 @@ export class ProjectMaintenance {
   );
 
   protected readonly draft = linkedSignal(() => this.loadDraft(this.storageKey()));
-  readonly editing = linkedSignal({ source: this.storageKey, computation: () => false });
+  readonly hasDraft = computed(() => {
+    const draft = this.draft();
+    return !!(draft.title || draft.date || draft.reviews.length);
+  });
+  protected readonly editing = linkedSignal({
+    source: this.storageKey,
+    computation: key => {
+      const draft = this.loadDraft(key);
+      return !!(draft.title || draft.date || draft.reviews.length);
+    },
+  });
   protected readonly openEquipment = signal<number | null>(null);
   protected readonly notice = signal('');
   protected readonly pickerOpen = signal(false);
@@ -98,10 +109,10 @@ export class ProjectMaintenance {
 
   protected updateDetails(details: Partial<Pick<MaintenanceDraft, 'title' | 'date'>>) {
     this.draft.update(draft => ({ ...draft, ...details }));
-    this.notice.set('');
+    this.saveDraft();
   }
 
-  protected openDraft() {
+  openDraft() {
     const { title, date } = this.draft();
     this.updateDetails({
       title: title.trim() ? title : 'Maintenance report',
@@ -117,6 +128,7 @@ export class ProjectMaintenance {
 
   protected addSelectedEquipment() {
     for (const id of this.selectedIds()) this.addEquipment(id);
+    this.saveDraft();
     this.pickerOpen.set(false);
   }
 
@@ -146,16 +158,27 @@ export class ProjectMaintenance {
         confirmed: false,
       }],
     }));
-    this.notice.set('');
   }
 
-  protected removeEquipment(id: number) {
+  protected confirmRemoveEquipment(id: number) {
+    const name = this.deviceFor(id)?.name ?? 'this equipment';
+    this.modal.confirm({
+      nzTitle: 'Remove equipment?',
+      nzContent: `Remove ${name} and its checklist and photos from this draft?`,
+      nzOkText: 'Remove equipment',
+      nzOkDanger: true,
+      nzCancelText: 'Cancel',
+      nzOnOk: () => this.removeEquipment(id),
+    });
+  }
+
+  private removeEquipment(id: number) {
     this.draft.update(draft => ({
       ...draft,
       reviews: draft.reviews.filter(review => review.equipmentId !== id),
     }));
     if (this.openEquipment() === id) this.openEquipment.set(null);
-    this.notice.set('');
+    this.saveDraft();
   }
 
   protected updateReview(id: number, changes: Partial<EquipmentReview>) {
@@ -165,7 +188,7 @@ export class ProjectMaintenance {
         review.equipmentId === id ? { ...review, confirmed: false, ...changes } : review,
       ),
     }));
-    this.notice.set('');
+    this.saveDraft();
   }
 
   protected readonly selectPhoto = (file: NzUploadFile): false => {
@@ -207,10 +230,10 @@ export class ProjectMaintenance {
     }
   }
 
-  protected saveDraft() {
+  private saveDraft() {
     try {
       localStorage.setItem(this.storageKey(), JSON.stringify(this.draft()));
-      this.notice.set('Draft saved in this browser.');
+      this.notice.set('');
     } catch {
       this.notice.set('The browser could not save this draft. Remove large photos and try again.');
     }

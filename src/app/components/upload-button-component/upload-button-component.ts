@@ -1,5 +1,5 @@
-import {Component} from '@angular/core';
-import {NzUploadComponent} from "ng-zorro-antd/upload";
+import {Component, input} from '@angular/core';
+import {NzBeforeUploadFileType, NzUploadComponent, NzUploadFile} from "ng-zorro-antd/upload";
 import {NzIconModule} from 'ng-zorro-antd/icon';
 import {AbstractUploadComponent} from '../../services/abstract-upload-component.directive';
 
@@ -13,4 +13,6 @@ import {AbstractUploadComponent} from '../../services/abstract-upload-component.
   styleUrl: './upload-button-component.css',
 })
 export class UploadButtonComponent extends AbstractUploadComponent{
+  readonly disabled = input(false);
+  readonly beforeUpload = input<((file: NzUploadFile, files: NzUploadFile[]) => NzBeforeUploadFileType) | undefined>(undefined);
 }
