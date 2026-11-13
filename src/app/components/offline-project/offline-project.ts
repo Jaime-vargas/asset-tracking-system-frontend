@@ -1,11 +1,12 @@
 import { DatePipe } from '@angular/common';
 import { Component, effect, inject, input, signal } from '@angular/core';
 import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzModalModule } from 'ng-zorro-antd/modal';
 import { OfflineFile, OfflineProject, OfflineProjectService } from '../../services/offline-project.service';
 
 @Component({
   selector: 'app-offline-project',
-  imports: [DatePipe, NzButtonModule],
+  imports: [DatePipe, NzButtonModule, NzModalModule],
   templateUrl: './offline-project.html',
   styles: [`
     :host { display: block; margin-block: 12px; }
@@ -20,7 +21,7 @@ export class OfflineProjectComponent {
   readonly projectId = input.required<number>();
   private readonly offline = inject(OfflineProjectService);
   protected readonly snapshot = signal<OfflineProject | null>(null);
-  protected readonly expanded = signal(!navigator.onLine);
+  protected readonly visible = signal(false);
   protected readonly busy = signal(false);
   protected readonly message = signal('');
 
@@ -30,6 +31,8 @@ export class OfflineProjectComponent {
       const projectId = this.projectId();
       let current = true;
       this.snapshot.set(null);
+      this.visible.set(false);
+      this.message.set('');
       onCleanup(() => { current = false; });
       void this.offline.read(clientId, projectId).then(snapshot => {
         if (current) this.snapshot.set(snapshot ?? null);
@@ -59,7 +62,6 @@ export class OfflineProjectComponent {
     try {
       await this.offline.remove(this.clientId(), this.projectId());
       this.snapshot.set(null);
-      this.expanded.set(false);
       this.message.set('');
     } catch {
       this.message.set('The offline copy could not be removed.');
