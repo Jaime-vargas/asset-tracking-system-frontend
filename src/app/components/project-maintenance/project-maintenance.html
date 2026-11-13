@@ -38,6 +38,11 @@
         <p>Select equipment to start the checklist.</p>
       }
     </div>
+    @if (queuedCount()) {
+      <p role="status">{{ queuedCount() }} photos waiting to upload
+        <button nz-button nzType="text" type="button" (click)="retryPhotos()">Retry upload</button>
+      </p>
+    }
     @if (notice()) { <p class="save-error" role="alert">{{ notice() }}</p> }
   </section>
 }
@@ -96,6 +101,7 @@
               <nz-icon nzType="camera" aria-hidden="true" /> Take photo
             </button>
           </div>
+          @if (queuedCount()) { <p role="status">{{ queuedCount() }} photos waiting to upload</p> }
           @if (photoError()) { <p role="alert">{{ photoError() }}</p> }
         </div>
         @if (reviewPhotos().length) {

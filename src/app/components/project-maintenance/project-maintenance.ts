@@ -6,6 +6,8 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
+import { HttpErrorResponse } from '@angular/common/http';
+import { MaintenancePhotoQueue } from '../../services/maintenance-photo-queue.service';
 import { firstValueFrom } from 'rxjs';
 import { HardwareTableDto } from '../../interfaces/hardware/hardware-table.dto';
 import { HardwareService } from '../../services/hardware.service';
@@ -36,6 +38,7 @@ export class ProjectMaintenance {
   readonly clientId = input.required<number>();
   readonly equipmentLinked = output<void>();
 
+  private readonly queue = inject(MaintenancePhotoQueue);
   private readonly api = inject(MaintenanceService);
   private readonly hardware = inject(HardwareService);
   private readonly modal = inject(NzModalService);
@@ -62,6 +65,16 @@ export class ProjectMaintenance {
   protected readonly reviewPhotos = signal<GalleryPhoto[]>([]);
   private readonly pendingPhotos = signal(0);
   protected readonly savingPhotos = computed(() => this.pendingPhotos() > 0);
+  protected readonly queuedCount = computed(() => {
+    const owner = this.queue.owner();
+    const projectId = this.projectId();
+    return this.queue.pending().filter(photo => photo.owner === owner && photo.projectId === projectId).length;
+  });
+
+  protected retryPhotos() {
+    void this.queue.sync();
+  }
+
   protected readonly confirmedCount = computed(() => this.draft()?.reviews.filter(review => review.confirmed).length ?? 0);
 
   constructor() {
@@ -71,6 +84,19 @@ export class ProjectMaintenance {
       this.pickerOpen.set(false);
       untracked(() => this.closeReview());
       void this.loadDraft(projectId);
+    });
+    effect(() => {
+      const sent = this.queue.lastUploaded();
+      if (!sent) return;
+      untracked(() => {
+        if (sent.projectId !== this.projectId()) return;
+        this.draft.update(draft => draft && {
+          ...draft,
+          reviews: draft.reviews.map(review => review.id === sent.reviewId ? { ...review, confirmed: false } : review),
+        });
+        this.cacheDraft(this.projectId(), this.draft());
+        if (this.openEquipment() === sent.reviewId) void this.loadPhotos(sent.projectId, sent.reviewId);
+      });
     });
     inject(DestroyRef).onDestroy(() => {
       this.destroyed = true;
@@ -86,9 +112,17 @@ export class ProjectMaintenance {
       const draft = await firstValueFrom(this.api.get(projectId));
       if (!this.isCurrent(projectId)) return;
       this.draft.set(draft);
+      this.cacheDraft(projectId, draft);
       if (draft) this.details.set({ title: draft.title, maintenanceDate: draft.maintenanceDate });
-    } catch {
+    } catch (error) {
       if (this.isCurrent(projectId)) {
+        const saved = this.canUseOffline(error) ? this.cachedDraft(projectId) : null;
+        if (saved) {
+          this.draft.set(saved);
+          this.details.set({ title: saved.title, maintenanceDate: saved.maintenanceDate });
+          this.notice.set('Offline copy. Photos will be sent when the connection returns.');
+          return;
+        }
         this.loadFailed.set(true);
         this.notice.set('Maintenance report could not be loaded.');
       }
@@ -103,6 +137,7 @@ export class ProjectMaintenance {
       const draft = await firstValueFrom(this.api.create(projectId));
       if (!this.isCurrent(projectId)) return;
       this.draft.set(draft);
+      this.cacheDraft(projectId, draft);
       this.details.set({ title: draft.title, maintenanceDate: draft.maintenanceDate });
     }, this.notice, 'Maintenance report could not be created.');
   }
@@ -146,6 +181,7 @@ export class ProjectMaintenance {
       const draft = await firstValueFrom(this.api.addEquipment(projectId, this.selectedIds(), initialChecklist));
       if (!this.isCurrent(projectId)) return;
       this.draft.set(draft);
+      this.cacheDraft(projectId, draft);
       this.pickerOpen.set(false);
       this.equipmentLinked.emit();
     }, this.pickerError, 'Equipment could not be added.');
@@ -169,6 +205,10 @@ export class ProjectMaintenance {
     const review = this.activeReview();
     const checklist = this.checklist();
     if (!review || !checklist || this.savingPhotos()) return;
+    if (!confirm && !navigator.onLine) {
+      this.closeReview();
+      return;
+    }
     await this.run(async projectId => {
       const { cleaning, viewAdjustment, cabling, comments } = review;
       if (cleaning !== checklist.cleaning || viewAdjustment !== checklist.viewAdjustment ||
@@ -234,13 +274,14 @@ export class ProjectMaintenance {
     this.photoError.set('');
     this.pendingPhotos.update(count => count + 1);
     try {
-      const photo = await firstValueFrom(this.api.addPhoto(projectId, review.id, file));
-      if (!this.isReviewCurrent(projectId, review.id)) return;
-      this.markPending(review.id);
-      await this.appendPhoto(projectId, review.id, photo.id, photo.filename);
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 20 * 1024 * 1024) {
+        this.photoError.set('Choose a JPEG, PNG or WebP photo up to 20 MB.');
+        return;
+      }
+      await this.queue.enqueue(projectId, review.id, file);
     } catch {
       if (this.isReviewCurrent(projectId, review.id)) {
-        this.photoError.set('Photo could not be loaded. Use JPEG, PNG or WebP up to 20 MB.');
+        this.photoError.set('The photo could not be saved on this device.');
       }
     } finally {
       this.pendingPhotos.update(count => count - 1);
@@ -255,8 +296,8 @@ export class ProjectMaintenance {
         this.appendPhoto(projectId, reviewId, photo.id, photo.filename),
       ));
       if (results.some(result => result.status === 'rejected')) throw new Error('Photo download failed');
-    } catch {
-      if (this.isReviewCurrent(projectId, reviewId)) this.photoError.set('Some photos could not be loaded.');
+    } catch (error) {
+      if (!this.canUseOffline(error) && this.isReviewCurrent(projectId, reviewId)) this.photoError.set('Some photos could not be loaded.');
     } finally {
       this.pendingPhotos.update(count => count - 1);
     }
@@ -266,7 +307,13 @@ export class ProjectMaintenance {
     const blob = await firstValueFrom(this.api.downloadPhoto(projectId, reviewId, id));
     if (!this.isReviewCurrent(projectId, reviewId)) return;
     const filePath = URL.createObjectURL(blob);
-    this.reviewPhotos.update(photos => [...photos, { id, filename, filePath }].sort((a, b) => a.id - b.id));
+    this.reviewPhotos.update(photos => {
+      if (photos.some(photo => photo.id === id)) {
+        URL.revokeObjectURL(filePath);
+        return photos;
+      }
+      return [...photos, { id, filename, filePath }].sort((a, b) => a.id - b.id);
+    });
   }
 
   private closeReview() {
@@ -282,11 +329,38 @@ export class ProjectMaintenance {
 
   private replaceReview(review: MaintenanceReview) {
     this.draft.update(draft => draft && { ...draft, reviews: draft.reviews.map(item => item.id === review.id ? review : item) });
+    this.cacheDraft(this.projectId(), this.draft());
   }
 
   private markPending(reviewId: number) {
     const review = this.activeReview();
     if (review?.id === reviewId) this.replaceReview({ ...review, confirmed: false });
+  }
+
+  private canUseOffline(error: unknown) {
+    return error instanceof HttpErrorResponse && error.status === 0;
+  }
+
+  private cacheDraft(projectId: number, draft: MaintenanceDraft | null) {
+    const owner = this.queue.owner();
+    if (!owner) return;
+    try {
+      const key = 'maintenance-offline:' + owner + ':' + projectId;
+      if (draft) localStorage.setItem(key, JSON.stringify(draft));
+      else localStorage.removeItem(key);
+    } catch {
+      // Online edits remain stored on the server.
+    }
+  }
+
+  private cachedDraft(projectId: number): MaintenanceDraft | null {
+    const owner = this.queue.owner();
+    if (!owner) return null;
+    try {
+      return JSON.parse(localStorage.getItem('maintenance-offline:' + owner + ':' + projectId) ?? 'null');
+    } catch {
+      return null;
+    }
   }
 
   private isCurrent(projectId: number) {

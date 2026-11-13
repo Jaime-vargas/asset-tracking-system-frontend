@@ -1,4 +1,7 @@
-import {ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners} from '@angular/core';
+import { inject, provideAppInitializer } from '@angular/core';
+import { MaintenancePhotoQueue } from './services/maintenance-photo-queue.service';
+import { provideServiceWorker } from '@angular/service-worker';
+import {ApplicationConfig, isDevMode, importProvidersFrom, provideBrowserGlobalErrorListeners} from '@angular/core';
 import {provideHttpClient, withInterceptors} from '@angular/common/http';
 import { provideRouter, withHashLocation } from '@angular/router';
 
@@ -18,6 +21,8 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(withInterceptors([authInterceptorService])),
     provideBrowserGlobalErrorListeners(),
+    provideAppInitializer(() => inject(MaintenancePhotoQueue).start()),
+    provideServiceWorker('ngsw-worker.js', { enabled: !isDevMode() }),
     provideRouter(routes, ...(backendOrigin ? [withHashLocation()] : [])),
     provideNzI18n(en_US),
     importProvidersFrom(
