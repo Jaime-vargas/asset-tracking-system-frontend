@@ -2,6 +2,7 @@ import { DatePipe } from '@angular/common';
 import { Component, effect, inject, input, signal } from '@angular/core';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { MaintenancePhotoQueue } from '../../services/maintenance-photo-queue.service';
 import { OfflineFile, OfflineProject, OfflineProjectService } from '../../services/offline-project.service';
 
 @Component({
@@ -19,6 +20,7 @@ import { OfflineFile, OfflineProject, OfflineProjectService } from '../../servic
 export class OfflineProjectComponent {
   readonly clientId = input.required<number>();
   readonly projectId = input.required<number>();
+  private readonly queue = inject(MaintenancePhotoQueue);
   private readonly offline = inject(OfflineProjectService);
   protected readonly snapshot = signal<OfflineProject | null>(null);
   protected readonly visible = signal(false);
@@ -65,6 +67,24 @@ export class OfflineProjectComponent {
       this.message.set('');
     } catch {
       this.message.set('The offline copy could not be removed.');
+    }
+  }
+
+  protected pendingPhotos(reportId: number) {
+    const owner = this.queue.owner();
+    return this.queue.pending().filter(photo => 'reportId' in photo && photo.reportId === reportId && photo.owner === owner).length;
+  }
+
+  protected async queueReportPhotos(reportId: number, input: HTMLInputElement) {
+    const files = Array.from(input.files ?? []);
+    input.value = '';
+    try {
+      for (const file of files) {
+        if (!file.type.startsWith('image/') || !file.size) throw new Error('Invalid image');
+        await this.queue.enqueueReportPhoto(reportId, file);
+      }
+    } catch {
+      this.message.set('A photo could not be saved. Check the file type and available storage.');
     }
   }
 

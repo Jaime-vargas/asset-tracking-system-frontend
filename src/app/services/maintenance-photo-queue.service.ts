@@ -1,19 +1,23 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { firstValueFrom, timeout } from 'rxjs';
+import { firstValueFrom, Observable, timeout } from 'rxjs';
+import { ApiUrlBaseService } from './api-url-base.service';
 import { AuthService } from './auth-service';
 import { MaintenanceService } from './maintenance.service';
 
-interface PendingPhoto {
+interface PhotoEntry {
   id: string;
   owner: string;
-  projectId: number;
-  reviewId: number;
   file: File;
 }
 
+type PendingPhoto = PhotoEntry & (
+  { projectId: number; reviewId: number } | { reportId: number }
+);
+
 @Injectable({ providedIn: 'root' })
 export class MaintenancePhotoQueue {
+  private readonly http = inject(ApiUrlBaseService);
   private readonly auth = inject(AuthService);
   private readonly api = inject(MaintenanceService);
   private database?: Promise<IDBDatabase>;
@@ -46,9 +50,17 @@ export class MaintenancePhotoQueue {
   }
 
   async enqueue(projectId: number, reviewId: number, file: File) {
+    return this.save({ projectId, reviewId }, file);
+  }
+
+  enqueueReportPhoto(reportId: number, file: File) {
+    return this.save({ reportId }, file);
+  }
+
+  private async save(target: { projectId: number; reviewId: number } | { reportId: number }, file: File) {
     const owner = this.owner();
     if (!owner) throw new Error('Sign in to save photos.');
-    const photo = { id: crypto.randomUUID(), owner, projectId, reviewId, file };
+    const photo = { id: crypto.randomUUID(), owner, ...target, file };
     await this.write(store => store.add(photo));
     this.state.update(items => [...items, photo]);
     void this.sync();
@@ -79,14 +91,14 @@ export class MaintenancePhotoQueue {
         if (photo.owner !== owner) continue;
         if (this.owner() !== owner || !this.auth.isValidToken()) break;
         try {
-          await firstValueFrom(this.api.addPhoto(photo.projectId, photo.reviewId, photo.file).pipe(timeout(90_000)));
+          await firstValueFrom(this.upload(photo).pipe(timeout(90_000)));
         } catch (error) {
           if (error instanceof HttpErrorResponse && [400, 404, 413, 415, 422].includes(error.status)) continue;
           break;
         }
         await this.write(store => store.delete(photo.id));
         this.state.update(items => items.filter(item => item.id !== photo.id));
-        this.lastUploaded.set({ projectId: photo.projectId, reviewId: photo.reviewId });
+        if ('projectId' in photo) this.lastUploaded.set({ projectId: photo.projectId, reviewId: photo.reviewId });
       }
     } catch {
       // Keep the persisted entries for the next attempt.
@@ -97,6 +109,15 @@ export class MaintenancePhotoQueue {
         void this.sync();
       }
     }
+  }
+
+  private upload(photo: PendingPhoto): Observable<unknown> {
+    if ('reportId' in photo) {
+      const form = new FormData();
+      form.append('file', photo.file);
+      return this.http.post<void>(`reports/${photo.reportId}/photos/operations/${photo.id}`, form);
+    }
+    return this.api.addPhoto(photo.projectId, photo.reviewId, photo.file);
   }
 
   private open() {

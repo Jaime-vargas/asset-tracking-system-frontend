@@ -27,6 +27,15 @@
             <details>
               <summary>{{ report.title }} · {{ report.status }}</summary>
               <p>{{ report.reportDetails }}</p>
+              @if (report.status !== 'CLOSED') {
+                <input #reportFiles type="file" accept="image/*" multiple hidden (change)="queueReportPhotos(report.id, reportFiles)" />
+                <input #reportCamera type="file" accept="image/*" capture="environment" hidden (change)="queueReportPhotos(report.id, reportCamera)" />
+                <div class="actions">
+                  <button nz-button type="button" (click)="reportFiles.click()">Upload images</button>
+                  <button nz-button type="button" (click)="reportCamera.click()">Take photo</button>
+                  @if (pendingPhotos(report.id); as count) { <span role="status">{{ count }} waiting to upload</span> }
+                </div>
+              }
               @for (comment of report.comments; track $index) {
                 <p>{{ comment.text }}</p>
               }

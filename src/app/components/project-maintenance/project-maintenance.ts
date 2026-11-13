@@ -68,7 +68,7 @@ export class ProjectMaintenance {
   protected readonly queuedCount = computed(() => {
     const owner = this.queue.owner();
     const projectId = this.projectId();
-    return this.queue.pending().filter(photo => photo.owner === owner && photo.projectId === projectId).length;
+    return this.queue.pending().filter(photo => 'projectId' in photo && photo.owner === owner && photo.projectId === projectId).length;
   });
 
   protected retryPhotos() {
