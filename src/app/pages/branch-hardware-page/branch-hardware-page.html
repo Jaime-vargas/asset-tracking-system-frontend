@@ -78,6 +78,7 @@
           <app-client-documents [clientId]="clientId" [projectId]="currentBranchId" />
         </div>
         <div nz-col nzSpan="24">
+          <app-offline-project [clientId]="clientId" [projectId]="currentBranchId" />
           <app-project-maintenance [clientId]="clientId" [projectId]="currentBranchId" (equipmentLinked)="hardwareStore.loadHardware()" />
         </div>
       }

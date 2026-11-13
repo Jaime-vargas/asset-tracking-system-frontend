@@ -1,3 +1,4 @@
+import { OfflineProjectComponent } from '../../components/offline-project/offline-project';
 import {Component, computed, inject, OnInit, signal, TemplateRef, ViewChild, viewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {DashboardBoxComponent} from '../../components/dasboard-box-component/dashboard-box.component';
@@ -59,7 +60,8 @@ import { ClientDocuments } from '../../components/client-documents/client-docume
     NzOptionComponent,
     NzSelectComponent,
     ClientDocuments,
-    ProjectMaintenance
+    ProjectMaintenance,
+    OfflineProjectComponent
   ],
   standalone: true,
   templateUrl: './branch-hardware-page.html',

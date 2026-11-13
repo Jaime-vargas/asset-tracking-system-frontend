@@ -1,0 +1,53 @@
+<div class="actions">
+  <button nz-button type="button" [disabled]="busy()" (click)="download()">
+    {{ snapshot() ? 'Update offline copy' : 'Download for offline use' }}
+  </button>
+  @if (snapshot(); as saved) {
+    <button nz-button type="button" [attr.aria-expanded]="expanded()" (click)="expanded.set(!expanded())">
+      {{ expanded() ? 'Hide offline copy' : 'Open offline copy' }}
+    </button>
+    <span>Saved {{ saved.savedAt | date:'medium' }}</span>
+  }
+</div>
+@if (message()) { <p role="status">{{ message() }}</p> }
+
+@if (expanded() && snapshot(); as saved) {
+  <section aria-label="Offline project">
+    <h2>Offline project</h2>
+    <h3>Related hardware</h3>
+    <ul>
+      @for (device of saved.hardware; track device.id) {
+        <li>{{ device.name }} · {{ device.tagName }} · {{ device.model }} · {{ device.serialNumber }}</li>
+      } @empty { <li>No related hardware.</li> }
+    </ul>
+    <h3>Related reports</h3>
+    @for (report of saved.reports; track report.id) {
+      <details>
+        <summary>{{ report.title }} · {{ report.status }}</summary>
+        <p>{{ report.reportDetails }}</p>
+        @for (comment of report.comments; track $index) {
+          <p>{{ comment.text }}</p>
+        }
+      </details>
+    } @empty { <p>No related reports.</p> }
+    @if (saved.maintenance; as maintenance) {
+      <h3>{{ maintenance.title }}</h3>
+      <p>{{ maintenance.maintenanceDate }} · {{ maintenance.createdBy }}</p>
+      @for (review of maintenance.reviews; track review.id) {
+        <details>
+          <summary>{{ review.hardwareName }} · {{ review.confirmed ? 'Confirmed' : 'Pending' }}</summary>
+          <p>Cleaning {{ review.cleaning ? 'Yes' : 'No' }} · Cabling {{ review.cabling }}</p>
+          @if (review.camera) { <p>View adjustment {{ review.viewAdjustment ? 'Yes' : 'No' }}</p> }
+          <p>{{ review.comments }}</p>
+        </details>
+      }
+    }
+    <h3>Documents and photos</h3>
+    <ul>
+      @for (file of saved.files; track $index) {
+        <li><button nz-button nzType="link" type="button" (click)="openFile(file)">{{ file.name }}</button> {{ file.group }}</li>
+      } @empty { <li>No files in this copy.</li> }
+    </ul>
+    <button nz-button nzType="text" type="button" [disabled]="busy()" (click)="remove()">Remove offline copy</button>
+  </section>
+}
