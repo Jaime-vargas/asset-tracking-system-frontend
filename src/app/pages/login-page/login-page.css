@@ -19,7 +19,7 @@
   max-width: 340px;
 }
 .form-eyebrow {
-  color: #ab9fb9;
+  color: var(--app-muted);
   font-size: 9px;
   letter-spacing: 1.7px;
   font-weight: 600;
@@ -40,7 +40,7 @@ h2 {
 .login-panel input {
   height: 43px;
   padding: 9px 12px;
-  background: #faf9fd;
+  background: var(--app-surface-soft);
 }
 .login-submit {
   width: 100%;
@@ -62,7 +62,7 @@ h2 {
 }
 .login-footnote {
   text-align: center;
-  color: #b6aebe;
+  color: var(--app-muted);
   font-size: 10px;
   margin: 27px 0 0;
 }

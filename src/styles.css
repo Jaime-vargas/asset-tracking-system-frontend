@@ -88,7 +88,7 @@ nz-breadcrumb-item{
 }
 
 thead{
-  background-color: #f4f4f9;
+  background-color: var(--app-canvas);
 }
 thead tr th{
   font-size: 16px;
@@ -138,7 +138,7 @@ td{
 }
 
 .default-btn{
-  background: #f3f3f7;
+  background: var(--app-canvas);
   border: 1px solid #dcdcdc;
 }
 .primary-btn{
@@ -157,7 +157,13 @@ td{
 }
 
 .mainframe.client-area .contentFrame > router-outlet + * { display:block; height:100%; min-width:0; }
-.mainframe.client-area :is(button,a,input,nz-select):focus-visible { outline:3px solid #749ee9; outline-offset:3px; }
+.mainframe.client-area :is(button,a,input,nz-select):focus-visible { outline:3px solid var(--app-focus); outline-offset:3px; }
 .mainframe.client-area app-current-user-component { max-width:calc(100vw - 96px); }
 .mainframe.client-area app-current-user-component > div { min-height:40px; }
 
+.sticky-list-filters {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: white;
+}

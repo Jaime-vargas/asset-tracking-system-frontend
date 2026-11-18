@@ -30,7 +30,7 @@
               <!-- SWITCHING DATA DEPENDING OF TYPE -->
               @switch (column.type){
                 @case ('tag') {
-                  <nz-tag>{{ row[column.key] }}</nz-tag>
+                  <app-ui-tag>{{ row[column.key] }}</app-ui-tag>
                 }
                 <!-- IMAGE + STRING -->
                 @case ('img-string'){

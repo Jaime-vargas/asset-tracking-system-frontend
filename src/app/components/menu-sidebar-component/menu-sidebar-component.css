@@ -4,7 +4,7 @@
 }
 .sidebar {
   height: 100%;
-  min-height: 480px;
+  overflow-y: auto;
   background: white;
   padding: 25px 14px 16px;
   display: flex;
@@ -26,7 +26,7 @@
   background: var(--app-accent);
   color: white;
   font-size: 17px;
-  box-shadow: 0 5px 14px #7653ef30;
+  box-shadow: 0 5px 14px var(--app-shadow);
   flex-shrink: 0;
 }
 .brand-name {
@@ -44,7 +44,7 @@
 }
 .menu-label {
   font-size: 9px;
-  color: #a19ab3;
+  color: var(--app-muted);
   letter-spacing: 1.4px;
   font-weight: 600;
   padding: 8px 14px;
@@ -54,7 +54,7 @@
   border: 0;
 }
 .menu-sidebar .ant-menu-item {
-  color: #8d859f;
+  color: var(--app-muted);
   height: 42px;
   margin: 4px 0;
   border-radius: 10px;
@@ -65,11 +65,11 @@
 }
 .menu-sidebar .ant-menu-item nz-icon {
   font-size: 16px;
-  color: #b8abd7;
+  color: var(--app-icon);
 }
 .menu-sidebar .ant-menu-item:hover {
   color: var(--app-accent);
-  background: #f8f5ff;
+  background: var(--app-surface-soft);
 }
 .menu-sidebar .ant-menu-item-selected {
   background: var(--app-accent-soft) !important;
@@ -82,35 +82,8 @@
 .menu-sidebar .ant-menu-item::after {
   display: none;
 }
-.sidebar-note {
-  margin: auto 4px 0;
-  padding: 16px 12px;
-  border: 1px solid #efeafa;
-  border-radius: 14px;
-  background: linear-gradient(150deg, #faf8ff, #f1edff);
-}
-.sidebar-note nz-icon {
-  display: block;
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
-  text-align: center;
-  border-radius: 10px;
-  background: white;
-  color: var(--app-accent);
-  margin-bottom: 10px;
-}
-.sidebar-note strong {
-  display: block;
-  font-size: 11px;
-  margin-bottom: 4px;
-}
-.sidebar-note p {
-  font-size: 10px;
-  color: var(--app-muted);
-  line-height: 1.6;
-  margin: 0;
-}
+.menu-sidebar .ant-menu-item-selected > a,
+.menu-sidebar .ant-menu-item-selected > a:hover { color: var(--app-accent); }
 .menu-sidebar .ant-menu-item > a {
   display: flex;
   align-items: center;
@@ -118,3 +91,45 @@
   height: 100%;
   color: inherit;
 }
+
+.brand-release {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 9px;
+  color: var(--app-muted);
+  overflow-wrap: anywhere;
+}
+.about-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  min-height: 42px;
+  margin-top: auto;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--app-text);
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+.about-button nz-icon { color: var(--app-accent); }
+.about-button:hover, .about-button:focus-visible { background: var(--app-accent-soft); }
+.about-intro { color: var(--app-muted); }
+.about-details { display: grid; gap: 8px; margin: 0; }
+.about-details a { color: var(--app-accent); text-decoration: underline; }
+.about-details dt { color: var(--app-muted); font-size: 11px; }
+.about-details dd { margin: 3px 0 0; color: var(--app-text); font-weight: 600; overflow-wrap: anywhere; }
+.release-notes { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--app-border); }
+.release-notes h2 { margin: 0 0 8px; color: var(--app-text); font-size: 14px; font-weight: 650; }
+.release-notes details + details { margin-top: 8px; }
+.release-notes summary { padding-block: 3px; cursor: pointer; color: var(--app-accent); }
+.release-notes summary span, .release-notes ul { color: var(--app-muted); }
+.release-notes ul { margin: 6px 0 0; padding-inline-start: 18px; font-size: 12px; }
+.release-notes li + li { margin-top: 4px; }

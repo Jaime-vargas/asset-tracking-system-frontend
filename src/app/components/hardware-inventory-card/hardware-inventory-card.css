@@ -1,0 +1,13 @@
+:host { display: block; min-width: 0; }
+.inventory-item { display: flex; height: 100%; align-items: center; gap: 9px; padding: 11px; border-radius: 10px; background: var(--app-canvas); }
+.inventory-item:hover { background: var(--app-accent-soft); }
+.inventory-item:focus-visible { outline: 2px solid var(--app-accent); outline-offset: 2px; }
+.inventory-item > div { min-width: 0; }
+.inventory-item span:not(.inventory-icon) { color: var(--app-muted); font-size: 10px; }
+.inventory-item strong { display: block; margin-top: 3px; color: var(--app-text); font-size: 20px; line-height: 1.2; }
+.inventory-icon { display: grid; place-items: center; width: 32px; height: 32px; flex-shrink: 0; border-radius: 9px; background: var(--app-accent-soft); color: var(--app-accent); }
+@media (max-width: 600px) {
+  .inventory-item { display: block; padding: 10px; }
+  .inventory-icon { width: 28px; height: 28px; margin-bottom: 7px; }
+  .inventory-item span:not(.inventory-icon) { font-size: 9px; }
+}

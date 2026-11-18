@@ -1,0 +1,162 @@
+<div class="settings-content">
+  @if (isAdmin) {
+  <section class="profile-settings">
+    <div>
+      <h3>Name & photo</h3>
+      <p>Update this client's name and logo.</p>
+    </div>
+    <button nz-button (click)="editDetails.emit()" [disabled]="!detailsAvailable()">
+      Edit details
+    </button>
+  </section>
+  }
+  <div class="settings-grid">
+    <section>
+      <div class="section-heading">
+        <h3>
+          Sites <small class="site-count">{{ tags.tags().length }}</small>
+        </h3>
+        <button nz-button (click)="openSite()">+ Add</button>
+      </div>
+      <p>Sites belong only to this client and appear as tags.</p>
+      @if (tags.loading()) {
+        <p role="status">Loading sites…</p>
+      } @else {
+        <ul class="site-list">
+          @for (tag of tags.tags(); track tag.id) {
+            <li>
+              <app-ui-tag class="tag-chip" [tone]="tag.color">{{ tag.name }}</app-ui-tag>
+              @if (isAdmin) {
+              <button
+                nz-button
+                nzType="text"
+                (click)="editSite(tag)"
+                [attr.aria-label]="'Edit site ' + tag.name"
+              >
+                Edit</button
+              ><button
+                nz-button
+                nzType="text"
+                nzDanger
+                (click)="confirmDeleteSite(tag)"
+                [disabled]="tags.creating()"
+                [attr.aria-label]="'Delete site ' + tag.name"
+              >
+                Delete
+              </button>
+              }
+            </li>
+          } @empty {
+            <li class="empty">No sites yet. Add the first one above.</li>
+          }
+        </ul>
+      }
+    </section>
+    <section>
+      <div class="section-heading">
+        <h3>File categories</h3>
+        <button nz-button (click)="openCategory()">+ Add</button>
+      </div>
+      <p>Categories are independent for each client.</p>
+      @if (categoriesLoading()) {
+        <p role="status">Loading categories…</p>
+      } @else if (categoriesError()) {
+        <div role="alert">
+          <p>Categories could not be loaded.</p>
+          <button nz-button (click)="loadCategories()">Try again</button>
+        </div>
+      } @else {
+        <ul class="category-list">
+          @for (category of categories(); track category.id) {
+            <li>
+              <app-ui-tag class="tag-chip" [tone]="category.color">{{ category.name }}</app-ui-tag>
+              @if (isAdmin) {
+                <button
+                  nz-button
+                  nzType="text"
+                  (click)="openCategory(category)"
+                  [attr.aria-label]="'Edit category ' + category.name"
+                >
+                  Edit</button
+                ><button
+                  nz-button
+                  nzType="text"
+                  nzDanger
+                  (click)="confirmDeleteCategory(category)"
+                  [attr.aria-label]="'Delete category ' + category.name"
+                >
+                  Delete
+                </button>
+              }
+            </li>
+          } @empty {
+            <li class="empty">No categories yet.</li>
+          }
+        </ul>
+      }
+    </section>
+  </div>
+</div>
+<ng-template #categoryForm
+  ><app-file-category-form
+    [clientId]="clientId()"
+    (saved)="categoriesChanged()"
+    (close)="categoryModal?.destroy()"
+/></ng-template>
+
+<ng-template #siteEditor>
+  <div>
+    <span class="title">{{ editingSite() ? 'Update Site' : 'New Site' }}</span>
+    <nz-divider />
+    <form nz-form class="site-form" [formGroup]="siteForm" (ngSubmit)="addSite()">
+      <nz-form-item
+        ><nz-form-label class="sub-title" nzRequired nzFor="settings-site">Name</nz-form-label>
+        <nz-form-control [nzErrorTip]="siteNameError"
+          ><input id="settings-site" nz-input [formControl]="siteName"
+        /></nz-form-control>
+      </nz-form-item>
+      <nz-form-item
+        ><nz-form-label class="sub-title">Tag color</nz-form-label
+        ><nz-form-control>
+          <app-tag-color-picker
+            [color]="siteColor.value"
+            (colorChange)="siteColor.setValue($event)"
+          /> </nz-form-control
+      ></nz-form-item>
+      <nz-divider />
+      <div class="buttons-container site-editor-actions">
+        <button
+          nz-button
+          class="form-btn default-btn"
+          nzSize="large"
+          type="button"
+          (click)="closeSiteEditor()"
+          [disabled]="tags.creating()"
+        >
+          Cancel
+        </button>
+        <button
+          nz-button
+          class="form-btn primary-btn"
+          nzType="primary"
+          nzSize="large"
+          type="submit"
+          [nzLoading]="tags.creating()"
+          [disabled]="
+            siteName.invalid || !siteName.value.trim() || tags.creating() || tags.loading()
+          "
+        >
+          <nz-icon nzType="save" />Save Changes
+        </button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+<ng-template #siteNameError>
+  @if (siteName.hasError('required') || !siteName.value.trim()) {
+    Name is required
+  }
+  @if (siteName.hasError('maxlength')) {
+    Name cannot exceed 255 characters
+  }
+</ng-template>

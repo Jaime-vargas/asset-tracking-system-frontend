@@ -1,6 +1,5 @@
 <div class="contentPage workspace">
   <header class="workspace-header">
-    <a routerLink="/clients" class="back-link">← All clients</a>
     <div class="client-heading">
       <div class="client-symbol">
         @if (clientLogo(); as logo) {
@@ -9,112 +8,135 @@
           <span aria-hidden="true">{{ clientInitials() }}</span>
         }
       </div>
-      <div>
-        <span class="eyebrow">CLIENT WORKSPACE</span>
+      <div class="client-identity">
+        <a routerLink="/clients" class="back-link">← All clients</a>
         <h1>{{ clientName() }}</h1>
-        <p>Documents, equipment and activity in one place.</p>
       </div>
+      <button class="client-settings-button" aria-label="Client settings" nz-button (click)="openSettings()">
+        <nz-icon nzType="setting" /> <span>Client settings</span>
+      </button>
     </div>
   </header>
   <div class="contentBody">
     @if (clientId(); as id) {
-      <nz-tabs [nzSelectedIndex]="activeTab()" (nzSelectedIndexChange)="changeTab($event)">
-        <nz-tab [nzTitle]="documentsTitle"
-          ><ng-template #documentsTitle><nz-icon nzType="file-text" /> Documents</ng-template>
-          @if (activeTab() === 0) {
-            <app-client-documents [clientId]="id" />
+      <nav class="workspace-nav" aria-label="Client sections">
+        @for (section of sections; track section.label; let index = $index) {
+          <button type="button" [attr.aria-current]="activeTab() === index ? 'page' : null" (click)="changeTab(index)">
+            <nz-icon [nzType]="section.icon" aria-hidden="true" /> {{ section.label }}
+          </button>
+        }
+      </nav>
+      @if (activeTab() === 0) {
+        <app-client-documents
+          [clientId]="id"
+          [revision]="settingsRevision()"
+        />
+      } @else if (activeTab() === 1) {
+        <section class="projects-section">
+          <div class="section-heading">
+            <div>
+              <h2>Projects</h2>
+              <p>Document maintenance, installations and other activities.</p>
+            </div>
+            <button nz-button nzType="primary" (click)="openNewSidebar()">+ Add project</button>
+          </div>
+          <div class="project-filters sticky-list-filters">
+            <label class="project-name-filter">Search
+              <input nz-input aria-label="Search projects" placeholder="Search projects…" [ngModel]="branchNameFilter()" (ngModelChange)="branchNameFilter.set($event); page.set(1)" />
+            </label>
+            <label>Created from
+              <input nz-input type="date" aria-label="Created from" [ngModel]="createdFrom()" (ngModelChange)="createdFrom.set($event); page.set(1)" />
+            </label>
+            <label>Created to
+              <input nz-input type="date" aria-label="Created to" [ngModel]="createdTo()" (ngModelChange)="createdTo.set($event); page.set(1)" />
+            </label>
+            <label>Order
+              <nz-select aria-label="Project order" [ngModel]="projectOrder()" (ngModelChange)="projectOrder.set($event); page.set(1)">
+                <nz-option nzValue="newest" nzLabel="Newest first" />
+                <nz-option nzValue="oldest" nzLabel="Oldest first" />
+                <nz-option nzValue="name" nzLabel="Name A–Z" />
+              </nz-select>
+            </label>
+          </div>
+          @if (invalidDateRange()) {
+            <p class="date-range-error" role="alert">The start date must be on or before the end date.</p>
           }
-        </nz-tab>
-        <nz-tab [nzTitle]="hardwareTitle"
-          ><ng-template #hardwareTitle><nz-icon nzType="desktop" /> Hardware</ng-template>
-          @if (activeTab() === 1) {
-            <app-client-hardware [clientId]="id" />
-          }
-        </nz-tab>
-        <nz-tab [nzTitle]="projectsTitle"
-          ><ng-template #projectsTitle><nz-icon nzType="folder-open" /> Projects</ng-template>
-          @if (activeTab() === 2) {
-            <section class="projects-section">
-              <div class="section-heading">
-                <div>
-                  <h2>Projects</h2>
-                  <p>Document maintenance, installations and other activities.</p>
+          <div class="project-results">
+            <p class="result-count" aria-live="polite">{{ filteredBranches().length }} projects</p>
+            @if (branchNameFilter() || createdFrom() || createdTo()) {
+              <button nz-button nzType="link" (click)="clearProjectFilters()">Clear filters</button>
+            }
+          </div>
+          @if (branchStore.tableLoading()) {
+            <div class="empty-state" role="status">Loading projects…</div>
+          } @else if (branchStore.loadError()) {
+            <div class="empty-state" role="alert">
+              <h3>Projects could not be loaded</h3>
+              <button nz-button (click)="branchStore.loadBranches()">Try again</button>
+            </div>
+          } @else {
+            <div class="project-grid">
+              @for (project of visibleProjects(); track project.id) {
+                <a class="project-card" [routerLink]="projectLink(project)">
+                  <span class="project-icon"><nz-icon nzType="folder-open" /></span>
+                  <div class="project-details">
+                    <h3>{{ project.name }}</h3>
+                    <time [attr.datetime]="project.createdDate"><nz-icon nzType="calendar" /> {{ project.createdDate | date:'dd MMM yyyy':'UTC' }}</time>
+                  </div>
+                  <span class="project-arrow" aria-hidden="true">↗</span>
+                </a>
+              } @empty {
+                <div class="empty-state">
+                  <h3>{{ branchNameFilter() || createdFrom() || createdTo() ? 'No matching projects' : 'No projects yet' }}</h3>
+                  <p>
+                    {{
+                      branchNameFilter() || createdFrom() || createdTo()
+                        ? 'Try another name or date range.'
+                        : 'Create a project to keep reports and evidence of an activity together.'
+                    }}
+                  </p>
                 </div>
-                <button nz-button nzType="primary" (click)="openNewSidebar()">+ Add project</button>
-              </div>
-              <input
-                nz-input
-                class="project-search"
-                aria-label="Search projects"
-                placeholder="Search projects…"
-                [ngModel]="branchNameFilter()"
-                (ngModelChange)="branchNameFilter.set($event); page.set(1)"
-              />
-              <p class="result-count" aria-live="polite">
-                {{ filteredBranches().length }} projects
-              </p>
-              @if (branchStore.tableLoading()) {
-                <div class="empty-state" role="status">Loading projects…</div>
-              } @else if (branchStore.loadError()) {
-                <div class="empty-state" role="alert">
-                  <h3>Projects could not be loaded</h3>
-                  <button nz-button (click)="branchStore.loadBranches()">Try again</button>
-                </div>
-              } @else {
-                <div class="project-grid">
-                  @for (project of visibleProjects(); track project.id) {
-                    <article class="project-card">
-                      <div class="project-top">
-                        <span class="project-icon"><nz-icon nzType="folder-open" /></span
-                        ><button
-                          nz-button
-                          nzType="text"
-                          (click)="openEditSidebar(project)"
-                          [attr.aria-label]="'Edit ' + project.name"
-                        >
-                          <nz-icon nzType="edit" />
-                        </button>
-                      </div>
-                      <h3>
-                        <a [routerLink]="projectLink(project)">{{ project.name }}</a>
-                      </h3>
-                      <p class="project-description">Activity documentation and evidence</p>
-                      <div class="project-actions">
-                        <button nz-button (click)="showProjectDocuments(project)">
-                          View documents</button
-                        ><a [routerLink]="projectLink(project)" class="project-link"
-                          >Open project ↗</a
-                        >
-                      </div>
-                    </article>
-                  } @empty {
-                    <div class="empty-state">
-                      <h3>{{ branchNameFilter() ? 'No matching projects' : 'No projects yet' }}</h3>
-                      <p>
-                        {{
-                          branchNameFilter()
-                            ? 'Try another name.'
-                            : 'Create a project to keep reports and evidence of an activity together.'
-                        }}
-                      </p>
-                    </div>
-                  }
-                </div>
-                <app-list-pagination
-                  [total]="filteredBranches().length"
-                  [page]="currentPage()"
-                  [pageSize]="pageSize"
-                  (pageChange)="page.set($event)"
-                />
               }
-            </section>
-          }</nz-tab
-      ></nz-tabs>
+            </div>
+            <app-list-pagination
+              [total]="filteredBranches().length"
+              [page]="currentPage()"
+              [pageSize]="pageSize"
+              (pageChange)="page.set($event)"
+            />
+          }
+        </section>
+      } @else {
+        <app-client-hardware [clientId]="id" [revision]="settingsRevision()" />
+      }
     }
   </div>
 </div>
-@if (openSideBar() && activeTab() === 2) {
+@if (openSideBar() && (clientEditing() || activeTab() === 1)) {
   <app-edit-side-bar width="min(600px, 100vw)"
-    ><div body><app-branch-form /></div
+    ><div body>
+      @if (clientEditing()) {
+        <app-client-form />
+      } @else {
+        <app-branch-form />
+      }</div
   ></app-edit-side-bar>
 }
+<nz-modal
+  nzTitle="Client settings"
+  [nzVisible]="settingsOpen()"
+  [nzWidth]="720"
+  [nzFooter]="null"
+  (nzOnCancel)="closeSettings()"
+>
+  <ng-container *nzModalContent>
+    @if (clientId(); as id) {
+      <app-client-settings
+        [clientId]="id"
+        [detailsAvailable]="!!currentClient()"
+        (editDetails)="openClientEditor()"
+        (changed)="settingsDirty = true"
+      />
+    }
+  </ng-container>
+</nz-modal>

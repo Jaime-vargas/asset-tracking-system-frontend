@@ -1,43 +1,18 @@
-<div nz-flex nzGap="small" nzAlign="stretch" nzJustify="space-between">
-  <div nz-flex nzAlign="center">
-    <button nz-button
-            nzType="text"
-            (click)="scrollLeft()"
-            [style.height.px]="imageSize"  >
-      <nz-icon nzType="left" nzTheme="outline" />
-    </button>
-  </div>
-  <div #carousel style="overflow: hidden" >
-    <nz-image-group nz-flex nzGap="small" >
-      @for (image of images(); track image.id){
-        <div class="image-container">
-          @if (showDeleteButton()){
-            <button nz-button
-                    class="form-btn img-delete-button"
-                    nzType="primary"
-                    nzDanger
-                    nz-popconfirm
-                    nzPopconfirmTitle="Are you shure you want to delete this photo?"
-                    nzPopconfirmPlacement="bottomRight"
-                    (nzOnConfirm)="deleteEvent.emit(image.id)">
-              <nz-icon nzType="delete" nzTheme="outline" />
-            </button>
-          }
-          <img nz-image
-               [nzSrc]="image.filePath"
-               [nzFallback]="defaultImgPlaceholder"
-               width="180" height="180" [alt]="image.filename"
-               class="shadow" style="border-radius: 10px"/>
-        </div>
+<nz-image-group class="evidence-gallery">
+  @for (image of images(); track image.id) {
+    <div class="evidence-item">
+      <button class="evidence-preview" type="button" [attr.aria-label]="'Preview ' + image.filename" (click)="preview.onPreview()">
+        <img nz-image #preview="nzImage" [src]="image.filePath" [nzSrc]="image.filePath"
+          [nzFallback]="defaultImgPlaceholder" [alt]="image.filename" />
+      </button>
+      @if (showDeleteButton()) {
+        <button nz-button nzDanger type="button" class="evidence-delete"
+          [attr.aria-label]="'Delete photo ' + image.filename"
+          nz-popconfirm nzPopconfirmTitle="Delete this photo?" nzPopconfirmPlacement="bottomRight"
+          (nzOnConfirm)="deleteEvent.emit(image.id)">
+          <nz-icon nzType="delete" />
+        </button>
       }
-    </nz-image-group>
-  </div>
-  <div nz-flex nzAlign="center">
-  <button nz-button
-          nzType="text"
-          (click)="scrollRight()"
-          [style.height.px]="imageSize"  >
-    <nz-icon nzType="right" nzTheme="outline" />
-  </button>
-</div>
-</div>
+    </div>
+  }
+</nz-image-group>

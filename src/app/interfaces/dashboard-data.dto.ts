@@ -12,4 +12,5 @@ export interface DashboardDataDto {
   totalCameras: number;
   totalSwitches: number;
   totalOtherHardware: number;
+  totalComputers: number;
 }

@@ -1,0 +1,11 @@
+.date-options {
+  margin-top: 12px;
+}
+.date-options summary {
+  font-size: 11px;
+  color: var(--app-accent);
+  cursor: pointer;
+}
+.date-options .extra-filters {
+  padding-top: 3px;
+}

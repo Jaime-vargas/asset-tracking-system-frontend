@@ -1,0 +1,4 @@
+<a class="inventory-item" routerLink="/hardware" [queryParams]="{ type: type() }">
+  <span class="inventory-icon"><nz-icon [nzType]="icon()" aria-hidden="true" /></span>
+  <div><span>{{ label() }}</span><strong>{{ count() }}</strong></div>
+</a>

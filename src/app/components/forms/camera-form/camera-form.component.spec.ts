@@ -6,6 +6,7 @@ import {NzNotificationService} from 'ng-zorro-antd/notification';
 import {CameraForm} from './camera-form.component';
 import {HardwareStore} from '../../../store/hardware.store';
 import {SidebarStore} from '../../../store/sidebar.store';
+import {AuthService} from '../../../services/auth-service';
 import {TagService} from '../../../services/tag.service';
 import {RouteContextService} from '../../../services/route-context.service';
 import {CameraResponseDto} from '../../../interfaces/hardware/camera/camera-response.dto';
@@ -42,6 +43,7 @@ describe('Camera site selection', () => {
     await TestBed.configureTestingModule({
       imports: [CameraForm],
       providers: [
+        {provide: AuthService, useValue: {getUserRole: () => 'ADMIN'}},
         {provide: HardwareStore, useValue: hardwareStore},
         {provide: SidebarStore, useValue: sidebar},
         {provide: TagService, useValue: tagService},
@@ -84,7 +86,7 @@ describe('Camera site selection', () => {
     await fixture.whenStable();
     fixture.componentInstance['newSiteName'].setValue('  Tecomán  ');
     fixture.componentInstance.addSite();
-    expect(tagService.addTag).toHaveBeenCalledWith(9, 'Tecomán');
+    expect(tagService.addTag).toHaveBeenCalledWith(9, 'Tecomán', 'PURPLE');
     expect(fixture.componentInstance['cameraForm'].controls.tagId.value).toBe(12);
   });
 

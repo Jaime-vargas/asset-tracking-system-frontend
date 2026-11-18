@@ -1,10 +1,10 @@
 {
   "name": "asset-tracking-system-frontend",
-  "version": "0.0.0",
+  "version": "0.1.0-beta.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "node scripts/build.cjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

@@ -1,34 +1,47 @@
 <section class="inventory">
   <div class="inventory-header">
     <div>
-      <h2>Hardware</h2>
-      <p>Equipment owned by this client, organized by site.</p>
+      <h2>{{ projectId() === null ? 'Hardware' : 'Hardware relacionado' }}</h2>
+      <p>{{ projectId() === null ? 'Equipment owned by this client, organized by site.' : 'Client equipment linked to this project.' }}</p>
     </div>
-    <button nz-button nzType="primary" (click)="openNew()">+ Add camera</button>
+    @if (projectId() !== null) {
+      <button nz-button nzType="primary" (click)="openRelatedEditor()" [disabled]="store.tableLoading() || store.loadError()">Relate equipment</button>
+    } @else {
+      <div class="inventory-actions">
+        <app-hardware-transfer [clientId]="clientId()" [sites]="tags.tags()" [sitesLoading]="tags.loading()" [initialSiteId]="siteFilter()" (imported)="siteFilter.set($event); store.loadHardware()" />
+        <button nz-button (click)="openNew()">+ Add camera</button>
+        <button nz-button nzType="primary" (click)="computerEditor.set({ id: null })">+ Add computer</button>
+      </div>
+    }
   </div>
-  <div class="inventory-filters">
-    <input
-      nz-input
-      placeholder="Search name, model or serial…"
-      aria-label="Search hardware"
-      [ngModel]="search()"
-      (ngModelChange)="search.set($event)"
-    />
-    <nz-select
-      nzAllowClear
-      nzShowSearch
-      nzPlaceHolder="All sites"
-      [ngModel]="siteFilter()"
-      (ngModelChange)="siteFilter.set($event)"
-    >
-      @for (tag of tags.tags(); track tag.id) {
-        <nz-option [nzValue]="tag.id" [nzLabel]="tag.name" />
-      }
-    </nz-select>
+  <div class="sticky-list-filters inventory-filter-bar">
+    @if (projectId() === null && store.hardwareList().length) {
+      <app-hardware-type-filter [equipment]="store.hardwareList()" [(selected)]="typeFilter" />
+    }
+    <div class="inventory-filters">
+      <input
+        nz-input
+        placeholder="Search name, serial, IP or location…"
+        aria-label="Search hardware"
+        [ngModel]="search()"
+        (ngModelChange)="search.set($event)"
+      />
+      <nz-select
+        nzAllowClear
+        nzShowSearch
+        nzPlaceHolder="All sites"
+        [ngModel]="siteFilter()"
+        (ngModelChange)="siteFilter.set($event)"
+      >
+        @for (tag of tags.tags(); track tag.id) {
+          <nz-option [nzValue]="tag.id" [nzLabel]="tag.name" />
+        }
+      </nz-select>
+    </div>
   </div>
   <div class="result-count">
     <span aria-live="polite">{{ filteredHardware().length }} equipment</span>
-    @if (search() || siteFilter() !== null) {
+    @if (hasFilters()) {
       <button nz-button nzType="link" (click)="clearFilters()">Clear filters</button>
     }
   </div>
@@ -44,51 +57,41 @@
       @for (hardware of visibleHardware(); track hardware.id) {
         <article class="equipment-card">
           <div class="equipment-top">
-            <span class="equipment-icon"><nz-icon nzType="video-camera" /></span
-            ><button class="site-tag" (click)="siteFilter.set(hardware.tagId)">
-              {{ hardware.tagName }}
-            </button>
+            <span class="equipment-icon"><nz-icon [nzType]="hardware.type === 'Camera' ? 'video-camera' : 'desktop'" /></span>
+            <div class="equipment-heading">
+              <h3><a [routerLink]="['/hardware', hardware.id]">{{ hardware.name }}</a></h3>
+              <p class="equipment-type">{{ hardware.type }} @if (hardware.brand) { · {{ hardware.brand }} }</p>
+            </div>
+            <button appUiTag type="button" class="site-tag" [tone]="siteColor(hardware.tagId)" (click)="siteFilter.set(hardware.tagId)">{{ hardware.tagName }}</button>
           </div>
-          <h3>
-            <a [routerLink]="['/hardware', hardware.id]">{{ hardware.name }}</a>
-          </h3>
-          <p class="equipment-type">{{ hardware.type }}</p>
           <dl>
-            <div>
-              <dt>Model</dt>
-              <dd>{{ hardware.model || '—' }}</dd>
-            </div>
-            <div>
-              <dt>Serial</dt>
-              <dd>{{ hardware.serialNumber || '—' }}</dd>
-            </div>
-            <div>
-              <dt>Open reports</dt>
-              <dd>{{ hardware.reportsActive.length }}</dd>
-            </div>
+            @if (hardware.type === 'Camera') {
+              <div><dt>Camera ID</dt><dd>{{ hardware.cameraId || '—' }}</dd></div>
+              <div><dt>IP address</dt><dd>{{ hardware.ipAddress || '—' }}</dd></div>
+            }
+            <div><dt>Model</dt><dd>{{ hardware.model || '—' }}</dd></div>
+            <div><dt>Serial</dt><dd>{{ hardware.serialNumber || '—' }}</dd></div>
+            <div><dt>Location</dt><dd>{{ hardware.location || '—' }}</dd></div>
+            @if (hardware.type === 'Camera') {
+              <div><dt>IDF</dt><dd>{{ hardware.idf || '—' }}</dd></div>
+            }
           </dl>
           <div class="equipment-actions">
-            <a nz-button [routerLink]="['/hardware', hardware.id]">View equipment ↗</a
-            ><button
-              nz-button
-              nzType="text"
-              (click)="openEdit(hardware.id)"
-              [attr.aria-label]="'Edit ' + hardware.name"
-            >
-              Edit
-            </button>
+            <a [routerLink]="['/hardware', hardware.id]" class="equipment-link">View equipment ↗</a>
+            <a class="reports-link" [routerLink]="['/hardware', hardware.id, 'reports']">{{ hardware.reportsActive.length }} open</a>
+            <button nz-button nzType="text" (click)="openEdit(hardware)" [attr.aria-label]="'Edit ' + hardware.name">Edit</button>
           </div>
         </article>
       } @empty {
         <div class="empty-state">
           <h3>
-            {{ search() || siteFilter() !== null ? 'No matching equipment' : 'No equipment yet' }}
+            {{ hasFilters() ? 'No matching equipment' : (projectId() === null ? 'No equipment yet' : 'No related hardware yet') }}
           </h3>
           <p>
             {{
-              search() || siteFilter() !== null
+              hasFilters()
                 ? 'Try another search or clear the filters.'
-                : 'Register equipment and assign it to a site.'
+                : (projectId() === null ? 'Register equipment and assign it to a site.' : 'Use Relate equipment to select existing client equipment.')
             }}
           </p>
         </div>
@@ -102,8 +105,29 @@
     />
   }
 </section>
+@if (computerEditor(); as editor) {
+  <app-computer-form [clientId]="clientId()" [computerId]="editor.id"
+    (closed)="computerEditor.set(null)" (saved)="computerSaved()" />
+}
 @if (sidebar.isOpen()) {
   <app-edit-side-bar width="min(600px, 100vw)"
     ><div body><app-camera-form /></div
   ></app-edit-side-bar>
 }
+
+<nz-modal nzTitle="Related equipment" [nzVisible]="relatedEditorOpen()" [nzWidth]="520"
+  [nzMaskClosable]="false" [nzClosable]="!savingRelations()" [nzOkLoading]="savingRelations()"
+  [nzOkDisabled]="candidatesLoading() || candidatesError()" [nzCancelDisabled]="savingRelations()"
+  nzOkText="Save Changes" (nzOnOk)="saveRelations()" (nzOnCancel)="!savingRelations() && relatedEditorOpen.set(false)">
+  <ng-container *nzModalContent>
+    <p>Select equipment from any site of this client. Removing a selection only removes its relationship with this project.</p>
+    @if (candidatesError()) {
+      <p role="alert">Equipment could not be loaded.</p>
+      <button nz-button (click)="loadCandidates()">Try again</button>
+    } @else {
+      <app-related-equipment-picker [equipment]="candidates()"
+        [loading]="candidatesLoading()" [disabled]="savingRelations() || candidatesLoading()"
+        [selectedIds]="selectedHardwareIds()" (selectedIdsChange)="selectedHardwareIds.set($event)" />
+    }
+  </ng-container>
+</nz-modal>

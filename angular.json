@@ -50,7 +50,26 @@
               ],
               "outputHashing": "all",
               "serviceWorker": "ngsw-config.json",
-              "sourceMap": true
+              "sourceMap": false,
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "public",
+                  "ignore": [
+                    "deployment.js"
+                  ]
+                },
+                {
+                  "glob": "**/*",
+                  "input": "./node_modules/@ant-design/icons-angular/src/inline-svg/",
+                  "output": "/assets/"
+                },
+                {
+                  "glob": "deployment.js",
+                  "input": "deployment/production",
+                  "output": "/"
+                }
+              ]
             },
             "development": {
               "optimization": false,

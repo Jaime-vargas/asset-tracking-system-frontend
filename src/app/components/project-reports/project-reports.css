@@ -1,0 +1,11 @@
+.report-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.report-heading h2 { margin: 0 0 3px; font-size: 16px; }
+.report-heading p, .report-info small { margin: 0; color: var(--app-muted); font-size: 12px; }
+.report-list { list-style: none; padding: 0; margin: 0; }
+.report-list li + li { border-top: 1px solid var(--app-border); }
+.report-link { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding: 9px 4px; }
+.report-info { min-width: 0; display: grid; gap: 3px; overflow-wrap: anywhere; }
+.report-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.report-message { padding: 10px; border-radius: 8px; background: var(--app-canvas); color: var(--app-muted); }
+.report-select { width: 100%; }
+.report-error { margin: 8px 0 0; color: #a23946; }

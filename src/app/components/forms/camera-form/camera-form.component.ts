@@ -47,6 +47,7 @@ export class CameraForm {
   protected tagStore = inject(TagStore);
   clientId = computed(() => this.formMode() === 'edit'
     ? this.selectedCamera()?.clientId ?? null : this.hardwareStore.currentClientId() ?? this.routeContext.clientId());
+  protected siteEditorOpen = signal(false);
   protected newSiteName = this.formBuilder.control('', [Validators.required, Validators.maxLength(255)]);
 
   currentBranchId = this.hardwareStore.currentBranchId;
@@ -158,9 +159,15 @@ export class CameraForm {
   }
 
   onClose(){
+    this.closeSiteEditor();
     this.cameraForm.reset();
     this.selectedCamera.set(null);
     this.sidebarStore.isOpen.set(false);
+  }
+
+  protected closeSiteEditor() {
+    this.siteEditorOpen.set(false);
+    this.newSiteName.reset();
   }
 
   addSite() {
@@ -169,7 +176,7 @@ export class CameraForm {
     if (clientId === null || !name || this.newSiteName.invalid || this.tagStore.creating()) return;
     this.tagStore.addTag(clientId, name).subscribe(tag => {
       this.cameraForm.controls.tagId.setValue(tag.id);
-      this.newSiteName.reset();
+      this.closeSiteEditor();
     });
   }
 }

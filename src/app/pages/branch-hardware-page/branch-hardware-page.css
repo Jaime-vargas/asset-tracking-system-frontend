@@ -1,0 +1,17 @@
+:host { color: var(--app-text); }
+.project-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.project-header > div:first-child { min-width: 0; }
+.back-link { display: inline-flex; min-height: 26px; align-items: center; color: var(--app-muted); font-size: 11px; }
+h1 { margin: 0 0 4px; font-size: 23px; font-weight: 700; color: var(--app-text); overflow-wrap: anywhere; }
+.project-header p { margin: 0; font-size: 11px; color: var(--app-muted); }
+.project-tools { display: flex; gap: 8px; flex-shrink: 0; }
+.project-tools button { min-height: 34px; font-size: 11px; }
+.project-sections { background: transparent; }
+.project-panel { background: white; border: 1px solid var(--app-border); border-radius: 16px; padding: 16px 20px; margin-bottom: 12px; }
+@media (max-width:600px) {
+  .project-header { align-items: flex-start; flex-wrap: wrap; gap: 8px; }
+  h1 { font-size: 19px; }
+  .project-header p { font-size: 10px; }
+  .project-tools { margin-left: auto; }
+  .project-panel { padding: 12px; border-radius: 13px; margin-bottom: 8px; }
+}

@@ -1,122 +1,94 @@
-import {Component, computed, signal} from '@angular/core';
-import {NzDividerComponent} from 'ng-zorro-antd/divider';
-import {DashboardBoxComponent} from '../../components/dasboard-box-component/dashboard-box.component';
-import {FormsModule} from '@angular/forms';
-import {NzIconDirective} from 'ng-zorro-antd/icon';
-import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 'ng-zorro-antd/input';
-import { NzSelectModule } from 'ng-zorro-antd/select'
-import {HardwareTableDto} from '../../interfaces/hardware/hardware-table.dto';
-import {UtilityService} from '../../services/utility.service';
-import {HardwareService} from '../../services/hardware.service';
-import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
-import {NzTypographyComponent} from 'ng-zorro-antd/typography';
-import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
-import {TableComponent} from '../../components/table-component/table-component';
-import {TableColumnsHardwareService} from '../../services/table-columns-service/table-columns-hardware.service';
-import {TableData} from '../../interfaces/table/table-data';
-
+import { DatePipe } from '@angular/common';
+import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
+import { HardwareService } from '../../services/hardware.service';
+import { HardwareTableDto } from '../../interfaces/hardware/hardware-table.dto';
+import { directoryClients, directorySites, groupBySite, scopeOrder, validDirectoryDate, matchesDirectorySearch } from '../../utils/directory';
+import { HardwareTypeFilter } from '../../components/hardware-type-filter/hardware-type-filter';
+import { DirectoryFilters } from '../../components/directory-filters/directory-filters';
+import { UiIcon } from '../../components/ui-icon/ui-icon';
+import { ListPagination } from '../../components/list-pagination/list-pagination';
+import { UiTag } from '../../components/ui-tag/ui-tag';
 @Component({
-  selector: 'app-hardware-page',
-  imports: [
-    NzDividerComponent,
-    DashboardBoxComponent,
-    FormsModule,
-    NzIconDirective,
-    NzInputDirective,
-    NzInputPrefixDirective,
-    NzInputWrapperComponent,
-    NzSelectModule,
-    NzSelectComponent,
-    NzOptionComponent,
-    NzTypographyComponent,
-    NzRowDirective,
-    NzColDirective,
-    TableComponent
+  selector: 'app-hardware-page', imports: [
+    DatePipe, FormsModule, RouterLink, DirectoryFilters, HardwareTypeFilter, UiIcon, ListPagination, UiTag
   ],
-  templateUrl: './hardware-page.html',
-  styleUrl: './hardware-page.css',
+  templateUrl: './hardware-page.html', styleUrls: [
+    '../../styles/native-controls.css', '../../styles/directory-page.css', './hardware-page.css'
+  ]
 })
 export class HardwarePage {
-
-  constructor(private hardwareService: HardwareService,
-              protected utilityService: UtilityService,
-              protected tableHardwareService: TableColumnsHardwareService) {
-    this.getAllHardwareData()
-  }
-  tableLoading = signal<boolean>(false)
+  private service = inject(HardwareService);
+  private destroyRef = inject(DestroyRef);
   hardwareData = signal<HardwareTableDto[]>([]);
-
-  // TABLE DATA
-  tableData = computed<TableData[]>(()=> {
-    return this.filteredHardware().map((hardware: HardwareTableDto) => {
-      return {
-        ...hardware,
-        actions: [
-          {label: 'View', type: 'link', link: ['/hardware', hardware.id]}
-        ]
-      }
-    })
-  })
-
-  // TABLE INPUT FILTERS
-  clientList = computed(()=> {
-    return new Set(this.hardwareData().map((hardware) => {
-      return hardware.clientName;
-    }))
-  });
-  branchList = computed(() => {
-    const clientName = this.clientFilter();
-    return new Set(this.hardwareData().filter((hardware) =>
-      (!clientName || hardware.clientName === clientName)).map((hardware) =>
-      hardware.tagName))
-  });
-  typeList = computed(() =>
-    new Set(this.hardwareData().map((hardware) =>
-    hardware.type))
-  );
-
-  clientFilter = signal<string>("");
-  branchFilter = signal("");
-  typeFilter = signal<string>("");
-  nameFilter = signal<string>("");
-  modelFilter = signal<string>("");
-  serialNumberFilter = signal<string>("");
-  locationFilter = signal<string>("");
-  lastMaintenanceFilter = signal<string>("");
-  // TABLE FILTER
+  loading = signal(false);
+  loadError = signal(false);
+  search = signal('');
+  clientId = signal<number | null>(null);
+  siteId = signal<number | null>(null);
+  type = signal<string | null>(null);
+  onlyReports = signal(false);
+  sort = signal('name');
+  grouped = signal(true);
+  page = signal(1);
+  readonly pageSize = 12;
+  clients = computed(() => directoryClients(this.hardwareData()));
+  sites = computed(() => directorySites(this.hardwareData(), this.clientId()));
+  totals = computed(() => ({
+    equipment: this.hardwareData().length, clients: this.clients().length, sites: new Set(this.hardwareData().map(item => item.tagId)).size, reports: this.hardwareData().reduce((sum, item) => sum + (item.reportsActive?.length ?? 0), 0)
+  }));
+  hasFilters = computed(() => !!(this.search() || this.clientId() !== null || this.siteId() !== null || this.type() || this.onlyReports()));
   filteredHardware = computed(() => {
-    return this.hardwareData().filter(hardware => {
-      const clientFilter = this.clientFilter();
-      const branchFilter = this.branchFilter();
-      const typeFilter = this.typeFilter();
-
-      const matchClient = (!clientFilter || hardware.clientName === clientFilter)
-      const matchBranch = (!branchFilter || hardware.tagName === branchFilter)
-      const matchType = (!typeFilter || hardware.type === typeFilter)
-
-      return (
-        matchClient &&
-        matchBranch &&
-        matchType &&
-        hardware.name.toLowerCase().includes(this.nameFilter().toLowerCase()) &&
-        hardware.model.toLowerCase().includes(this.modelFilter().toLowerCase()) &&
-        hardware.serialNumber.toLowerCase().includes(this.serialNumberFilter().toLowerCase()) &&
-        hardware.location.toLowerCase().includes(this.locationFilter().toLowerCase()) &&
-        hardware.lastMaintenanceDate.toLowerCase().includes(this.lastMaintenanceFilter().toLowerCase())
-      );
-    });
+    const query = this.search().trim().toLocaleLowerCase();
+    return this.hardwareData().filter(item => (this.clientId() === null || item.clientId === this.clientId()) && (this.siteId() === null || item.tagId === this.siteId())
+      && (!this.type() || item.type === this.type()) && (!this.onlyReports() || (item.reportsActive?.length ?? 0) > 0)
+      && matchesDirectorySearch(query, [
+        `#${item.id}`, item.name, item.type, item.brand, item.model, item.serialNumber, item.location, item.clientName, item.tagName, item.cameraId, item.ipAddress, item.macAddress, item.idf, item.lastMaintenanceDate, this.date(item.lastMaintenanceDate)?.toDateString()
+      ]))
+      .sort((a, b) => (this.grouped() ? scopeOrder(a, b) : 0) || (this.sort() === 'reports' ? (b.reportsActive?.length ?? 0) - (a.reportsActive?.length ?? 0) : this.sort() === 'updated' ? (this.date(b.lastMaintenanceDate)?.getTime() ?? 0) - (this.date(a.lastMaintenanceDate)?.getTime() ?? 0) : 0) || a.name.localeCompare(b.name) || a.id - b.id);
   });
-
-  getAllHardwareData(){
-    this.tableLoading.set(true);
-    this.hardwareService.getAllHardware().subscribe({
-      next: (data) => {
-        this.hardwareData.set(data);
-      },
-      complete: () => {
-        this.tableLoading.set(false);
-      }
-    })
+  currentPage = computed(() => Math.max(1, Math.min(this.page(), Math.ceil(this.filteredHardware().length / this.pageSize))));
+  groups = computed(() => groupBySite(this.filteredHardware().slice((this.currentPage() - 1) * this.pageSize, this.currentPage() * this.pageSize), this.grouped()));
+  constructor() {
+    inject(ActivatedRoute).queryParamMap.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(params => this.type.set(params.get('type') || null));
+    effect(() => {
+      this.search();
+      this.clientId();
+      this.siteId();
+      this.type();
+      this.onlyReports();
+      this.sort();
+      this.grouped();
+      this.page.set(1);
+    });
+    this.getAllHardwareData();
   }
-
+  date = validDirectoryDate;
+  setClient(id: number | null) {
+    this.clientId.set(id);
+    this.siteId.set(null);
+  }
+  selectSite(client: number, id: number) {
+    this.setClient(client);
+    this.siteId.set(id);
+  }
+  clearFilters() {
+    this.search.set('');
+    this.setClient(null);
+    this.type.set(null);
+    this.onlyReports.set(false);
+  }
+  getAllHardwareData() {
+    if (this.loading())
+      return;
+    this.loading.set(true);
+    this.loadError.set(false);
+    this.service.getAllHardware().pipe(takeUntilDestroyed(this.destroyRef), finalize(() => this.loading.set(false))).subscribe({
+      next: data => this.hardwareData.set(data), error: () => this.loadError.set(true)
+    });
+  }
 }

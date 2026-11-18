@@ -1,20 +1,16 @@
-import {Component, computed, input, signal} from '@angular/core';
+import {Component, computed, input} from '@angular/core';
 import {ReportCountDTO} from '../../interfaces/report/report-count.dto';
-import {NzTagComponent} from 'ng-zorro-antd/tag';
-import {UtilityService} from '../../services/utility.service';
+import { UiTag } from '../ui-tag/ui-tag';
 
 @Component({
   selector: 'app-report-count-tags-component',
   imports: [
-    NzTagComponent
+    UiTag
   ],
   templateUrl: './report-count-tags-component.html',
   styleUrl: './report-count-tags-component.css',
 })
 export class ReportCountTagsComponent {
-  constructor(private utilityService: UtilityService) {
-  }
-
   reports = input.required<ReportCountDTO[]>();
   activeReportCount = computed(() => {
     const now = new Date();
@@ -32,7 +28,7 @@ export class ReportCountTagsComponent {
   overdueReports = computed(() => this.activeReportCount().overdueReports + " " + "OVERDUE");
 
   tagActiveColor= computed(() =>
-    this.activeReportCount().activeReports > 0 ? this.utilityService.baseColors.yellow : this.utilityService.baseColors.gray);
+    this.activeReportCount().activeReports > 0 ? 'GOLD' : null);
   tagOverdueColor= computed(() =>
-    this.activeReportCount().overdueReports > 0 ? this.utilityService.baseColors.red : this.utilityService.baseColors.gray);
+    this.activeReportCount().overdueReports > 0 ? 'RED' : null);
 }

@@ -1,19 +1,18 @@
-import {computed, inject, Injectable, signal} from '@angular/core';
-import {ClientTableDto} from '../interfaces/client-table.dto';
-import {NzMessageService} from 'ng-zorro-antd/message';
-import {NzNotificationService} from 'ng-zorro-antd/notification';
-import {ClientService} from '../services/client.service';
-import {ClientRequestDto} from '../interfaces/client/client-request.dto';
-import {ApiUrlBaseService} from '../services/api-url-base.service';
-import {ClientDto} from '../interfaces/client/client.dto';
-import {NzUploadFile} from 'ng-zorro-antd/upload';
-import {HttpErrorResponse} from '@angular/common/http';
-import {ClientSummaryDto} from '../interfaces/client/client-summary.dto';
-import {tap, catchError, EMPTY, finalize} from 'rxjs';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { ClientTableDto } from '../interfaces/client-table.dto';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { ClientService } from '../services/client.service';
+import { ClientRequestDto } from '../interfaces/client/client-request.dto';
+import { ApiUrlBaseService } from '../services/api-url-base.service';
+import { ClientDto } from '../interfaces/client/client.dto';
+import { NzUploadFile } from 'ng-zorro-antd/upload';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ClientSummaryDto } from '../interfaces/client/client-summary.dto';
+import { tap, catchError, EMPTY, finalize } from 'rxjs';
 
-@Injectable({providedIn: 'root',})
+@Injectable({ providedIn: 'root' })
 export class ClientStore {
-
   private apiUrlBaseService = inject(ApiUrlBaseService);
   private clientService = inject(ClientService);
   private message = inject(NzMessageService);
@@ -31,31 +30,32 @@ export class ClientStore {
   loadClientSummary(clientId: number) {
     this.summary.set(null);
     return this.clientService.getClientSummary(clientId).pipe(
-      tap(summary => this.summary.set(summary)),
-      catchError((error: HttpErrorResponse) => { this.responseError(error); return EMPTY; })
+      tap((summary) => this.summary.set(summary)),
+      catchError((error: HttpErrorResponse) => {
+        this.responseError(error);
+        return EMPTY;
+      }),
     );
   }
 
   // Computed
-  public selectedClientImage = computed<string|null>(() => {
+  public selectedClientImage = computed<string | null>(() => {
     const path = this.selectedClient()?.photo?.filePath;
-    console.log('path', path);
-    console.log(this.selectedClient());
-    return (path) ? this.apiUrlBaseService.imageBaseUrl + path : null;
+    return path ? this.apiUrlBaseService.imageBaseUrl + path : null;
   });
 
-  public clientPhotoUrl = computed<string|null>(()=>{
+  public clientPhotoUrl = computed<string | null>(() => {
     const client = this.selectedClient();
-    if(client === null) return null;
+    if (client === null) return null;
     return this.clientService.getUploadClientPhotoUrl(client.id);
   });
 
   // Form
-  public formMode = signal<"add" | "edit" | null>(null);
+  public formMode = signal<'add' | 'edit' | null>(null);
 
   // Functions
-  public updateSelectedClient (client:ClientDto) {
-    const actualClient = this.clientList().find(c => c.id === client.id);
+  public updateSelectedClient(client: ClientDto) {
+    const actualClient = this.clientList().find((c) => c.id === client.id);
     if (!actualClient) return;
     const updatedClient: ClientTableDto = {
       id: client.id,
@@ -64,66 +64,73 @@ export class ClientStore {
       totalHardware: actualClient.totalHardware,
       reportsActive: actualClient.reportsActive,
       branches: actualClient.branches,
-    }
-    this.clientList.update(currList =>
-      currList.map(client => client.id === updatedClient.id ? updatedClient : client));
-    this.selectedClient.set(updatedClient)
+    };
+    this.clientList.update((currList) =>
+      currList.map((client) => (client.id === updatedClient.id ? updatedClient : client)),
+    );
+    this.selectedClient.set(updatedClient);
   }
 
   // Store is the layer that shares data with services.
-  public loadClients(){
+  public loadClients() {
     this.tableLoading.set(true);
     this.loadError.set(false);
-    this.clientService.getClients().pipe(finalize(() => this.tableLoading.set(false))).subscribe({
-      next: (clients: ClientTableDto[]) =>
-        this.clientList.set(clients),
-      error: (err: HttpErrorResponse) => { this.loadError.set(true); this.responseError(err); },
-    })
+    this.clientService
+      .getClients()
+      .pipe(finalize(() => this.tableLoading.set(false)))
+      .subscribe({
+        next: (clients: ClientTableDto[]) => this.clientList.set(clients),
+        error: (err: HttpErrorResponse) => {
+          this.loadError.set(true);
+          this.responseError(err);
+        },
+      });
   }
 
   public addClient(client: ClientRequestDto) {
     this.clientService.addClient(client).subscribe({
       /* TODO: response incomplete (id, name), make response brings ClientTableDto object */
-      next: (data:ClientDto)=> {
+      next: (data: ClientDto) => {
         const newClient: ClientTableDto = {
           ...data,
           branches: 0,
           totalHardware: 0,
           reportsActive: [],
         };
-        this.clientList.update(currList =>
-          [...currList, newClient]);
+        this.clientList.update((currList) => [...currList, newClient]);
         this.selectedClient.set(newClient);
       },
       error: (err: HttpErrorResponse) => this.responseError(err),
-      complete:() => this.message.success('Client created successfully.')
-    })
+      complete: () => this.message.success('Client created successfully.'),
+    });
   }
 
   public editClient(clientId: number, client: ClientRequestDto) {
-    this.clientService.editClient(clientId, client).subscribe({
-      next: (data: ClientRequestDto) => this.clientList.update(currList => currList.map(
-        client => client.id === clientId ? {...client, name: data.name} : client)),
-      error: (err: HttpErrorResponse) => this.responseError(err),
-      complete: () => this.message.success('Client edited successfully.')
-    })
+    return this.clientService.editClient(clientId, client).pipe(
+      tap((data) => {
+        this.clientList.update((list) =>
+          list.map((item) => (item.id === clientId ? { ...item, name: data.name } : item)),
+        );
+        if (this.summary()?.id === clientId) this.summary.set({ id: clientId, name: data.name });
+      }),
+      tap(() => this.message.success('Client edited successfully.')),
+      catchError((error: HttpErrorResponse) => {
+        this.responseError(error);
+        return EMPTY;
+      }),
+    );
   }
 
   public uploadClientPhoto(clientId: number, formData: FormData, replaceExisting: boolean) {
     this.clientService.uploadPhoto(clientId, formData, replaceExisting).subscribe({
-      next: (data: ClientDto)=>
-        this.updateSelectedClient(data),
+      next: (data: ClientDto) => this.updateSelectedClient(data),
       error: (err: HttpErrorResponse) => this.responseError(err),
-      complete:() => this.message.success('Photo updated successfully.')
-    })
+      complete: () => this.message.success('Photo updated successfully.'),
+    });
   }
 
   responseError(error: HttpErrorResponse) {
     const errorMessage: string = error.error.message;
-    this.notification.error(
-      'Request Failed',
-      errorMessage,
-      {nzDuration: 0}
-    )
+    this.notification.error('Request Failed', errorMessage, { nzDuration: 0 });
   }
 }

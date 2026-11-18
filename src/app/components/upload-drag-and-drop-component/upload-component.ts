@@ -3,7 +3,7 @@ import {NzModalModule, NzModalService,} from 'ng-zorro-antd/modal';
 import {NzBeforeUploadFileType, NzUploadChangeParam, NzUploadComponent, NzUploadFile} from 'ng-zorro-antd/upload';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
-import {NzImageDirective} from 'ng-zorro-antd/image';
+import {NzImageModule} from 'ng-zorro-antd/image';
 
 import {NzMessageService} from 'ng-zorro-antd/message';
 import {NzNotificationService} from 'ng-zorro-antd/notification';
@@ -16,7 +16,7 @@ import {AbstractUploadComponent} from '../../services/abstract-upload-component.
     NzUploadComponent,
     NzFlexDirective,
     NzIconDirective,
-    NzImageDirective
+    NzImageModule
   ],
   standalone: true,
   templateUrl: './upload-component.html',

@@ -1,6 +1,6 @@
 :host {
   position: absolute;
-  top: 18px;
+  top: 8px;
   right: 26px;
   z-index: 10;
   max-width: calc(100% - 90px);
@@ -8,10 +8,10 @@
 .user-trigger {
   border: 1px solid var(--app-border);
   background: white;
-  padding: 6px 11px;
+  padding: 4px 9px;
   border-radius: 11px;
   cursor: pointer;
-  box-shadow: 0 3px 10px #63539f04;
+  box-shadow: 0 3px 10px var(--app-shadow-soft);
   min-height: 34px;
 }
 .user-avatar {
@@ -28,7 +28,7 @@
 .user-name {
   font-size: 11px;
   font-weight: 500;
-  color: #7f748f;
+  color: var(--app-muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -36,7 +36,7 @@
 }
 @media (max-width: 600px) {
   :host {
-    top: 13px;
+    top: 7px;
     right: 14px;
   }
   .user-trigger {
@@ -47,4 +47,75 @@
     max-width: 150px;
     font-size: 10px;
   }
+}
+
+.account-panel {
+  width: min(226px, calc(100vw - 60px));
+  padding: 4px;
+  color: var(--app-ink, var(--app-text));
+}
+
+.account-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.account-avatar {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  font-size: 14px;
+}
+
+.account-identity {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.account-identity span {
+  color: var(--app-muted);
+  font-size: 12px;
+}
+
+.account-role {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--app-accent-soft);
+  color: var(--app-accent);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.account-actions {
+  display: grid;
+  gap: 3px;
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--app-border);
+}
+
+.account-actions button {
+  min-height: 36px;
+  padding: 6px 9px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.account-actions button:hover,
+.account-actions button:focus-visible {
+  background: var(--app-accent-soft);
+}
+
+.account-actions .logout {
+  color: #a9273e;
 }

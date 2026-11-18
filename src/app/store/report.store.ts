@@ -39,10 +39,10 @@ export class ReportStore{
 
   // SERVICE LAYER
   getReportDetails(reportId: number){
-    this.reportService.getReportById(reportId).subscribe({
-      next: (report : ReportDetailDto) => this.selectedReport.set(report),
-      error: (err: HttpErrorResponse) => this.responseError(err)
-    })
+    return this.reportService.getReportById(reportId).pipe(
+      tap(report => this.selectedReport.set(report)),
+      tap({ error: (error: HttpErrorResponse) => this.responseError(error) }),
+    );
   }
 
   saveReport(reportId: number, report: ReportRequestDto) {
@@ -82,7 +82,7 @@ export class ReportStore{
     if (selectedReport === null) return;
     return this.reportService.closeReport(selectedReport.id).pipe(
       tap(() => this.selectedReport.update(curr => {
-        if(curr === null) return curr;
+        if (curr?.id !== selectedReport.id) return curr;
         return {
           ...curr,
           status: 'CLOSED',

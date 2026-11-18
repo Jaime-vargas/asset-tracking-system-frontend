@@ -1,21 +1,22 @@
 <div class="main-container">
-  <span class="title">{{formTitle()}}</span>
-  <form nz-form [formGroup]="selectedUserForm()" (ngSubmit)="submitForm()" nzLayout="vertical" style="height: stretch">
-    <nz-divider nzText="User info" nzOrientation=left></nz-divider>
+  <h2 class="form-heading">{{formTitle()}}</h2>
+  <p class="form-description">Set the account details and workspace role.</p>
+  <form nz-form [formGroup]="selectedUserForm()" (ngSubmit)="submitForm()" nzLayout="vertical" >
+    <div class="form-section-label">Account information</div>
     <nz-row [nzGutter]="16">
-      <nz-col [nzSpan]="12">
+      <nz-col [nzXs]="24" [nzSm]="12">
         <nz-form-item>
           <nz-form-label nzRequired>Full name</nz-form-label>
           <nz-form-control [nzErrorTip] = "errorTpl">
-            <input nz-input formControlName="fullName" />
+            <input nz-input aria-label="Full name" formControlName="fullName" />
           </nz-form-control>
         </nz-form-item>
       </nz-col>
-      <nz-col [nzSpan]="12">
+      <nz-col [nzXs]="24" [nzSm]="12">
         <nz-form-item>
           <nz-form-label nzRequired>Username</nz-form-label>
           <nz-form-control [nzErrorTip] = "errorTpl">
-            <input nz-input formControlName="username" />
+            <input nz-input autocomplete="off" aria-label="Username" formControlName="username" />
           </nz-form-control>
         </nz-form-item>
       </nz-col>
@@ -23,17 +24,17 @@
 
     <nz-row [nzGutter]="16">
       @if (formMode() === 'add'){
-        <nz-col [nzSpan]="12">
+        <nz-col [nzXs]="24" [nzSm]="12">
           <nz-form-item>
             <nz-form-label nzRequired>Password</nz-form-label>
             <nz-form-control [nzErrorTip] = "errorTpl">
-              <input nz-input formControlName="password" />
+              <input nz-input type="password" autocomplete="new-password" aria-label="Password" formControlName="password" />
             </nz-form-control>
           </nz-form-item>
         </nz-col>
       }
 
-      <nz-col [nzSpan]="12">
+      <nz-col [nzXs]="24" [nzSm]="12">
         <nz-form-item>
           <nz-form-label nzRequired>Role</nz-form-label>
           <nz-form-control [nzErrorTip] = "errorTpl">
@@ -50,11 +51,11 @@
         </nz-form-item>
       </nz-col>
     </nz-row>
-    <nz-divider></nz-divider>
+
     <div class="buttons-container" nz-flex nzAlign="center" nzJustify="flex-end"
-         style="width: 100%; gap: 20px">
-      <button nz-button class="form-btn default-btn" nzType="default" nzSize="large" type="button" (click)="onClose()" >Close</button>
-      <button nz-button class="form-btn primary-btn" nzType="primary" nzSize="large" type="submit"
+         >
+      <button nz-button  nzType="default"  type="button" (click)="onClose()" >Close</button>
+      <button nz-button  nzType="primary"  type="submit"
               [disabled]="selectedUserForm().invalid"
               [nzLoading]="saveButtonLoading()">
         <nz-icon nzType="save" nzTheme="outline" />Save Changes</button>

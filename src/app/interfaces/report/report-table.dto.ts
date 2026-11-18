@@ -11,4 +11,7 @@ export interface ReportTableDto{
   createdDate: string;
   dueDate: string;
   status: string;
+  tagId: number;
+  tagName: string;
+  tagColor?: string;
 }

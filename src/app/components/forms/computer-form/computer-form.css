@@ -1,0 +1,15 @@
+form { display: grid; gap: 14px; }
+fieldset { min-width: 0; border: 1px solid var(--app-border); border-radius: 12px; padding: 12px; }
+legend { float: none; width: auto; padding: 0 5px; margin: 0; font-size: 13px; font-weight: 650; }
+.fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+label { display: grid; gap: 4px; color: var(--app-muted); font-size: 12px; }
+input, select {
+  width: 100%; min-height: 34px; padding: 5px 8px; border-radius: 8px;
+  border: 1px solid var(--app-border); background: var(--app-canvas); color: var(--app-text);
+}
+input:focus-visible, select:focus-visible { outline: 2px solid var(--app-accent); outline-offset: 1px; }
+.entry { padding: 10px; border-radius: 9px; background: var(--app-canvas); margin-bottom: 8px; }
+.entry button { margin-top: 5px; }
+.actions { display: flex; justify-content: flex-end; gap: 8px; }
+.error { color: #a9273e; margin: 0; }
+@media (max-width: 480px) { .fields { grid-template-columns: 1fr; } }

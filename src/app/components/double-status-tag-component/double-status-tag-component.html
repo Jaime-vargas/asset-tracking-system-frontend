@@ -1,5 +1,4 @@
-<nz-tag [nzColor]="tagColor()">{{label()}}</nz-tag>
-@if(status() && overdue()){
-  <nz-tag [nzColor]="utilityService.baseColors.red">OVERDUE</nz-tag>
+<app-single-status-tags-component [status]="status() ? 'ACTIVE' : 'CLOSED'" />
+@if (overdue()) {
+  <app-single-status-tags-component status="OVERDUE" />
 }
-

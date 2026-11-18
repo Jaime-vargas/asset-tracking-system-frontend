@@ -1,121 +1,61 @@
-<div class="contentPage">
-<h2 nz-typography>{{ fullName ? 'Hello, ' + fullName : 'Hello' }}</h2>
-<nz-divider nzSize="small"></nz-divider>
-<div class="contentBody">
-  <div nz-row [nzGutter]="[10,10]">
-    <!-- TOP CARDS -->
-    @for (card of topCardsView(); track card.label){
-      <div nz-col nzSpan="6">
-        <app-dashboard-card-component  [cardTitle]="card.label">
-          <div body>
-            <span class="bold-text" [style.color]="card.color">{{ card.value }}</span>
-          </div>
-        </app-dashboard-card-component>
-      </div>
-    }
-    <nz-divider nzSize="small" ></nz-divider>
-    <!-- Table RECENT ACTIVE REPORTS -->
-    <div nz-col nzSpan="12">
-      <app-dashboard-box-component [boxTitle]="'Recent Active Reports'">
-        <div body>
-          <nz-table #tableData [nzShowPagination]="false" nzSize="default" [nzData]="recentReports()" [nzScroll]="{ x: 'max-content' }" >
-            <colgroup>
-              <col style="width: 50px" />
-              <col style="width: 150px" />
-              <col style="width: 80px" />
-              <col style="width: 130px" />
-              <col style="width: 80px" />
-            </colgroup>
-            <thead>
-            <tr>
-              <th>ID</th>
-              <th>Title</th>
-              <th>Priority</th>
-              <th>Due Date</th>
-              <th>Status</th>
-            </tr>
-            </thead>
-            <tbody>
-              @for (report of tableData.data; track report){
-                <tr>
-                  <td>#{{report.id}}</td>
-                  <td>{{report.title}}</td>
-                  <td><app-priority-tags-component [priority]="report.priority"></app-priority-tags-component></td>
-                  <td>{{report.dueDate.toDateString()}}</td>
-                  <td><app-single-status-tags-component [status]="report.status"></app-single-status-tags-component> </td>
-                </tr>
-              }
-            </tbody>
-          </nz-table>
-        </div>
-        <div footer>
-          <nz-divider nzSize="small"></nz-divider>
-          <button nz-button  nzType="text" class="bg-blue"
-                  [routerLink]="['/reports']" style="font-size: 20px"> View All Reports <nz-icon nzType="right" /></button>
-        </div>
-      </app-dashboard-box-component >
+<div class="contentPage dashboard-page">
+  <header class="page-heading">
+    <div><span class="eyebrow">WORKSPACE</span><h1>{{ fullName ? 'Hello, ' + fullName : 'Hello' }}</h1><p>Your clients, equipment and reports at a glance.</p></div>
+    <div class="refresh-actions">@if (updatedAt()) { <span>Updated {{ updatedAt() | date:'shortTime' }}</span> }
+      <button nz-button (click)="getDashboardData()" [nzLoading]="loading()" [disabled]="loading()"><nz-icon nzType="reload" />Refresh</button>
     </div>
-    <!-- QUICK ACCESS CLIENTS -->
-    <div nz-col nzSpan="12">
-      <app-dashboard-box-component [boxTitle]="'Quick Access'" [flex]="true" >
-        <div body>
-          <div nz-row [nzGutter]="[10,10]" >
-            @for (client of clients(); track client.id){
-              <div nz-col nzSpan="12">
-                <app-dashboard-card-component>
-                  <div body>
-                    <h2 nz-typography style="margin: 0;">{{client.name}}</h2>
-                    <button class="form-btn primary-btn" nz-button nzType="primary"
-                            [routerLink]="['/clients', client.id, this.utilityService.slugify(client.name)]" >
-                      View Projects
-                      <nz-icon nzType="right" /></button>
-                  </div>
-                </app-dashboard-card-component>
-              </div>
+  </header>
+  <div class="contentBody dashboard-scroll" [attr.aria-busy]="loading()">
+    @if (loadError()) {
+      <div class="dashboard-error" role="alert"><div><strong>Dashboard could not be updated.</strong><p>{{ data() ? 'Showing the last loaded data. Try refreshing again.' : 'Try again to load your workspace overview.' }}</p></div><button nz-button (click)="getDashboardData()">Try again</button></div>
+    }
+    @if (loading() && !data()) { <p class="loading-message" role="status">Loading workspace overview...</p> }
+    <section class="metric-grid" aria-label="Workspace overview">
+      @for (metric of metrics(); track metric.label) {
+        <article class="metric-card" [class.primary]="metric.tone === 'primary'" [class.warning]="metric.tone === 'warning'">
+          <div class="metric-label"><span>{{ metric.label }}</span><nz-icon [nzType]="metric.icon" /></div>
+          <strong>{{ metric.value ?? '—' }}</strong><small>{{ metric.hint }}</small>
+        </article>
+      }
+    </section>
+    @if (data()) {
+      <div class="dashboard-layout">
+        <section class="dashboard-panel clients-panel" aria-labelledby="clients-heading">
+          <div class="section-heading"><div><h2 id="clients-heading">Client workspaces</h2><p>Quick access to your clients.</p></div><a routerLink="/clients">View all <nz-icon nzType="arrow-right" /></a></div>
+          <div class="client-shortcuts">
+            @for (client of clients(); track client.id) {
+              <a class="client-shortcut" [routerLink]="clientLink(client)">
+                <span class="client-logo">@if (photoUrl(client); as url) { <img [src]="url" alt="" (error)="imageFailed(url)" /> } @else { {{ initials(client.name) }} }</span>
+                <div><strong>{{ client.name }}</strong><span>Open workspace</span></div><nz-icon nzType="arrow-right" />
+              </a>
+            } @empty { <div class="empty-clients"><nz-icon nzType="apartment" /><p>Your client workspaces will appear here.</p><a routerLink="/clients">Go to clients</a></div> }
+          </div>
+        </section>
+        <section class="dashboard-panel reports-panel" aria-labelledby="open-reports-heading">
+          <div class="section-heading"><div><h2 id="open-reports-heading">Open reports</h2><p>Most recently created reports.</p></div><a routerLink="/reports">View all <nz-icon nzType="arrow-right" /></a></div>
+          @if (recentReports().length) {
+            <div class="recent-reports">
+              @for (report of recentReports(); track report.id) {
+                <a class="report-row" [routerLink]="['/reports', report.id]">
+                  <span class="report-symbol"><nz-icon nzType="file-text" /></span>
+                  <div class="report-details"><strong>{{ report.title }}</strong><span>#{{ report.id }} <span aria-hidden="true">&middot;</span> {{ report.dueDate ? 'Due ' + (report.dueDate | date:'mediumDate') : 'Due date not assigned' }}</span></div>
+                  <div class="report-tags"><app-priority-tags-component [priority]="report.priority" /><app-single-status-tags-component [status]="report.status" /></div><nz-icon class="report-arrow" nzType="arrow-right" />
+                </a>
+              }
+            </div>
+          } @else {
+            <div class="empty-reports"><span class="empty-symbol"><nz-icon nzType="check" /></span><h3>No open reports</h3><p>New reports will appear here when created.</p></div>
+          }
+        </section>
+        <section class="dashboard-panel hardware-panel" aria-labelledby="hardware-heading">
+          <div class="section-heading"><div><h2 id="hardware-heading">Hardware overview</h2><p>Equipment registered across your clients.</p></div><a routerLink="/hardware">Inventory <nz-icon nzType="arrow-right" /></a></div>
+          <div class="inventory-grid">
+            @for (item of inventory(); track item.type) {
+              <app-hardware-inventory-card [label]="item.label" [icon]="item.icon" [count]="item.count" [type]="item.type" />
             }
           </div>
-        </div>
-      </app-dashboard-box-component>
-    </div>
-    <!-- HARDWARE OVERVIEW -->
-    <div nz-col nzSpan="24">
-      <app-dashboard-box-component [boxTitle]="'Hardware Overview'" [flex]="true">
-        <div body>
-          <div nz-row nzGutter="10" >
-            <app-dasboard-grey-card-component nz-col nzSpan="8">
-              <div body nz-flex nzGap="middle" class="hwMetric" nzAlign="flex-start">
-                <nz-icon nzType="video-camera" nzTheme="fill"></nz-icon>
-                <div nz-flex nzVertical nzGap="middle">
-                  <span>Cameras</span>
-                  <span class="bg-green bold-text">{{ totalCameras() }}</span>
-                </div>
-              </div>
-            </app-dasboard-grey-card-component>
-            <app-dasboard-grey-card-component nz-col nzSpan="8">
-              <div body nz-flex nzGap="middle" class="hwMetric" nzAlign="flex-start">
-                <nz-icon nzType="video-camera" nzTheme="fill"></nz-icon>
-                <div nz-flex nzVertical nzGap="middle">
-                  <span>Switches</span>
-                  <span class="bg-green bold-text">{{ totalSwitches() }}</span>
-                </div>
-              </div>
-            </app-dasboard-grey-card-component>
-            <div nz-col nzSpan="8">
-              <app-dasboard-grey-card-component>
-                <div body nz-flex nzGap="middle" class="hwMetric" nzAlign="flex-start">
-                  <nz-icon nzType="video-camera" nzTheme="fill"></nz-icon>
-                  <div nz-flex nzVertical nzGap="middle">
-                    <span>Other Devices</span>
-                    <span class="bg-green bold-text">{{ totalOtherHardware() }}</span>
-                  </div>
-                </div>
-              </app-dasboard-grey-card-component>
-            </div>
-          </div>
-        </div>
-      </app-dashboard-box-component>
-    </div>
+        </section>
+      </div>
+    }
   </div>
 </div>
-</div>
-

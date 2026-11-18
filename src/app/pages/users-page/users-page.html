@@ -1,49 +1,62 @@
-<div class="contentPage">
-  <h2 nz-typography>Users</h2>
-  <div nz-flex nzJustify="flex-end">
-    <button nz-button class="form-btn primary-btn" nzType="primary"
-      (click)="saveUser()">
-      <nz-icon nzType="user-add" nzTheme="outline" />
-      New User
-    </button>
-  </div>
-  <nz-divider></nz-divider>
-  <div nz-flex nzVertical nzGap="large">
-    <app-user-row-component
-      themeColors="yellow"
-      [title]="'Administrators'"
-      [userList]="adminUsersList()"
-      [LoadingOptionsMenu]="LoadingOptionsMenu()"
-      (disableUser)="disableUser($event)"
-      (editUser)="editUser($event)"
-      (enableUser)="enableUser($event)"
-      (resetPassword)="resetPassword($event)">
-    </app-user-row-component>
-    <app-user-row-component
-      themeColors="blue"
-      [title]="'Standard Users'"
-      [userList]="standardUsersList()"
-      [LoadingOptionsMenu]="LoadingOptionsMenu()"
-      (disableUser)="disableUser($event)"
-      (editUser)="editUser($event)"
-      (enableUser)="enableUser($event)"
-      (resetPassword)="resetPassword($event)">
-    </app-user-row-component>
+<div class="contentPage users-page">
+  <header class="page-heading">
+    <div><span class="eyebrow">WORKSPACE</span><h1>Users</h1><p>Manage your team and workspace access.</p></div>
+    <button nz-button nzType="primary" (click)="saveUser()"><nz-icon nzType="user-add" />Add user</button>
+  </header>
+  <div class="contentBody users-scroll">
+    <section class="user-summary" aria-label="User overview">
+      <div><span>Total users</span><strong>{{ usersStore.loading() ? '—' : totals().all }}</strong></div>
+      <div><span>Active</span><strong>{{ usersStore.loading() ? '—' : totals().active }}</strong></div>
+      <div><span>Administrators</span><strong>{{ usersStore.loading() ? '—' : totals().admins }}</strong></div>
+    </section>
+    <section class="users-directory" aria-label="User directory">
+      <div class="users-toolbar">
+        <nz-input-wrapper><nz-icon nzInputPrefix nzType="search" /><input nz-input aria-label="Search users" placeholder="Search name or username..." [ngModel]="search()" (ngModelChange)="search.set($event)" /></nz-input-wrapper>
+        <select aria-label="Filter by role" [ngModel]="roleFilter()" (ngModelChange)="roleFilter.set($event)">
+          <option value="">All roles</option>
+          @for (role of roles(); track role) { <option [value]="role">{{ role }}</option> }
+        </select>
+        <select aria-label="Filter by status" [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)">
+          <option value="">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option>
+        </select>
+      </div>
+      <div class="results-bar"><span aria-live="polite">{{ filteredUsers().length }} {{ filteredUsers().length === 1 ? 'user' : 'users' }}{{ hasFilters() ? ' found' : '' }}</span>
+        @if (hasFilters()) { <button nz-button nzType="link" (click)="clearFilters()">Clear filters</button> }
+      </div>
+      @if (usersStore.loading()) { <div class="list-state" role="status">Loading users...</div> }
+      @else if (usersStore.loadError()) {
+        <div class="list-state" role="alert"><h2>Users could not be loaded</h2><button nz-button (click)="usersStore.getUsersList()">Try again</button></div>
+      } @else if (!filteredUsers().length) {
+        <div class="list-state"><nz-icon nzType="user" /><h2>{{ hasFilters() ? 'No matching users' : 'Your team starts here' }}</h2>
+          <p>{{ hasFilters() ? 'Try a different name, role or status.' : 'Add a user to give them access to the workspace.' }}</p>
+          @if (hasFilters()) { <button nz-button (click)="clearFilters()">Clear filters</button> }
+          @else { <button nz-button nzType="primary" (click)="saveUser()">Add user</button> }
+        </div>
+      } @else {
+        <table class="users-table">
+          <thead><tr><th>User</th><th>Role</th><th>Status</th><th class="actions-heading">Actions</th></tr></thead>
+          <tbody>
+            @for (user of visibleUsers(); track user.id) {
+              <tr>
+                <td class="identity-cell"><div class="user-identity"><span class="user-avatar" aria-hidden="true">{{ initials(user.fullName) }}</span><div><strong>{{ user.fullName }}</strong><span class="username">{{ user.username }}</span></div></div></td>
+                <td class="role-cell"><span class="role-chip" [class.admin]="user.role === 'Administrator'">{{ user.role }}</span></td>
+                <td class="status-cell"><span class="status-chip" [class.inactive]="!user.active"><span class="status-dot" aria-hidden="true"></span>{{ user.active ? 'Active' : 'Inactive' }}</span></td>
+                <td class="actions-cell"><div class="user-actions">
+                  <button nz-button [attr.aria-label]="'Edit ' + user.fullName" (click)="editUser(user)" [disabled]="busyUserId() !== null"><nz-icon nzType="edit" />Edit</button>
+                  <button nz-button nz-dropdown nzTrigger="click" [nzDropdownMenu]="userMenu" nzPlacement="bottomRight" [attr.aria-label]="'More actions for ' + user.fullName" [nzLoading]="busyUserId() === user.id" [disabled]="busyUserId() !== null"><nz-icon nzType="ellipsis" /></button>
+                </div>
+                <nz-dropdown-menu #userMenu="nzDropdownMenu"><ul nz-menu>
+                  <li nz-menu-item (click)="resetPassword(user)">Reset password</li>
+                  <li nz-menu-item [nzDisabled]="busyUserId() !== null" (click)="toggleStatus(user)">{{ user.active ? 'Disable user' : 'Enable user' }}</li>
+                </ul></nz-dropdown-menu></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <app-list-pagination [total]="filteredUsers().length" [page]="currentPage()" [pageSize]="pageSize" (pageChange)="page.set($event)" />
+      }
+    </section>
   </div>
 </div>
-<!-- SIDEBAR COMPONENT -->
-@if(openSideBar()){
-  <app-edit-side-bar>
-    <div body>
-      <app-user-form></app-user-form>
-    </div>
-  </app-edit-side-bar>
-}
-<!-- /SIDEBAR COMPONENT -->
-<!-- PASSWORD RESET MODAL -->
-<ng-template #resetPasswordModal>
-  <app-user-reset-password-form
-    (close)="modalRef?.close()">
-  </app-user-reset-password-form>
-</ng-template>
-<!-- /PASSWORD RESET MODAL -->
+@if (openSideBar()) { <app-edit-side-bar width="min(560px, 100vw)"><div body><app-user-form /></div></app-edit-side-bar> }
+<ng-template #resetPasswordModal><app-user-reset-password-form (close)="modalRef?.close()" /></ng-template>

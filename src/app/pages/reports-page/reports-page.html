@@ -1,85 +1,27 @@
-<div class="contentPage">
-  <h2 nz-typography>All Reports</h2>
-  <nz-divider></nz-divider>
-  <div class="contentBody">
-    <div nz-row [nzGutter]="[10,10]">
-      <div nz-col nzSpan="24">
-        <app-dashboard-box-component>
-          <div body>
-            <div nz-row [nzGutter]="[10,10]">
-              <div nz-col nzFlex="1 0 150px">
-                <nz-input-wrapper nzAllowClear >
-                  <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-                  <input nz-input [ngModel]="idFilter()" (ngModelChange)="idFilter.set($event)"  placeholder=" Search ID..." />
-                </nz-input-wrapper>
-              </div>
-              <div nz-col nzFlex="1 0 150px">
-                <nz-input-wrapper nzAllowClear >
-                  <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-                  <input nz-input [ngModel]="tittleFilter()" (ngModelChange)="tittleFilter.set($event)"  placeholder=" Search Title..." />
-                </nz-input-wrapper>
-              </div>
-              <div nz-col nzFlex="1 0 100px">
-                <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select a client" [ngModel]="clientFilter()" (ngModelChange)="clientFilter.set($event)">
-                  @for (client of clientList(); track $index){
-                    <nz-option [nzLabel]="client" [nzValue]="client" />
-                  }
-                </nz-select>
-              </div>
-              <div nz-col nzFlex="1 0 100px">
-                <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select a project" [ngModel]="branchFilter()" (ngModelChange)="branchFilter.set($event)" >
-                  @for (branch of branchList(); track $index){
-                    <nz-option [nzLabel]="branch" [nzValue]="branch" />
-                  }
-                </nz-select>
-              </div>
-              <div nz-col nzFlex="1 0 150px">
-                <nz-input-wrapper nzAllowClear >
-                  <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-                  <input nz-input [ngModel]="hardwareFilter()" (ngModelChange)="hardwareFilter.set($event)"  placeholder=" Search Hardware..." />
-                </nz-input-wrapper>
-              </div>
-              <div nz-col nzFlex="1 0 50px">
-                <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Priority" [ngModel]="priorityFilter()" (ngModelChange)="priorityFilter.set($event)" >
-                  @for (priority of priorityList(); track $index){
-                    <nz-option [nzLabel]="priority" [nzValue]="priority" />
-                  }
-                </nz-select>
-              </div>
-              <div nz-col nzFlex="1 0 150px">
-                <nz-input-wrapper nzAllowClear >
-                  <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-                  <input nz-input [ngModel]="createdAtFilter()" (ngModelChange)="createdAtFilter.set($event)"  placeholder=" Search Created At..." />
-                </nz-input-wrapper>
-              </div>
-              <div nz-col nzFlex="1 0 150px">
-                <nz-input-wrapper nzAllowClear >
-                  <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-                  <input nz-input [ngModel]="dueDateFilter()" (ngModelChange)="dueDateFilter.set($event)"  placeholder=" Search Due Date..." />
-                </nz-input-wrapper>
-              </div>
-              <div nz-col nzFlex="1 0 50px">
-                <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Status" [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)" >
-                  @for (status of statusList(); track $index){
-                    <nz-option [nzLabel]="status" [nzValue]="status" />
-                  }
-                </nz-select>
-              </div>
-            </div>
-          </div>
-        </app-dashboard-box-component>
-      </div>
-
-      <!-- TABLE COMPONENT -->
-      <div nz-col nzSpan="24">
-        <app-dashboard-box-component>
-          <div body>
-            <app-table-component
-              [tableColumns]="tableColumnsReportsService.tableColumns"
-              [tableData]="tableData()"></app-table-component>
-          </div>
-        </app-dashboard-box-component>
-      </div>
-    </div>
-  </div>
+<div class="contentPage directory-page">
+ <header class="page-heading"><div><span class="eyebrow">WORKSPACE</span><h1>Reports</h1><p>All reports, organized by client, site and equipment.</p></div><button class="native-button" [disabled]="loading()" (click)="getReports()"><app-ui-icon name="refresh"/>{{loading()?'Loading...':'Refresh'}}</button></header>
+ <div class="contentBody directory-scroll">
+  <section class="directory-summary" aria-label="Report overview"><div>Total <strong>{{loading()||loadError()?'—':totals().all}}</strong></div><div>Open <strong>{{loading()||loadError()?'—':totals().open}}</strong></div><div>Overdue <strong>{{loading()||loadError()?'—':totals().overdue}}</strong></div><div>Closed <strong>{{loading()||loadError()?'—':totals().closed}}</strong></div></section>
+  <section class="filters-panel" aria-label="Filter reports">
+   <app-directory-filters [clients]="clients()" [sites]="sites()" [search]="search()" [clientId]="clientId()" [siteId]="siteId()" (searchChange)="search.set($event)" (clientChange)="setClient($event)" (siteChange)="siteId.set($event)" placeholder="ID, title, equipment, client or site..."/>
+   <div class="extra-filters"><label class="filter-field"><span>Status</span><select [ngModel]="status()" (ngModelChange)="status.set($event)"><option value="">All statuses</option><option value="OPEN">Open (active and overdue)</option><option value="OVERDUE">Overdue</option><option value="ACTIVE">Active</option><option value="CLOSED">Closed</option></select></label><label class="filter-field"><span>Priority</span><select [ngModel]="priority()" (ngModelChange)="priority.set($event)"><option value="">All priorities</option>@for(item of priorities();track item){<option [value]="item">{{item}}</option>}</select></label><label class="filter-field"><span>Sort order</span><select [ngModel]="sort()" (ngModelChange)="sort.set($event)"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="due">Due date (soonest)</option></select></label></div>
+   <details class="date-options"><summary>Date filters</summary><div class="extra-filters"><label class="filter-field"><span>Date to filter</span><select [ngModel]="dateField()" (ngModelChange)="dateField.set($event)"><option value="dueDate">Due date</option><option value="createdDate">Created date</option></select></label><label class="filter-field"><span>From</span><input type="date" [ngModel]="dateFrom()" (ngModelChange)="dateFrom.set($event)"/></label><label class="filter-field"><span>To</span><input type="date" [ngModel]="dateTo()" (ngModelChange)="dateTo.set($event)"/></label></div></details>
+  </section>
+  <div class="results-toolbar"><span aria-live="polite">{{filteredReports().length}} {{filteredReports().length===1?'report':'reports'}}</span><div><label class="checkbox-label"><input type="checkbox" [ngModel]="grouped()" (ngModelChange)="grouped.set($event)"/>Group by site</label>@if(hasFilters()){<button class="text-button" (click)="clearFilters()">Clear filters</button>}</div></div>
+  @if(loading()){<div class="loading-state" role="status">Loading all reports...</div>}
+  @else if(loadError()){<div class="error-state" role="alert"><h2>Reports could not be loaded</h2><button class="native-button" (click)="getReports()">Try again</button></div>}
+  @else if(invalidDateRange()){<div class="error-state" role="alert">The end date must be on or after the start date.</div>}
+  @else if(!filteredReports().length){<div class="empty-state"><h2>{{hasFilters()?'No matching reports':'No reports registered'}}</h2><p>{{hasFilters()?'Try another client, site, status or date range.':'Create a report from the equipment it belongs to.'}}</p>@if(hasFilters()){<button class="native-button" (click)="clearFilters()">Clear filters</button>}@else{<a class="native-button" routerLink="/hardware">Go to hardware</a>}</div>}
+  @else{
+   @for(group of groups();track group.key){<section class="group-section" [attr.aria-label]="grouped()?group.clientName+' - '+group.siteName:'Report results'">
+    @if(grouped()){<header class="group-heading"><app-ui-icon name="client"/><button class="text-button" (click)="setClient(group.clientId)">{{group.clientName}}</button><span>/</span><button appUiTag type="button" [tone]="group.color" (click)="selectSite(group.clientId,group.siteId)">{{group.siteName}}</button><small>{{group.items.length}} on this page</small></header>}
+    @for(item of group.items;track item.id){<a class="record-row" [routerLink]="['/reports',item.id]" [attr.aria-label]="'Open report '+item.id+': '+item.title">
+     <div class="record-main"><span class="record-icon"><app-ui-icon name="report"/></span><div><strong>{{item.title}}</strong><small>#{{item.id}} &middot; {{item.hardwareName}}</small>@if(!grouped()){<small>{{item.clientName}} &middot; {{item.tagName||'Site not assigned'}}</small>}</div></div>
+     <div class="record-details"><span>Due {{date(item.dueDate)?(date(item.dueDate)|date:'mediumDate'):'Not assigned'}}</span><small>Created {{date(item.createdDate)?(date(item.createdDate)|date:'mediumDate'):'Not recorded'}}</small></div>
+     <div class="record-badges"><app-single-status-tags-component [status]="item.status" /><app-priority-tags-component [priority]="item.priority" /></div><app-ui-icon class="record-arrow" name="arrow"/>
+    </a>}
+   </section>}
+   <app-list-pagination [total]="filteredReports().length" [page]="currentPage()" [pageSize]="pageSize" (pageChange)="page.set($event)"/>
+  }
+ </div>
 </div>

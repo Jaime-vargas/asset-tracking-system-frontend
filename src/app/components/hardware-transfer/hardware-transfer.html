@@ -1,0 +1,53 @@
+<div class="transfer-actions">
+  <button nz-button (click)="openExport()">Export <nz-icon nzType="export" /></button>
+  <button nz-button nz-dropdown [nzDropdownMenu]="importMenu" [disabled]="templateLoading()">Import <nz-icon nzType="import" /></button>
+</div>
+<nz-dropdown-menu #importMenu="nzDropdownMenu">
+  <ul nz-menu>
+    <li nz-menu-item (click)="openImport()">Import from XLS</li>
+    <li nz-menu-item (click)="downloadTemplate()">Download template <nz-icon nzType="download" /></li>
+  </ul>
+</nz-dropdown-menu>
+<nz-modal nzTitle="Export hardware" [nzVisible]="exportOpen()" [nzWidth]="440" [nzMaskClosable]="false"
+  [nzClosable]="!exporting()" [nzCancelDisabled]="exporting()" [nzOkLoading]="exporting()" [nzOkDisabled]="sitesLoading()"
+  nzOkText="Export" (nzOnOk)="exportHardware()" (nzOnCancel)="!exporting() && exportOpen.set(false)">
+  <ng-container *nzModalContent>
+    <p>{{ exportSiteId() === 0 ? 'Downloads a ZIP with one document per site that has cameras, in the selected format.' : 'Includes every camera in the selected site.' }}</p>
+    <label class="field-label">Site</label>
+    <nz-select aria-label="Export site" nzShowSearch [ngModel]="exportSiteId()" (ngModelChange)="exportSiteId.set($event)" [nzLoading]="sitesLoading()" [nzDisabled]="exporting()">
+      <nz-option [nzValue]="0" nzLabel="All client sites" />
+      @for (site of sites(); track site.id) { <nz-option [nzValue]="site.id" [nzLabel]="site.name" /> }
+    </nz-select>
+    <label class="field-label">Format</label>
+    <nz-select aria-label="Export format" [ngModel]="exportFormat()" (ngModelChange)="exportFormat.set($event)" [nzDisabled]="exporting()">
+      @for (format of formats; track format.value) { <nz-option [nzValue]="format.value" [nzLabel]="format.label" /> }
+    </nz-select>
+  </ng-container>
+</nz-modal>
+<nz-modal nzTitle="Import cameras" [nzVisible]="importOpen()" [nzWidth]="480" [nzMaskClosable]="false"
+  [nzClosable]="!importing()" [nzCancelDisabled]="importing()" [nzOkLoading]="importing()"
+  [nzOkDisabled]="importSiteId() === null || !importFile() || sitesLoading()" nzOkText="Import"
+  (nzOnOk)="importCameras()" (nzOnCancel)="!importing() && importOpen.set(false)">
+  <ng-container *nzModalContent>
+    <p>All rows use the selected site, including cameras updated by their existing ID. New cameras are registered in this client.</p>
+    <label class="field-label">Site</label>
+    <nz-select aria-label="Import site" nzShowSearch nzPlaceHolder="Select a site" [ngModel]="importSiteId()" (ngModelChange)="importSiteId.set($event)" [nzLoading]="sitesLoading()" [nzDisabled]="importing()">
+      @for (site of sites(); track site.id) { <nz-option [nzValue]="site.id" [nzLabel]="site.name" /> }
+    </nz-select>
+    @if (!sitesLoading() && !sites().length) { <p>Create a Site in Client settings before importing.</p> }
+    @if (importOpen()) {
+      <span class="field-label">XLSX file</span>
+      <app-document-file-picker label="XLSX file" extension=".xlsx" [file]="importFile()"
+        [disabled]="importing()" (fileChange)="importFile.set($event)" />
+    }
+  </ng-container>
+</nz-modal>
+<nz-modal nzTitle="Import results" [nzVisible]="result() !== null" [nzFooter]="null" (nzOnCancel)="result.set(null)">
+  <ng-container *nzModalContent>
+    @if (result(); as summary) {
+      <p>Processed: <strong>{{ summary.processed }}</strong> · Successful: <strong>{{ summary.successful }}</strong> · Errors: <strong>{{ summary.errorsCount }}</strong></p>
+      <ul class="import-errors">@for (error of summary.errors; track $index) { <li>{{ error }}</li> }</ul>
+      <button nz-button (click)="result.set(null)">Close</button>
+    }
+  </ng-container>
+</nz-modal>

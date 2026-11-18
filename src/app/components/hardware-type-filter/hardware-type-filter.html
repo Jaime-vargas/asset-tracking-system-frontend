@@ -1,0 +1,14 @@
+@if (types().length) {
+  <div class="type-filters" role="group" aria-label="Filter by equipment type">
+    <button type="button" [attr.aria-pressed]="selected() === null" (click)="selected.set(null)">
+      <app-ui-icon name="grid" /><span>All equipment</span><small>{{ equipment().length }}</small>
+    </button>
+    @for (item of types(); track item.type) {
+      <button type="button" [attr.aria-pressed]="selected() === item.type" (click)="selected.set(item.type)">
+        <app-ui-icon [name]="item.type === 'Camera' ? 'camera' : 'device'" />
+        <span>{{ item.type === 'Camera' ? 'Cameras' : item.type === 'Computer' ? 'Computers' : item.type }}</span>
+        <small>{{ item.count }}</small>
+      </button>
+    }
+  </div>
+}

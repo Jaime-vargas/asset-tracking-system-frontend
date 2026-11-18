@@ -1,10 +1,14 @@
+import { DatePipe } from '@angular/common';
+import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { ClientSettings } from '../../components/client-settings/client-settings';
+import { ClientForm } from '../../components/forms/client-form/client-form';
 import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { NzIconDirective } from 'ng-zorro-antd/icon';
 import { BranchTableDto } from '../../interfaces/branch-table.dto';
 import { ApiUrlBaseService } from '../../services/api-url-base.service';
@@ -17,21 +21,26 @@ import { BranchForm } from '../../components/forms/branch-form/branch-form';
 import { ClientDocuments } from '../../components/client-documents/client-documents';
 import { ClientHardware } from '../../components/client-hardware/client-hardware';
 import { ClientStore } from '../../store/client.store';
+import { RecentClientsService } from '../../services/recent-clients.service';
 import { ListPagination } from '../../components/list-pagination/list-pagination';
 @Component({
   selector: 'app-client-branches-page',
   imports: [
+    DatePipe,
+    NzSelectModule,
     RouterLink,
     FormsModule,
     NzButtonComponent,
     NzInputModule,
-    NzTabsModule,
     NzIconDirective,
     EditSideBar,
     BranchForm,
     ClientDocuments,
     ClientHardware,
     ListPagination,
+    NzModalModule,
+    ClientSettings,
+    ClientForm,
   ],
   templateUrl: './client-branches-page.html',
   styleUrl: './client-branches-page.css',
@@ -44,10 +53,18 @@ export class ClientBranchesPage implements OnInit {
   private router = inject(Router);
   private routeContext = inject(RouteContextService);
   private clientStore = inject(ClientStore);
+  private recentClients = inject(RecentClientsService);
   private destroyRef = inject(DestroyRef);
   clientId = this.routeContext.clientId;
+  currentClient = computed(() =>
+    this.clientStore.clientList().find((client) => client.id === this.clientId()),
+  );
   clientName = computed(
-    () => this.clientStore.summary()?.name ?? this.routeContext.clientSlug() ?? 'Client',
+    () =>
+      this.currentClient()?.name ??
+      this.clientStore.summary()?.name ??
+      this.routeContext.clientSlug() ??
+      'Client',
   );
   private imageBaseUrl = inject(ApiUrlBaseService).imageBaseUrl;
   failedLogo = signal<string | null>(null);
@@ -66,20 +83,64 @@ export class ClientBranchesPage implements OnInit {
       .join('')
       .toUpperCase(),
   );
+  settingsOpen = signal(false);
+  clientEditing = signal(false);
+  settingsDirty = false;
+  settingsRevision = signal(0);
+  protected readonly sections = [
+    { label: 'Documents', icon: 'file-text' },
+    { label: 'Projects', icon: 'folder-open' },
+    { label: 'Hardware', icon: 'desktop' },
+  ];
   activeTab = signal(0);
-  documentProjectId = signal<number | null>(null);
+
+  openSettings() {
+    if (!this.currentClient() && !this.clientStore.tableLoading()) this.clientStore.loadClients();
+    this.settingsOpen.set(true);
+  }
+  closeSettings() {
+    this.settingsOpen.set(false);
+    if (this.settingsDirty) {
+      this.settingsRevision.update((value) => value + 1);
+      this.settingsDirty = false;
+    }
+  }
+  openClientEditor() {
+    const client = this.currentClient();
+    if (!client) return;
+    this.closeSettings();
+    this.clientStore.selectedClient.set(client);
+    this.clientStore.formMode.set('edit');
+    this.clientEditing.set(true);
+    this.openSideBar.set(true);
+  }
   openSideBar = this.sidebarStore.isOpen;
   branchList = this.branchStore.branchList;
   branchNameFilter = signal('');
   page = signal(1);
-  readonly pageSize = 8;
-  filteredBranches = computed(() =>
-    this.branchList()
-      .filter((project) =>
-        project.name.toLowerCase().includes(this.branchNameFilter().trim().toLowerCase()),
-      )
-      .sort((a, b) => a.name.localeCompare(b.name)),
-  );
+  readonly pageSize = 12;
+  createdFrom = signal('');
+  createdTo = signal('');
+  projectOrder = signal<'newest' | 'oldest' | 'name'>('newest');
+  invalidDateRange = computed(() => !!this.createdFrom() && !!this.createdTo() && this.createdFrom() > this.createdTo());
+  filteredBranches = computed(() => {
+    if (this.invalidDateRange()) return [];
+    return this.branchList().filter((project) =>
+      project.name.toLowerCase().includes(this.branchNameFilter().trim().toLowerCase()) &&
+      (!this.createdFrom() || project.createdDate >= this.createdFrom()) &&
+      (!this.createdTo() || project.createdDate <= this.createdTo()),
+    ).sort((a, b) => {
+      if (this.projectOrder() === 'name') return a.name.localeCompare(b.name) || a.id - b.id;
+      const dateOrder = a.createdDate.localeCompare(b.createdDate) || a.id - b.id;
+      return this.projectOrder() === 'oldest' ? dateOrder : -dateOrder;
+    });
+  });
+  clearProjectFilters() {
+    this.branchNameFilter.set('');
+    this.createdFrom.set('');
+    this.createdTo.set('');
+    this.page.set(1);
+  }
   currentPage = computed(() =>
     Math.min(this.page(), Math.max(1, Math.ceil(this.filteredBranches().length / this.pageSize))),
   );
@@ -98,16 +159,15 @@ export class ClientBranchesPage implements OnInit {
       this.clientStore.loadClients();
     const id = this.clientId();
     if (id !== null)
-      this.clientStore.loadClientSummary(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+      this.clientStore.loadClientSummary(id).pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => this.recentClients.record(id));
     this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       this.activeTab.set(
         Math.max(
           0,
-          ['documents', 'hardware', 'projects'].indexOf(params.get('tab') ?? 'documents'),
+          ['documents', 'projects', 'hardware'].indexOf(params.get('tab') ?? 'documents'),
         ),
       );
-      const project = Number(params.get('project'));
-      this.documentProjectId.set(Number.isSafeInteger(project) && project > 0 ? project : null);
     });
   }
   changeTab(index: number) {
@@ -116,7 +176,7 @@ export class ClientBranchesPage implements OnInit {
     this.activeTab.set(index);
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { tab: ['documents', 'hardware', 'projects'][index], project: null },
+      queryParams: { tab: ['documents', 'projects', 'hardware'][index], project: null },
       queryParamsHandling: 'merge',
       replaceUrl: true,
     });
@@ -132,28 +192,8 @@ export class ClientBranchesPage implements OnInit {
       'hardware',
     ];
   }
-  updateDocumentProject(projectId: number | null) {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { project: projectId },
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
-  }
-  showProjectDocuments(project: BranchTableDto) {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { tab: 'documents', project: project.id },
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
-  }
-  openEditSidebar(project: BranchTableDto) {
-    this.branchStore.selectedBranch.set(project);
-    this.branchStore.formMode.set('edit');
-    this.openSideBar.set(true);
-  }
   openNewSidebar() {
+    this.clientEditing.set(false);
     this.branchStore.selectedBranch.set(null);
     this.branchStore.formMode.set('add');
     this.openSideBar.set(true);

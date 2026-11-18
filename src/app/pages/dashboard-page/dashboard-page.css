@@ -1,17 +1,84 @@
-thead tr th{
-  padding: 5px;
-  font-size: 16px;
+:host { display: block; height: 100%; color: var(--app-text); }
+.dashboard-page { overflow: hidden; }
+.page-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.eyebrow { font-size: 9px; font-weight: 650; letter-spacing: 1.6px; color: var(--app-muted); }
+h1 { color: var(--app-text); font-size: 27px; font-weight: 700; letter-spacing: -.7px; margin: 3px 0 4px; }
+.page-heading p { margin: 0; color: var(--app-muted); font-size: 12px; }
+.refresh-actions { display: flex; align-items: center; gap: 10px; }
+.refresh-actions > span { font-size: 10px; color: var(--app-muted); }
+.refresh-actions button { font-size: 11px; }
+.dashboard-scroll { padding-right: 4px; }
+.metric-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px; }
+.metric-card, .dashboard-panel { border: 1px solid var(--app-border); border-radius: 16px; background: white; }
+.metric-card { padding: 16px; min-width: 0; }
+.metric-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--app-muted); font-size: 11px; }
+.metric-label nz-icon { color: var(--app-icon); font-size: 16px; }
+.metric-card > strong { display: block; color: var(--app-text); font-size: 29px; line-height: 1.2; margin: 12px 0 5px; font-weight: 650; }
+.metric-card small { color: var(--app-muted); font-size: 10px; }
+.metric-card.primary { background: var(--app-accent); border-color: var(--app-accent); }
+.metric-card.primary > strong, .metric-card.primary .metric-label { color: white; }
+.metric-card.primary small, .metric-card.primary nz-icon { color: var(--app-on-accent-muted); }
+.metric-card.warning { background: #fff8f5; border-color: #f6ddd3; }
+.metric-card.warning > strong, .metric-card.warning nz-icon { color: #be5b43; }
+.dashboard-layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(290px, 1fr); grid-template-areas: "reports clients" "hardware clients"; grid-template-rows: auto 1fr; gap: 14px; align-items: start; }
+.reports-panel { grid-area: reports; }
+.clients-panel { grid-area: clients; }
+.hardware-panel { grid-area: hardware; }
+.dashboard-panel { padding: 17px; min-width: 0; }
+.section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 15px; }
+h2 { color: var(--app-text); font-size: 14px; font-weight: 650; margin: 0; }
+.section-heading p { color: var(--app-muted); font-size: 10px; margin: 5px 0 0; }
+.section-heading > a { flex-shrink: 0; font-size: 10px; padding-top: 1px; }
+.section-heading a nz-icon { margin-left: 4px; }
+.report-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--app-border); color: var(--app-text); }
+.report-row:last-child { border: 0; }
+.report-symbol { display: grid; place-items: center; width: 32px; height: 32px; flex-shrink: 0; border-radius: 9px; background: var(--app-accent-soft); color: var(--app-accent); }
+.report-details { min-width: 0; flex: 1; }
+.report-details strong { display: block; font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
+.report-details > span { display: block; color: var(--app-muted); font-size: 10px; margin-top: 5px; }
+.report-tags { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+.report-arrow { color: var(--app-accent); font-size: 12px; }
+.report-row:hover strong { color: var(--app-accent); }
+.empty-reports { padding: 16px 10px; text-align: center; }
+.empty-symbol { display: grid; place-items: center; width: 34px; height: 34px; margin: 0 auto 10px; border-radius: 13px; color: #338362; background: #edf8f2; font-size: 20px; }
+h3 { color: var(--app-text); font-size: 14px; font-weight: 600; margin: 0 0 8px; }
+.empty-reports p { color: var(--app-muted); font-size: 11px; max-width: 290px; margin: 0 auto; }
+.inventory-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+.client-shortcut { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--app-border); color: var(--app-text); }
+.client-shortcut:last-child { border: 0; }
+.client-logo { display: grid; grid-template: minmax(0, 1fr) / minmax(0, 1fr); place-items: center; width: 76px; height: 46px; flex-shrink: 0; border: 1px solid var(--app-border); border-radius: 9px; background: var(--app-surface-soft); color: var(--app-accent); font-size: 18px; font-weight: 600; overflow: hidden; }
+.client-logo img { box-sizing: border-box; width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+.client-shortcut > div { min-width: 0; flex: 1; }
+.client-shortcut strong { display: block; color: var(--app-text); font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
+.client-shortcut div span { display: block; color: var(--app-muted); font-size: 10px; margin-top: 4px; }
+.client-shortcut > nz-icon { color: var(--app-accent); font-size: 12px; }
+.client-shortcut:hover strong { color: var(--app-accent); }
+.empty-clients { text-align: center; padding: 22px 8px; color: var(--app-muted); font-size: 11px; }
+.empty-clients > nz-icon { font-size: 24px; color: var(--app-accent); }
+.dashboard-error { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px; margin-bottom: 14px; border: 1px solid #efd7ce; border-radius: 12px; background: #fff9f6; font-size: 12px; }
+.dashboard-error p { margin: 4px 0 0; font-size: 11px; }
+.loading-message { font-size: 11px; color: var(--app-muted); }
+a:focus-visible { outline: 2px solid var(--app-accent); outline-offset: 3px; border-radius: 6px; }
+@media (max-width: 1100px) { .dashboard-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "clients" "reports" "hardware"; grid-template-rows: auto; } .client-shortcuts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 20px; } }
+@media (max-width: 600px) {
+  .page-heading { align-items: flex-start; gap: 10px; margin-bottom: 14px; }
+  h1 { font-size: 23px; }
+  .page-heading p { font-size: 11px; max-width: 195px; }
+  .refresh-actions { margin-top: 14px; }
+  .refresh-actions > span { display: none; }
+  .refresh-actions button { padding: 0 10px; font-size: 10px; }
+  .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .metric-card { padding: 12px; border-radius: 12px; }
+  .metric-label { font-size: 10px; }
+  .metric-label nz-icon { font-size: 14px; }
+  .metric-card > strong { font-size: 25px; margin: 8px 0 4px; }
+  .metric-card small { font-size: 9px; }
+  .dashboard-panel { padding: 13px; border-radius: 13px; }
+  .section-heading > a { font-size: 9px; }
+  .client-shortcuts { grid-template-columns: minmax(0, 1fr); }
+  .report-row { flex-wrap: wrap; }
+  .report-details { flex-basis: calc(100% - 60px); }
+  .report-tags { padding-left: 42px; flex: 1; }
+  .dashboard-error { align-items: flex-start; flex-wrap: wrap; }
+  .dashboard-scroll { padding-right: 2px; }
 }
-td{
-  font-size: 14px;
-}
-.hwMetric nz-icon{
-  font-size: 20px;
-}
-.hwMetric span {
-  font-size: 20px;
-  margin: 0;
-  line-height: 1;
-}
-
-

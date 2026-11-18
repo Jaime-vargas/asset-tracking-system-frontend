@@ -1,205 +1,113 @@
-<div class="contentPage">
-  <app-breadcrumb-component [breadcrumb]="breadcrumb()"></app-breadcrumb-component>
-  <nz-divider></nz-divider>
-  <div class="contentBody">
+<div class="contentPage report-page">
+  <div class="contentBody report-scroll">
     @if (selectedReport(); as report) {
-      <div nz-row [nzGutter]="[10,10]">
-        <div nz-col nzSpan="24">
-          <!-- TITLE -->
-          <app-dashboard-box-component >
-            <div body nz-row>
-              <div nz-col nzSpan="16" nz-flex nzAlign="center" nzGap="middle">
-                <h3 nz-typography style="margin: 0">Report # {{report.id}}</h3>
-                <app-single-status-tags-component [status]="report.status" ></app-single-status-tags-component>
-              </div>
-              <div nz-col nzSpan="8" nz-flex nzGap="small" nzJustify="flex-end">
-                @if (report.status != 'CLOSED'){
-                  <button nz-button class="form-btn" nzType="primary" (click)="openEditForm()">Edit Report</button>
-                  <button nz-button class="form-btn"
-                          nzType="primary"
-                          [nzLoading]="closeButtonLoading()"
-                          nz-popconfirm
-                          nzPopconfirmTitle="Are you shure you want to close this report?"
-                          nzPopconfirmPlacement="bottomRight"
-                          (nzOnConfirm)="closeReport()"
-                          nzDanger>Close Report</button>
-                }
-              </div>
+      <header class="report-header">
+        <a class="report-back" routerLink="/reports"><nz-icon nzType="arrow-left" aria-hidden="true" /> All reports</a>
+        <div class="report-heading">
+          <div>
+            <div class="report-badges">
+              <span class="report-number">Report #{{ report.id }}</span>
+              <app-single-status-tags-component [status]="report.status" />
+              <app-priority-tags-component [priority]="report.priority" />
             </div>
-            <div body nz-row>
-              <div nz-col nzSpan="24" nz-flex nzGap="middle" nzAlign="center">
-                <h2 nz-typography style="margin: 0">{{report.title}}</h2>
-                <app-priority-tags-component [priority]="report.priority"></app-priority-tags-component>
-              </div>
-            </div>
-          </app-dashboard-box-component>
-        </div>
-
-        <div nz-col nzSpan="16" >
-          <div nz-row [nzGutter]="[10,10]" style="height: 100%">
-            <div nz-col nzSpan="24">
-              <!-- REPORT DESCRIPTION -->
-              <app-dashboard-box-component [boxTitle]="'Report Description'" [flex]="true">
-                <div body>
-                  <p nz-typography style="font-size: 1.2rem; white-space: pre-wrap">{{report.reportDetails ?? "no details"}}</p>
-                </div>
-              </app-dashboard-box-component>
-            </div>
-
-            <!-- CAROUSEL -->
-            <div nz-col nzSpan="24" >
-              <app-dashboard-box-component  [flex]="true" >
-                <div body>
-                  <div nz-row [nzGutter]="[10,10]">
-                    @if (reportPhotos().length > 0){
-                      <div nz-col nzSpan="24">
-                        <app-carousel-component
-                          [images]="reportPhotos()"
-                          [showDeleteButton]="report.status != 'CLOSED'"
-                          (deleteEvent)="deletePhoto($event)"
-                        ></app-carousel-component>
-                      <!-- TODO: Make event delete the real photo -->
-                      </div>
-                    } @else {
-                      <div nz-col nzSpan="24">
-                        <nz-empty nzNotFoundImage="simple"></nz-empty>
-                      </div>
-                    }
-                    <div nz-col nzSpan="24">
-                      <div nz-flex nzJustify="space-between" nzAlign="center">
-                        <h5 nz-typography nzType="secondary" style="margin: 0">Photos: {{reportPhotos().length}}</h5>
-                        @if (report.status != 'CLOSED'){
-                          <app-upload-button-component
-                            [acceptedFiles]="'image/*'"
-                            [uploadUrl]="uploadUrl()"
-                            [multipleFiles]="true"
-                            (uploadSuccess)="uploadSuccessPhoto()">
-                            <div body>
-                              <button nz-button class="form-btn">
-                                Upload image
-                                <nz-icon nzType="upload" />
-                              </button>
-                            </div>
-                          </app-upload-button-component>
-                        }
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </app-dashboard-box-component>
-            </div>
-
+            <h1>{{ report.title }}</h1>
           </div>
-        </div>
-
-        <!-- OTHER REPORT DETAILS -->
-        <div nz-col nzSpan="8" >
-          <app-dashboard-box-component [boxTitle]="'Report Details'" [flex]="true">
-            <div body>
-              @for (item of reportDetailsView(); track item.label){
-                <div nz-row>
-                  <nz-col nzSpan="6">
-                    <span>{{item.label}}: </span>
-                  </nz-col>
-                  <nz-col nzSpan="18">
-                    @switch (item.type){
-                      @case ('priority'){
-                        <app-priority-tags-component [priority]="item.value">
-                        </app-priority-tags-component>
-                      }
-                      @case ('status'){
-                        <app-single-status-tags-component [status]="report.status"
-                        >
-                        </app-single-status-tags-component>
-                      }
-                      @default {
-                        <strong>{{item.value}}</strong>
-                      }
-                    }
-                  </nz-col>
-                  <nz-divider nzSize="small"></nz-divider>
-                </div>
-              }
+          @if (report.status !== 'CLOSED') {
+            <div class="report-actions">
+              <button class="native-button primary" type="button" (click)="openEditForm()"><nz-icon nzType="edit" /> Edit report</button>
+              <button class="native-button close-action" type="button" [disabled]="closeButtonLoading()" nz-popconfirm
+                nzPopconfirmTitle="Close this report?" nzPopconfirmPlacement="bottomRight"
+                (nzOnConfirm)="closeReport()"><nz-icon nzType="check" aria-hidden="true" /> {{ closeButtonLoading() ? 'Closing…' : 'Close report' }}</button>
             </div>
-          </app-dashboard-box-component>
+          }
         </div>
+      </header>
 
-        <!-- COMMENTS SECTION -->
-        <div nz-col nzSpan="24">
-          <app-dashboard-box-component [boxTitle]="'Comments'">
-            <div body>
-              <div nz-row>
-                @if (report.comments.length > 0){
-                  @for (comment of report.comments; track comment.id){
-                    <div nz-col nzSpan="1" nz-flex nzJustify="center">
-                      <nz-avatar [nzSize]="35" nzIcon="user" />
-                    </div>
-                    <div nz-col nzSpan="23" nz-flex nzGap="small" nzVertical>
-                      <div nz-flex nzGap="small" nzAlign="center">
-                        <span><strong>{{comment.username}}</strong></span>
-                        <span>{{comment.createdAt | date }}</span>
-                      </div>
-                      <div>
-                        <p nz-typography style="white-space: pre-wrap">{{comment.text}}</p>
-                      </div>
-                    </div>
-                    <nz-divider nzSize="small"></nz-divider>
-                  }
-                } @else {
-                  <div nz-col nzSpan="24">
-                    <div nz-flex nzVertical nzAlign="center">
-                      <nz-icon nzType="info-circle" nzTheme="outline" />
-                      <span>No comments</span>
-                      <nz-divider nzSize="small"></nz-divider>
-                    </div>
-                  </div>
-                }
-              </div>
-            </div>
-            @if (report.status != 'CLOSED'){
-              <div footer nz-flex nzGap="middle" nzAlign="center" >
-                <form nz-form [formGroup]="commentForm" (ngSubmit)="submitComment()" nzLayout="inline" nzSize="large" style="display: flex; flex: 1; gap: 12px; align-items: flex-start;">
-                  <nz-form-item style="flex: 1; margin-bottom: 0;">
-                    <nz-form-control nzHasFeedback nzErrorTip="Comment cannot be empty">
-                      <textarea nz-input formControlName="text" placeholder="Write a comment" cdkTextareaAutosize maxlength="250"></textarea>
-                    </nz-form-control>
-                  </nz-form-item>
-                  <button nz-button
-                          class="form-btn"
-                          nzType="primary"
-                          type="submit"
-                          [disabled]="commentForm.invalid"
-                          [nzLoading]="commentButtonLoading()">Send</button>
-                </form>
+      <div class="report-layout">
+        <section class="report-panel description-panel" aria-labelledby="description-heading">
+          <h2 id="description-heading">Description</h2>
+          <p class="body-text">{{ report.reportDetails || 'No description provided.' }}</p>
+        </section>
+
+        <section class="report-panel details-panel" aria-labelledby="details-heading">
+          <h2 id="details-heading">Report details</h2>
+          <dl class="report-details">
+            <div><dt>Equipment</dt><dd><a [routerLink]="['/hardware', report.hardwareId]">{{ report.hardwareName }}</a></dd></div>
+            @for (item of reportDetailsView(); track item.label) {
+              <div><dt>{{ item.label }}</dt><dd>{{ item.value }}</dd></div>
+            }
+          </dl>
+        </section>
+
+        <section class="report-panel photos-panel" aria-labelledby="photos-heading">
+          <div class="panel-heading">
+            <div><h2 id="photos-heading">Evidence photos</h2><p>{{ reportPhotos().length }} {{ reportPhotos().length === 1 ? 'photo' : 'photos' }}</p></div>
+            @if (report.status !== 'CLOSED') {
+              <div class="report-actions">
+                <app-upload-button-component [acceptedFiles]="'image/*'" [uploadUrl]="uploadUrl()" [multipleFiles]="true"
+                  (uploadSuccess)="uploadSuccessPhoto()">
+                  <div body><button class="native-button" type="button"><nz-icon nzType="upload" /> Upload images</button></div>
+                </app-upload-button-component>
+                <input #cameraInput type="file" accept="image/*" capture="environment" hidden
+                  (change)="uploadCapturedPhoto(cameraInput)" />
+                <button class="native-button camera-action" type="button" [disabled]="capturedPhotoUploading()"
+                  (click)="cameraInput.click()"><nz-icon nzType="camera" aria-hidden="true" />
+                  {{ capturedPhotoUploading() ? 'Uploading…' : 'Take photo' }}
+                </button>
               </div>
             }
-          </app-dashboard-box-component>
-        </div>
+          </div>
+          @if (captureError()) { <p class="capture-error" role="alert">{{ captureError() }}</p> }
+          @if (reportPhotos().length) {
+            <app-carousel-component [images]="reportPhotos()" [showDeleteButton]="report.status !== 'CLOSED'"
+              (deleteEvent)="deletePhoto($event)" />
+          } @else {
+            <p class="panel-empty">No evidence photos attached.</p>
+          }
+        </section>
 
+        <section class="report-panel comments-panel" aria-labelledby="comments-heading">
+          <div class="panel-heading">
+            <div><h2 id="comments-heading">Comments</h2><p>{{ report.comments.length }} {{ report.comments.length === 1 ? 'comment' : 'comments' }}</p></div>
+          </div>
+          @if (report.comments.length) {
+            <ol class="comments">
+              @for (comment of report.comments; track comment.id) {
+                <li>
+                  <span class="comment-avatar" aria-hidden="true">{{ comment.username.charAt(0).toUpperCase() }}</span>
+                  <div>
+                    <div class="comment-meta"><strong>{{ comment.username }}</strong><time [attr.datetime]="comment.createdAt">{{ comment.createdAt | date:'medium' }}</time></div>
+                    <p class="body-text">{{ comment.text }}</p>
+                  </div>
+                </li>
+              }
+            </ol>
+          } @else {
+            <p class="panel-empty">No comments yet.</p>
+          }
+          @if (report.status !== 'CLOSED') {
+            <form class="comment-form" [formGroup]="commentForm" (ngSubmit)="submitComment()">
+              <label for="report-comment">Write a comment</label>
+              <textarea id="report-comment" formControlName="text" rows="2" maxlength="250"></textarea>
+              <button nz-button nzType="primary" type="submit" [disabled]="commentForm.invalid || commentButtonLoading()"
+                [nzLoading]="commentButtonLoading()">Send</button>
+            </form>
+          }
+        </section>
       </div>
+    } @else if (loadError()) {
+      <section class="report-panel" role="alert">
+        <h1>Report could not be loaded</h1>
+        <div class="report-actions"><a routerLink="/reports">Back to reports</a><button nz-button type="button" (click)="loadReport()">Try again</button></div>
+      </section>
+    } @else {
+      <div class="report-panel" role="status">Loading report…</div>
     }
   </div>
 </div>
 
-<!-- SIDEBAR COMPONENT -->
-@if(openSideBar()){
-  <app-edit-side-bar>
-    <div body>
-      <app-report-form></app-report-form>
-    </div>
+@if (openSideBar()) {
+  <app-edit-side-bar width="min(600px, 100vw)">
+    <div body><app-report-form /></div>
   </app-edit-side-bar>
 }
-<!-- /SIDEBAR COMPONENT -->
-
-<ng-template #errorTpl let-errors="data">
-
-  <div style="font-size: 1rem; margin-bottom: 8px;">
-    <nz-icon nzType="close-circle" nzTheme="outline" style="color: #e94748; font-size: 1.5rem; padding-right: 20px" /> Error uploading some files
-  </div>
-  <ul style="margin:0; padding: 0 50px;">
-    @for (err of errors; track $index) {
-      <li>{{ err }}</li>
-    }
-  </ul>
-
-</ng-template>

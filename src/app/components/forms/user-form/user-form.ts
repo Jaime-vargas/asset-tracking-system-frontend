@@ -10,7 +10,6 @@ import {
 import {UsersStore} from '../../../store/users.store';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
-import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
 import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
@@ -27,7 +26,6 @@ import {UserEntityRequestDto} from '../../../interfaces/users/user-entity-reques
     FormsModule,
     NzButtonComponent,
     NzColDirective,
-    NzDividerComponent,
     NzFlexDirective,
     NzFormControlComponent,
     NzFormDirective,

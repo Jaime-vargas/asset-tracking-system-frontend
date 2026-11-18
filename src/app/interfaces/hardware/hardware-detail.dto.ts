@@ -6,7 +6,7 @@ export interface HardwareDetailDto {
   tagId: number;
   tagName: string;
   id: number;
-  type: 'Camera' | 'Server';
+  type: 'Camera' | 'Server' | 'Computer';
   brand: string;  // NEW
   model: string;
   serialNumber: string;

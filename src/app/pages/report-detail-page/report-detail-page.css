@@ -1,0 +1,60 @@
+.report-scroll { display: grid; align-content: start; gap: 12px; }
+.report-header, .report-panel {
+  min-width: 0;
+  padding: 16px 18px;
+  border: 1px solid var(--app-border);
+  border-radius: 16px;
+  background: white;
+}
+.report-badges, .report-actions, .comment-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.report-back { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 10px; font-size: 11px; }
+.close-action { background: var(--app-canvas); }
+.camera-action { display: none; }
+.capture-error { margin: 0 0 10px; color: #a23946; }
+@media (max-width: 760px), (any-pointer: coarse) {
+  .camera-action { display: inline-flex; }
+}
+.report-heading, .panel-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.report-heading > div:first-child { min-width: 0; }
+.report-heading h1 { margin: 6px 0 0; font-size: clamp(20px, 3vw, 28px); line-height: 1.25; overflow-wrap: anywhere; }
+.report-number { color: var(--app-muted); font-size: 11px; font-weight: 650; }
+.report-actions { flex-shrink: 0; }
+.report-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(240px, 1fr);
+  grid-template-areas: "description details" "photos details" "comments details";
+  gap: 12px;
+  align-items: start;
+}
+.description-panel { grid-area: description; }
+.details-panel { grid-area: details; }
+.photos-panel { grid-area: photos; }
+.comments-panel { grid-area: comments; }
+.report-panel h2 { margin: 0 0 8px; font-size: 15px; font-weight: 700; }
+.panel-heading { margin-bottom: 12px; flex-wrap: wrap; }
+.panel-heading h2 { margin: 0; }
+.panel-heading p { color: var(--app-muted); margin: 3px 0 0; font-size: 11px; }
+.body-text { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.report-details { display: grid; gap: 8px 14px; margin: 0; }
+.report-details dt, .comment-meta time { color: var(--app-muted); font-size: 11px; }
+.report-details dd { margin: 2px 0 0; font-weight: 600; overflow-wrap: anywhere; }
+.panel-empty { margin: 0; padding: 12px; border-radius: 9px; background: var(--app-canvas); color: var(--app-muted); }
+.comments { list-style: none; margin: 0; padding: 0; }
+.comments li { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--app-border); }
+.comment-avatar { display: grid; place-items: center; height: 30px; border-radius: 9px; background: var(--app-accent-soft); color: var(--app-accent); }
+.comment-meta { margin-bottom: 4px; overflow-wrap: anywhere; }
+.comment-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 6px 8px; margin-top: 12px; }
+.comment-form label { grid-column: 1 / -1; font-size: 12px; color: var(--app-muted); }
+.comment-form textarea { width: 100%; resize: vertical; border: 1px solid var(--app-border); border-radius: 9px; padding: 7px 9px; background: var(--app-canvas); color: inherit; }
+.comment-form textarea:focus-visible { outline: 2px solid var(--app-accent); outline-offset: 1px; }
+@media (max-width: 760px) {
+  .report-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "description" "details" "photos" "comments"; }
+  .report-heading { flex-wrap: wrap; }
+  .report-details { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .report-header, .report-panel { padding: 12px; }
+}

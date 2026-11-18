@@ -2,7 +2,6 @@ import {Component, computed, inject, OnInit, output, signal} from '@angular/core
 import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
-import {NzDividerComponent} from 'ng-zorro-antd/divider';
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
 import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
@@ -16,7 +15,6 @@ import {UsersStore} from '../../../../store/users.store';
     FormsModule,
     NzButtonComponent,
     NzColDirective,
-    NzDividerComponent,
     NzFlexDirective,
     NzFormControlComponent,
     NzFormDirective,

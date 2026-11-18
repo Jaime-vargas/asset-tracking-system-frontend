@@ -1,0 +1,49 @@
+<section aria-labelledby="project-reports-heading">
+  <div class="report-heading">
+    <div>
+      <h2 id="project-reports-heading">Reportes relacionados</h2>
+      <p>Reports from this client linked to the project.</p>
+    </div>
+    <button nz-button nzType="primary" type="button" [disabled]="loading() || loadError()" (click)="openEditor()">Relate reports</button>
+  </div>
+  @if (loading()) {
+    <p class="report-message" role="status">Loading reports…</p>
+  } @else if (loadError()) {
+    <p class="report-message" role="alert">Related reports could not be loaded.</p>
+    <button nz-button type="button" (click)="loadReports(projectId())">Try again</button>
+  } @else {
+    <ul class="report-list">
+      @for (report of reports(); track report.id) {
+        <li>
+          <a [routerLink]="['/reports', report.id]" class="report-link">
+            <span class="report-info"><strong>{{ report.title }}</strong><small>#{{ report.id }} · {{ report.hardwareName }} · {{ report.tagName }}</small></span>
+            <span class="report-tags">
+              <app-single-status-tags-component [status]="report.status" />
+              <app-priority-tags-component [priority]="report.priority" />
+            </span>
+          </a>
+        </li>
+      } @empty {
+        <li class="report-message">No related reports yet.</li>
+      }
+    </ul>
+  }
+</section>
+
+<nz-modal nzTitle="Related reports" [nzVisible]="editorOpen()" [nzWidth]="540" [nzMaskClosable]="false"
+  [nzClosable]="!saving()" [nzKeyboard]="!saving()" [nzCancelDisabled]="saving()" [nzOkLoading]="saving()"
+  [nzOkDisabled]="loadingCandidates() || candidatesError()" nzOkText="Save changes"
+  (nzOnOk)="save()" (nzOnCancel)="!saving() && editorOpen.set(false)">
+  <ng-container *nzModalContent>
+    <p>Select reports from any site of this client. Removing a selection unlinks the report from this project.</p>
+    @if (candidatesError()) {
+      <p role="alert">Client reports could not be loaded.</p>
+      <button nz-button type="button" (click)="loadCandidates()">Try again</button>
+    } @else {
+      <app-multi-select-done label="Select client reports" [options]="reportOptions()"
+        [loading]="loadingCandidates()" [disabled]="loadingCandidates() || saving()"
+        [value]="selectedIds()" (valueChange)="selectedIds.set($event)" />
+    }
+    @if (saveError()) { <p class="report-error" role="alert">{{ saveError() }}</p> }
+  </ng-container>
+</nz-modal>

@@ -1,0 +1,100 @@
+<nz-modal [nzVisible]="true" [nzWidth]="680" [nzFooter]="null" [nzMaskClosable]="false"
+  [nzClosable]="!saving()" [nzKeyboard]="!saving()"
+  [nzTitle]="computerId() === null ? 'New computer' : 'Edit computer'" (nzOnCancel)="!saving() && closed.emit()">
+  <ng-container *nzModalContent>
+    @if (loading()) {
+      <p role="status">Loading computer form…</p>
+    } @else if (loadError()) {
+      <p role="alert">Computer data or sites could not be loaded.</p>
+      <button nz-button type="button" (click)="load()">Try again</button>
+    } @else {
+      <form #form="ngForm" (ngSubmit)="save(form)">
+        <fieldset [disabled]="saving()">
+          <legend>Identification</legend>
+          <div class="fields">
+            <label>Name <input name="name" [(ngModel)]="model.name" required maxlength="255" /></label>
+            <label>Type <select name="computerType" [(ngModel)]="model.computerType" required>
+              <option value="DESKTOP">Desktop</option><option value="SERVER">Server</option>
+            </select></label>
+            <label>Site <select name="tagId" [(ngModel)]="model.tagId" required>
+              <option [ngValue]="null" disabled>Select a site</option>
+              @for (site of sites(); track site.id) { <option [ngValue]="site.id">{{ site.name }}</option> }
+            </select></label>
+            <label>Location <input name="location" [(ngModel)]="model.location" maxlength="255" /></label>
+            <label>Brand <input name="brand" [(ngModel)]="model.brand" required maxlength="255" /></label>
+            <label>Model <input name="model" [(ngModel)]="model.model" required maxlength="255" /></label>
+            <label>Serial number <input name="serialNumber" [(ngModel)]="model.serialNumber" required maxlength="255" /></label>
+            <label>Hostname <input name="hostname" [(ngModel)]="model.hostname" maxlength="255" /></label>
+          </div>
+          @if (!sites().length) { <p>Create a site in Client settings before registering equipment.</p> }
+        </fieldset>
+        <fieldset [disabled]="saving()">
+          <legend>Specifications</legend>
+          <div class="fields">
+            <label>Operating system <input name="operatingSystem" [(ngModel)]="model.operatingSystem" maxlength="255" /></label>
+            <label>Processor <input name="processor" [(ngModel)]="model.processor" maxlength="255" /></label>
+            <label>RAM (GB) <input type="number" name="ramGb" [(ngModel)]="model.ramGb" min="1" step="1" /></label>
+            <label>NTP server <input name="ntpServer" [(ngModel)]="model.ntpServer" maxlength="255" /></label>
+          </div>
+        </fieldset>
+        <fieldset [disabled]="saving()">
+          <legend>Storage</legend>
+          @for (disk of model.storage; track disk; let i = $index) {
+            <div class="entry">
+              <div class="fields">
+                <label>Storage type <select [name]="'storageType' + i" [(ngModel)]="disk.storageType">
+                  <option value="SSD">SSD (SATA)</option><option value="HDD">HDD</option><option value="NVME">SSD (NVMe)</option>
+                </select></label>
+                <label>RAID <select [name]="'raidLevel' + i" [ngModel]="disk.raidLevel" (ngModelChange)="setRaid(disk, $event)">
+                  <option [ngValue]="null">Single disk</option>
+                  @for (level of raidOptions; track level.value) { <option [ngValue]="level.value">{{ level.value.replace('_', ' ') }}</option> }
+                </select></label>
+                @if (disk.raidLevel) {
+                  <label>Disk count <input type="number" [name]="'diskCount' + i" [(ngModel)]="disk.diskCount" min="2" step="1" required /></label>
+                }
+                <label>Capacity per disk (GB) <input type="number" [name]="'diskCapacity' + i" [(ngModel)]="disk.diskCapacityGb" min="1" step="1" required /></label>
+              </div>
+              <button nz-button nzType="text" type="button" (click)="model.storage.splice(i, 1)">Remove storage {{ i + 1 }}</button>
+            </div>
+          }
+          <button nz-button type="button" (click)="addStorage()">+ Add storage</button>
+        </fieldset>
+        <fieldset [disabled]="saving()">
+          <legend>Network interfaces</legend>
+          @for (network of model.networkInterfaces; track network; let i = $index) {
+            <div class="entry">
+              <div class="fields">
+                <label>Interface name <input [name]="'interface' + i" [(ngModel)]="network.name" maxlength="255" /></label>
+                <label>MAC address <input [name]="'mac' + i" [(ngModel)]="network.macAddress" placeholder="02:00:00:00:00:80" required maxlength="64" /></label>
+                <label>IP address <input [name]="'ip' + i" [(ngModel)]="network.ipAddress" maxlength="45" /></label>
+                <label>Subnet prefix <input type="number" [name]="'prefix' + i" [(ngModel)]="network.subnetPrefix" min="0" max="128" step="1" placeholder="24 for 255.255.255.0" /></label>
+                <label>Gateway <input [name]="'gateway' + i" [(ngModel)]="network.gateway" maxlength="45" /></label>
+              </div>
+              <button nz-button nzType="text" type="button" (click)="model.networkInterfaces.splice(i, 1)">Remove interface {{ i + 1 }}</button>
+            </div>
+          }
+          <button nz-button type="button" (click)="addInterface()">+ Add interface</button>
+        </fieldset>
+        <fieldset [disabled]="saving()">
+          <legend>Credentials</legend>
+          @for (credential of model.credentials; track credential; let i = $index) {
+            <div class="entry">
+              <div class="fields">
+                <label>Label <input [name]="'label' + i" [(ngModel)]="credential.label" placeholder="Windows or Genetec" required maxlength="255" /></label>
+                <label>Username <input [name]="'username' + i" [(ngModel)]="credential.username" autocomplete="off" maxlength="255" /></label>
+                <label>Password <input type="password" [name]="'password' + i" [(ngModel)]="credential.password" autocomplete="new-password" maxlength="255" /></label>
+              </div>
+              <button nz-button nzType="text" type="button" (click)="model.credentials.splice(i, 1)">Remove credential {{ i + 1 }}</button>
+            </div>
+          }
+          <button nz-button type="button" (click)="addCredential()">+ Add credential</button>
+        </fieldset>
+        @if (saveError()) { <p role="alert" class="error">{{ saveError() }}</p> }
+        <div class="actions">
+          <button nz-button type="button" [disabled]="saving()" (click)="closed.emit()">Cancel</button>
+          <button nz-button nzType="primary" type="submit" [nzLoading]="saving()" [disabled]="form.invalid || saving()">Save computer</button>
+        </div>
+      </form>
+    }
+  </ng-container>
+</nz-modal>

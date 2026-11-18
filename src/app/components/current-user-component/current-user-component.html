@@ -1,41 +1,39 @@
 @if (authService.token()) {
-  <div
+  <button
+    type="button"
+    aria-label="Account options"
+    [attr.aria-expanded]="menuOpen()"
     nz-flex
     nzGap="small"
     nzAlign="center"
     nz-popover
     [nzPopoverContent]="userMenu"
-    [nzPopoverPlacement]="'leftTop'"
+    nzPopoverPlacement="bottomRight"
     nzPopoverTrigger="click"
-    nzPopoverTitle="User Data"
+    [nzPopoverVisible]="menuOpen()"
+    (nzPopoverVisibleChange)="menuOpen.set($event)"
     class="user-trigger"
   >
     <span class="user-avatar" aria-hidden="true">{{ userData()?.fullName?.charAt(0) }}</span
     ><span class="user-name">{{ userData()?.fullName }}</span>
-  </div>
+  </button>
 }
 <!-- Drop down - Current User -->
 <ng-template #userMenu>
-  <div nz-menu nz-flex nzVertical>
-    <div style="height: 25px">
-      <span>username: </span>
-      <span
-        ><strong>{{ userData()?.username }}</strong></span
-      >
+  <section class="account-panel" aria-label="Account" (keydown.escape)="menuOpen.set(false)">
+    <div class="account-header">
+      <span class="user-avatar account-avatar" aria-hidden="true">{{ userData()?.fullName?.charAt(0) }}</span>
+      <div class="account-identity">
+        <strong>{{ userData()?.fullName }}</strong>
+        <span>{{ userData()?.username }}</span>
+      </div>
     </div>
-    <div style="height: 25px">
-      <span>role: </span>
-      <span
-        ><strong>{{ userData()?.role }}</strong></span
-      >
+    <span class="account-role">{{ userData()?.role }}</span>
+    <div class="account-actions">
+      <button type="button" (click)="changePassword()">Change password</button>
+      <button type="button" class="logout" (click)="logout()">Log out</button>
     </div>
-    <div nz-flex nzVertical nzGap="small">
-      <button nz-button class="form-btn" (click)="changePassword()">Change password</button>
-      <button nz-button class="form-btn" (click)="logout()" nzDanger nzType="primary">
-        Log Out
-      </button>
-    </div>
-  </div>
+  </section>
 </ng-template>
 <!-- PASSWORD CHANGE MODAL -->
 <ng-template #changePasswordModal>

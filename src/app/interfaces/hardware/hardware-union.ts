@@ -1,4 +1,6 @@
 import {CameraDetailDto} from '../camera-detail.dto';
 import {ServerDetailDto} from '../server-detail.dto';
 
-export type HardwareUnion = CameraDetailDto | ServerDetailDto;
+import { ComputerDetailDto } from './computer.dto';
+
+export type HardwareUnion = CameraDetailDto | ServerDetailDto | ComputerDetailDto;

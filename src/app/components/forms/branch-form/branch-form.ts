@@ -1,4 +1,7 @@
-import {Component, computed, inject, OnInit} from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { finalize } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {Component, computed, DestroyRef, inject, OnInit, signal} from '@angular/core';
 import {SidebarStore} from '../../../store/sidebar.store';
 import {BranchStore} from '../../../store/branch.store';
 import {BranchTableDto} from '../../../interfaces/branch-table.dto';
@@ -13,6 +16,7 @@ import {NzInputDirective} from 'ng-zorro-antd/input';
 @Component({
   selector: 'app-branch-form',
   imports: [
+    DatePipe,
     NzButtonComponent,
     NzDividerComponent,
     NzFlexDirective,
@@ -29,6 +33,8 @@ import {NzInputDirective} from 'ng-zorro-antd/input';
 })
 export class BranchForm implements OnInit {
 
+  private destroyRef = inject(DestroyRef);
+  saving = signal(false);
   private branchStore = inject(BranchStore);
   private formBuilder = inject(FormBuilder);
   private sidebarStore = inject(SidebarStore);
@@ -49,7 +55,7 @@ export class BranchForm implements OnInit {
   }
 
   // Form
-  protected branchForm = this.formBuilder.group({
+  protected branchForm = this.formBuilder.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(25)]],
   })
 
@@ -60,33 +66,27 @@ export class BranchForm implements OnInit {
   }
 
   submitForm() {
-    if (this.branchForm.invalid) return;
-    const branch = this.branchForm.getRawValue(); /* FIX-create BranchRequestDTO */
-    switch (this.formMode()) {
-      case 'add':
-        this.addRequest(branch);
-        break;
-      case 'edit':
-        this.editRequest(branch);
-        break;
-    }
-  }
-
-  addRequest(branch: any){
+    if (this.branchForm.invalid || this.saving()) return;
+    const name = this.branchForm.controls.name.value.trim();
+    if (name.length < 3) return;
     const clientId = this.currentClientId();
-    if (clientId === null) return;
-    this.branchStore.addBranch(clientId, branch);
-    this.onClose()
-  }
-
-  editRequest(branch: any){
-    const selectedBranch = this.selectedBranch();
-    if (selectedBranch === null) return;
-    this.branchStore.editBranch(selectedBranch.id, branch);
-    this.onClose()
+    const project = this.selectedBranch();
+    if (this.formMode() === 'add' ? clientId === null : project === null) return;
+    const request = this.formMode() === 'add'
+      ? this.branchStore.addBranch(clientId!, { name })
+      : this.branchStore.editBranch(project!.id, { name });
+    this.saving.set(true);
+    request.pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.saving.set(false)),
+    ).subscribe(() => {
+      this.saving.set(false);
+      this.onClose();
+    });
   }
 
   onClose() {
+    if (this.saving()) return;
     this.branchForm.reset();
     this.selectedBranch.set(null);
     this.sidebarStore.isOpen.set(false);

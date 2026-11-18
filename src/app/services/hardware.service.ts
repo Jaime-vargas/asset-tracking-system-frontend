@@ -1,3 +1,4 @@
+import { ImportTemplate } from '../interfaces/importResponse.type';
 import {inject, Injectable} from '@angular/core';
 import {ApiUrlBaseService} from './api-url-base.service';
 import {Observable} from 'rxjs';
@@ -8,6 +9,7 @@ import {CameraResponseDto} from '../interfaces/hardware/camera/camera-response.d
 import {CameraRequestDto} from '../interfaces/hardware/camera/camera-request.dto';
 import {ClientDto} from '../interfaces/client/client.dto';
 import {CameraDetailDto} from '../interfaces/camera-detail.dto';
+import { ComputerDetailDto, ComputerRequestDto } from '../interfaces/hardware/computer.dto';
 import {HttpResponse} from '@angular/common/http';
 
 @Injectable({providedIn: 'root'})
@@ -32,12 +34,28 @@ export class HardwareService{
     return this.api.get(`branches/${branchId}/hardware`);
   }
 
+  updateRelatedHardware(projectId: number, hardwareIds: number[]): Observable<HardwareTableDto[]> {
+    return this.api.put(`projects/${projectId}/hardware`, { hardwareIds });
+  }
+
   getHardwareDetail(hardwareID: number): Observable<HardwareUnion> {
     return this.api.get(`hardware/${hardwareID}`);
   }
 
   getHardwareReports(hardwareID: number): Observable<ReportTableDto[]>{
     return this.api.get(`hardware/${hardwareID}/reports`);
+  }
+
+  createComputer(clientId: number, computer: ComputerRequestDto): Observable<ComputerDetailDto> {
+    return this.api.post(`clients/${clientId}/hardware/computer`, computer);
+  }
+
+  getComputer(id: number): Observable<ComputerDetailDto> {
+    return this.api.get(`hardware/${id}/computer`);
+  }
+
+  updateComputer(id: number, computer: ComputerRequestDto): Observable<ComputerDetailDto> {
+    return this.api.put(`hardware/${id}/computer`, computer);
   }
 
   // Camera endpoints
@@ -61,6 +79,20 @@ export class HardwareService{
 
   getUploadCameraPhotoUrl(hardwareId: number, photoType: string){
     return `${this.api.baseUrl}/hardware/${hardwareId}/camera/photos?photoType=${photoType}`
+  }
+
+  exportClientHardware(clientId: number, format: string, tagId: number | null): Observable<HttpResponse<Blob>> {
+    return this.api.getMultipartXLS(`clients/${clientId}/hardware/export/${format}${tagId === null ? '' : '?tagId=' + tagId}`);
+  }
+
+  getClientImportTemplate(clientId: number): Observable<HttpResponse<Blob>> {
+    return this.api.getMultipartXLS(`clients/${clientId}/hardware/import-template`);
+  }
+
+  importClientCameras(clientId: number, tagId: number, file: File): Observable<ImportTemplate> {
+    const body = new FormData();
+    body.append('file', file);
+    return this.api.post(`clients/${clientId}/hardware/import-cameras?tagId=${tagId}`, body);
   }
 
   // Generation of PDF documents

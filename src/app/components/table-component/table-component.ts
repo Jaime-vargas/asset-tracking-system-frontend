@@ -13,12 +13,12 @@ import {ApiUrlBaseService} from '../../services/api-url-base.service';
 import {NzImageDirective} from 'ng-zorro-antd/image';
 import {UtilityService} from '../../services/utility.service';
 import {NgOptimizedImage} from '@angular/common';
-import {NzTagModule} from 'ng-zorro-antd/tag';
+import { UiTag } from '../ui-tag/ui-tag';
 
 @Component({
   selector: 'app-table-component',
   imports: [
-    NzTagModule,
+    UiTag,
     NzTableComponent,
     ReportCountTagsComponent,
     NzIconDirective,

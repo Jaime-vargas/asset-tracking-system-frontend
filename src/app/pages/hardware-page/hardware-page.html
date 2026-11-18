@@ -1,77 +1,28 @@
-<div class="contentPage">
-  <h2 nz-typography>All Hardware</h2>
-  <nz-divider></nz-divider>
-  <div class="contentBody">
-    <div nz-row [nzGutter]="[10,10]">
-      <div nz-col nzSpan="24">
-        <app-dashboard-box-component>
-          <div body nz-row [nzGutter]="[5,5]">
-            <div nz-col nzFlex="1 0 100px">
-              <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select a client" [ngModel]="clientFilter()" (ngModelChange)="clientFilter.set($event); branchFilter.set('')">
-                @for (client of clientList(); track $index){
-                  <nz-option [nzLabel]="client" [nzValue]="client" />
-                }
-              </nz-select>
-            </div>
-            <div nz-col nzFlex="1 0 100px">
-              <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select a site" [ngModel]="branchFilter()" (ngModelChange)="branchFilter.set($event)" >
-                @for (branch of branchList(); track $index){
-                  <nz-option [nzLabel]="branch" [nzValue]="branch" />
-                }
-              </nz-select>
-            </div>
-            <div nz-col nzFlex="1 0 auto">
-              <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Type" [ngModel]="typeFilter()" (ngModelChange)="typeFilter.set($event)">
-                @for (type of typeList(); track $index){
-                  <nz-option [nzLabel]="type" [nzValue]="type" />
-                }
-              </nz-select>
-            </div>
-            <div nz-col nzFlex="1 0 200px" >
-              <nz-input-wrapper nzAllowClear >
-                <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-                <input nz-input [ngModel]="nameFilter()" (ngModelChange)="nameFilter.set($event)"  placeholder=" Search Name..." />
-              </nz-input-wrapper>
-            </div>
-            <div nz-col nzFlex="1 0 200px" >
-              <nz-input-wrapper nzAllowClear >
-                <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-                <input nz-input [ngModel]="modelFilter()" (ngModelChange)="modelFilter.set($event)"  placeholder=" Search Model..." />
-              </nz-input-wrapper>
-            </div>
-            <div nz-col nzFlex="1 0 200px" >
-              <nz-input-wrapper nzAllowClear >
-                <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-                <input nz-input [ngModel]="serialNumberFilter()" (ngModelChange)="serialNumberFilter.set($event)"  placeholder=" Search Serial Number..." />
-              </nz-input-wrapper>
-            </div>
-            <div nz-col nzFlex="1 0 200px" >
-              <nz-input-wrapper nzAllowClear >
-                <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-                <input nz-input [ngModel]="locationFilter()" (ngModelChange)="locationFilter.set($event)" placeholder=" Search Location..." />
-              </nz-input-wrapper>
-            </div>
-            <div nz-col nzFlex="1 0 200px" >
-              <nz-input-wrapper nzAllowClear >
-                <nz-icon nzInputPrefix nzType="search" nzTheme="outline" />
-                <input nz-input [ngModel]="lastMaintenanceFilter()" (ngModelChange)="lastMaintenanceFilter.set($event)" placeholder=" Search Last Maintenance..." />
-              </nz-input-wrapper>
-            </div>
-          </div>
-        </app-dashboard-box-component>
-      </div>
-      <!-- TABLE COMPONENT -->
-      <div nz-col nzSpan="24">
-        <app-dashboard-box-component >
-          <div body>
-            <app-table-component
-              [tableLoading]="tableLoading()"
-              [tableColumns]="tableHardwareService.tableColumns"
-              [tableData]="tableData()">
-            </app-table-component>
-          </div>
-        </app-dashboard-box-component>
-      </div>
-    </div>
-  </div>
+<div class="contentPage directory-page">
+ <header class="page-heading"><div><span class="eyebrow">WORKSPACE</span><h1>Hardware</h1><p>All equipment, organized by client and site.</p></div><button class="native-button" [disabled]="loading()" (click)="getAllHardwareData()"><app-ui-icon name="refresh"/>{{loading()?'Loading...':'Refresh'}}</button></header>
+ <div class="contentBody directory-scroll">
+  <section class="directory-summary" aria-label="Inventory overview"><div>Equipment <strong>{{loading()||loadError()?'—':totals().equipment}}</strong></div><div>Clients with equipment <strong>{{loading()||loadError()?'—':totals().clients}}</strong></div><div>Sites with equipment <strong>{{loading()||loadError()?'—':totals().sites}}</strong></div><div>Open reports <strong>{{loading()||loadError()?'—':totals().reports}}</strong></div></section>
+  <section class="filters-panel" aria-label="Filter hardware">
+   @if (!loadError() && hardwareData().length) {
+    <app-hardware-type-filter [equipment]="hardwareData()" [(selected)]="type" />
+   }
+   <app-directory-filters [clients]="clients()" [sites]="sites()" [search]="search()" [clientId]="clientId()" [siteId]="siteId()" (searchChange)="search.set($event)" (clientChange)="setClient($event)" (siteChange)="siteId.set($event)" placeholder="Name, model, serial, IP or location..."/>
+   <details class="extra-options"><summary>Sorting</summary><div class="extra-filters"><label class="filter-field"><span>Sort order</span><select [ngModel]="sort()" (ngModelChange)="sort.set($event)"><option value="name">Name A-Z</option><option value="reports">Most open reports</option><option value="updated">Last update</option></select></label></div></details>
+  </section>
+  <div class="results-toolbar"><span aria-live="polite">{{filteredHardware().length}} {{filteredHardware().length===1?'device':'devices'}}</span><div><label class="checkbox-label"><input type="checkbox" [ngModel]="onlyReports()" (ngModelChange)="onlyReports.set($event)"/>With open reports</label><label class="checkbox-label"><input type="checkbox" [ngModel]="grouped()" (ngModelChange)="grouped.set($event)"/>Group by site</label>@if(hasFilters()){<button class="text-button" (click)="clearFilters()">Clear filters</button>}</div></div>
+  @if(loading()){<div class="loading-state" role="status">Loading all equipment...</div>}
+  @else if(loadError()){<div class="error-state" role="alert"><h2>Equipment could not be loaded</h2><button class="native-button" (click)="getAllHardwareData()">Try again</button></div>}
+  @else if(!filteredHardware().length){<div class="empty-state"><h2>{{hasFilters()?'No matching equipment':'No equipment registered'}}</h2><p>{{hasFilters()?'Try another client, site or search.':'Register equipment from a client workspace.'}}</p>@if(hasFilters()){<button class="native-button" (click)="clearFilters()">Clear filters</button>}@else{<a class="native-button" routerLink="/clients">Go to clients</a>}</div>}
+  @else{
+   @for(group of groups();track group.key){<section class="group-section" [attr.aria-label]="grouped()?group.clientName+' - '+group.siteName:'Equipment results'">
+    @if(grouped()){<header class="group-heading"><app-ui-icon name="client"/><button class="text-button" (click)="setClient(group.clientId)">{{group.clientName}}</button><span>/</span><button appUiTag type="button" [tone]="group.color" (click)="selectSite(group.clientId,group.siteId)">{{group.siteName}}</button><small>{{group.items.length}} on this page</small></header>}
+    @for(item of group.items;track item.id){<a class="record-row" [routerLink]="['/hardware',item.id]" [attr.aria-label]="'Open '+item.name">
+     <div class="record-main"><span class="record-icon"><app-ui-icon [name]="item.type==='Camera'?'camera':'device'"/></span><div><strong>{{item.name}}</strong><small>{{item.type}} &middot; {{item.brand}} {{item.model}}</small>@if(!grouped()){<small>{{item.clientName}} &middot; {{item.tagName}}</small>}</div></div>
+     <div class="record-details"><span>{{item.cameraId?'ID '+item.cameraId:'Equipment #'+item.id}} &middot; {{item.ipAddress||'No IP assigned'}}</span><small>Serial {{item.serialNumber||'Not assigned'}}</small>@if(item.location||item.idf){<small>{{item.location}}{{item.idf?' · '+item.idf:''}}</small>}</div>
+     <div class="record-details"><app-ui-tag [tone]="item.reportsActive.length ? 'GOLD' : null">{{item.reportsActive.length}} open reports</app-ui-tag><small>Updated {{date(item.lastMaintenanceDate)?(date(item.lastMaintenanceDate)|date:'mediumDate'):'Not recorded'}}</small></div><app-ui-icon class="record-arrow" name="arrow"/>
+    </a>}
+   </section>}
+   <app-list-pagination [total]="filteredHardware().length" [page]="currentPage()" [pageSize]="pageSize" (pageChange)="page.set($event)"/>
+  }
+ </div>
 </div>

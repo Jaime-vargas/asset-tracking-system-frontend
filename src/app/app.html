@@ -24,7 +24,7 @@
       ></button>
     }
     <div id="main-navigation" class="navigation-column" [class.menu-open]="menuOpen()">
-      <app-menu-sidebar-component />
+      <app-menu-sidebar-component (aboutOpened)="menuOpen.set(false)" />
     </div>
   }
   <main class="contentFrame">

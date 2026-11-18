@@ -1,29 +1,20 @@
+import { UiTag } from '../../components/ui-tag/ui-tag';
+import {DatePipe} from '@angular/common';
 import {Component, computed, effect, inject, OnInit, signal} from '@angular/core';
-import {NzDividerComponent} from 'ng-zorro-antd/divider';
-import {NzTypographyComponent} from 'ng-zorro-antd/typography';
-import {DashboardBoxComponent} from '../../components/dasboard-box-component/dashboard-box.component';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
-import {NzFlexDirective} from 'ng-zorro-antd/flex';
-import {NzEmptyComponent} from 'ng-zorro-antd/empty';
-import {DashboardCardComponent} from '../../components/dashboard-card-component/dashboard-card-component';
-import {NzImageModule } from 'ng-zorro-antd/image';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {RouteContextService} from '../../services/route-context.service';
-import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {UtilityService} from '../../services/utility.service';
 import {HardwareUnion} from '../../interfaces/hardware/hardware-union';
 import {DoubleStatusTagComponent} from '../../components/double-status-tag-component/double-status-tag-component';
 import {PriorityTagsComponent} from '../../components/priority-tags-component/priority-tags-component';
-import {NzModalModule} from 'ng-zorro-antd/modal';
 import { evidencePhotoUrls } from '../../services/evidence-photo-urls';
-import {BreadcrumbComponent} from '../../components/breadcrumb-component/breadcrumb-component';
-import {NzDropdownDirective, NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
-import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
 import {HardwareStore} from '../../store/hardware.store';
 import {UploadButtonComponent} from '../../components/upload-button-component/upload-button-component';
 import {UploadComponent} from '../../components/upload-drag-and-drop-component/upload-component';
 import {EditSideBar} from '../../components/edit-side-bar/edit-side-bar';
+import { ComputerForm } from '../../components/forms/computer-form/computer-form';
 import {CameraForm} from '../../components/forms/camera-form/camera-form.component';
 import {SidebarStore} from '../../store/sidebar.store';
 import {ReportForm} from '../../components/forms/report-form/report-form';
@@ -32,30 +23,18 @@ import {ReportStore} from '../../store/report.store';
 @Component({
   selector: 'app-hardware-device-page',
   imports: [
-    NzDividerComponent,
-    NzTypographyComponent,
-    DashboardBoxComponent,
+    DatePipe,
+    UiTag,
     NzButtonComponent,
     NzIconDirective,
-    NzFlexDirective,
-    NzEmptyComponent,
-    DashboardCardComponent,
     RouterLink,
-    NzImageModule,
-    NzRowDirective,
-    NzColDirective,
     DoubleStatusTagComponent,
     PriorityTagsComponent,
-    NzModalModule,
-    BreadcrumbComponent,
-    NzDropdownDirective,
-    NzDropdownMenuComponent,
-    NzMenuDirective,
-    NzMenuItemComponent,
     UploadButtonComponent,
     UploadComponent,
     EditSideBar,
     CameraForm,
+    ComputerForm,
     ReportForm
   ],
   templateUrl: './hardware-device-page.html',
@@ -84,6 +63,13 @@ export class HardwareDevicePage implements OnInit {
   });
   private photoUrls = evidencePhotoUrls(this.photoIds);
 
+
+  computerEditorOpen = signal(false);
+  revealedCredential = signal<number | null>(null);
+  computer = computed(() => {
+    const hardware = this.selectedHardwareDetail();
+    return hardware?.type === 'Computer' ? hardware : null;
+  });
 
   showPassword = signal<boolean>(false);
 
@@ -131,6 +117,7 @@ export class HardwareDevicePage implements OnInit {
     this.routeContext.setFromRoute(this.route);
     const hardwareId = this.routeContext.hardwareId()
     if (hardwareId === null) return;
+    this.selectedHardwareDetail.set(null);
     this.selectedHardwareId.set(hardwareId);
     this.hardwareStore.getHardwareDetail(hardwareId);
   }
@@ -145,7 +132,19 @@ export class HardwareDevicePage implements OnInit {
     this.hardwareStore.uploadCameraPhoto(selectedCameraId, photoType, true, formData).subscribe();
   }
 
+  computerSaved() {
+    this.computerEditorOpen.set(false);
+    this.revealedCredential.set(null);
+    const id = this.selectedHardwareId();
+    if (id !== null) this.hardwareStore.getHardwareDetail(id);
+  }
+
   openEditSideBar(){
+    if (this.computer()) {
+      this.revealedCredential.set(null);
+      this.computerEditorOpen.set(true);
+      return;
+    }
     this.sidebarContent.set("cameraForm");
     const selectedCameraId = this.selectedHardwareId()
     if(selectedCameraId === null) return;
@@ -170,10 +169,6 @@ export class HardwareDevicePage implements OnInit {
     const hardware = this.selectedHardwareDetail();
     if (!hardware) return undefined;
     const hardwareGlobalDetails = [
-      {label: 'Client', value: hardware.clientName},
-      {label: 'Site', value: hardware.tagName},
-      {label: 'Type', value: hardware.type},
-      {label: 'Name', value: hardware.name },
       {label: 'Brand', value: hardware.brand},
       {label: 'Model', value: hardware.model},
       {label: 'Serial Number', value: hardware.serialNumber },

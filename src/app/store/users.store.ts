@@ -3,7 +3,7 @@ import {UsersService} from '../services/users.service';
 import {NzMessageService} from 'ng-zorro-antd/message';
 import {NzNotificationService} from 'ng-zorro-antd/notification';
 import {UserEntityResponseDto} from '../interfaces/users/user-entity-response.dto';
-import {catchError, EMPTY, take, tap} from 'rxjs';
+import {catchError, EMPTY, finalize, take, tap} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 import {UserRoleDto} from '../interfaces/users/user-role.dto';
 import {UserPasswordUpdateRequestDto} from '../interfaces/users/user-password-update-request.dto';
@@ -19,14 +19,18 @@ export class UsersStore{
   public formMode = signal<"add" | "edit" | null>(null);
 
   usersList = signal<UserEntityResponseDto[]>([]);
+  loading = signal(false);
+  loadError = signal(false);
   selectedUser = signal<UserEntityResponseDto | null>(null);
 
   usersRoleList = signal<UserRoleDto[]>([]);
 
   getUsersList(){
-    this.userService.getUsersList().subscribe({
+    this.loading.set(true);
+    this.loadError.set(false);
+    this.userService.getUsersList().pipe(finalize(() => this.loading.set(false))).subscribe({
       next: usersList => this.usersList.set(usersList),
-      error: err => this.messageService.error(err),
+      error: (err: HttpErrorResponse) => { this.loadError.set(true); this.responseError(err); },
     })
   }
 

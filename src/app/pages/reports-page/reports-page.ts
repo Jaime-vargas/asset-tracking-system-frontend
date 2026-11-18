@@ -1,140 +1,114 @@
-import {Component, computed, inject, signal} from '@angular/core';
-import {ReportsService} from '../../services/report.service';
-import {ReportTableDto} from '../../interfaces/report/report-table.dto';
-import {NzDividerComponent} from 'ng-zorro-antd/divider';
-import {DashboardBoxComponent} from '../../components/dasboard-box-component/dashboard-box.component';
-import {NzTypographyComponent} from 'ng-zorro-antd/typography';
-import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
-import {NzIconDirective} from 'ng-zorro-antd/icon';
-import {NzInputDirective, NzInputPrefixDirective, NzInputWrapperComponent} from 'ng-zorro-antd/input';
-import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
-import {FormsModule} from '@angular/forms';
-import {TableComponent} from '../../components/table-component/table-component';
-import {TableData} from '../../interfaces/table/table-data';
-import {TableColumnsReportsService} from '../../services/table-columns-service/table-columns-reports.service';
-import {UtilityService} from '../../services/utility.service';
-
+import { DatePipe } from '@angular/common';
+import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
+import { ReportsService } from '../../services/report.service';
+import { ReportTableDto } from '../../interfaces/report/report-table.dto';
+import { directoryClients, directorySites, groupBySite, scopeOrder, validDirectoryDate, matchesDirectorySearch, directoryDateKey } from '../../utils/directory';
+import { DirectoryFilters } from '../../components/directory-filters/directory-filters';
+import { UiIcon } from '../../components/ui-icon/ui-icon';
+import { ListPagination } from '../../components/list-pagination/list-pagination';
+import { PriorityTagsComponent } from '../../components/priority-tags-component/priority-tags-component';
+import { SingleStatusTagsComponent } from '../../components/single-status-tags-component/single-status-tags-component';
+import { UiTag } from '../../components/ui-tag/ui-tag';
 @Component({
-  selector: 'app-reports-page',
-  imports: [
-    NzDividerComponent,
-    DashboardBoxComponent,
-    NzTypographyComponent,
-    NzRowDirective,
-    NzColDirective,
-    NzIconDirective,
-    NzInputDirective,
-    NzInputPrefixDirective,
-    NzInputWrapperComponent,
-    NzOptionComponent,
-    NzSelectComponent,
-    FormsModule,
-    TableComponent
+  selector: 'app-reports-page', imports: [
+    DatePipe, FormsModule, RouterLink, DirectoryFilters, UiIcon, ListPagination, UiTag, SingleStatusTagsComponent, PriorityTagsComponent
   ],
-  templateUrl: './reports-page.html',
-  styleUrl: './reports-page.css',
+  templateUrl: './reports-page.html', styleUrls: [
+    '../../styles/native-controls.css', '../../styles/directory-page.css', './reports-page.css'
+  ]
 })
 export class ReportsPage {
-
-  constructor(private reportsService: ReportsService,
-              protected tableColumnsReportsService: TableColumnsReportsService) {
+  private service = inject(ReportsService);
+  private destroyRef = inject(DestroyRef);
+  reportsData = signal<ReportTableDto[]>([]);
+  loading = signal(false);
+  loadError = signal(false);
+  search = signal('');
+  clientId = signal<number | null>(null);
+  siteId = signal<number | null>(null);
+  status = signal('');
+  priority = signal('');
+  sort = signal('newest');
+  grouped = signal(true);
+  page = signal(1);
+  readonly pageSize = 12;
+  dateField = signal<'createdDate' | 'dueDate'>('dueDate');
+  dateFrom = signal('');
+  dateTo = signal('');
+  invalidDateRange = computed(() => !!(this.dateFrom() && this.dateTo() && this.dateFrom() > this.dateTo()));
+  clients = computed(() => directoryClients(this.reportsData()));
+  sites = computed(() => directorySites(this.reportsData(), this.clientId()));
+  priorities = computed(() => [
+    ...new Set(this.reportsData().map(item => item.priority))
+  ].sort());
+  totals = computed(() => ({
+    all: this.reportsData().length, open: this.reportsData().filter(item => [
+      'ACTIVE', 'OVERDUE'
+    ].includes(item.status)).length, overdue: this.reportsData().filter(item => item.status === 'OVERDUE').length, closed: this.reportsData().filter(item => item.status === 'CLOSED').length
+  }));
+  hasFilters = computed(() => !!(this.search() || this.clientId() !== null || this.siteId() !== null || this.status() || this.priority() || this.dateFrom() || this.dateTo()));
+  filteredReports = computed(() => {
+    if (this.invalidDateRange())
+      return [];
+    return this.reportsData().filter(item => {
+      const day = directoryDateKey(item[this.dateField()]);
+      return (this.clientId() === null || item.clientId === this.clientId()) && (this.siteId() === null || item.tagId === this.siteId())
+        && (!this.status() || (this.status() === 'OPEN' ? [
+          'ACTIVE', 'OVERDUE'
+        ].includes(item.status) : item.status === this.status()))
+        && (!this.priority() || item.priority === this.priority())
+        && (!this.dateFrom() || (!!day && day >= this.dateFrom())) && (!this.dateTo() || (!!day && day <= this.dateTo()))
+        && matchesDirectorySearch(this.search(), [
+          `#${item.id}`, item.title, item.hardwareName, item.clientName, item.tagName, item.createdDate, item.dueDate, this.date(item.createdDate)?.toDateString(), this.date(item.dueDate)?.toDateString()
+        ]);
+    }).sort((a, b) => (this.grouped() ? scopeOrder(a, b) : 0) || (this.sort() === 'due' ? (this.date(a.dueDate)?.getTime() ?? Infinity) - (this.date(b.dueDate)?.getTime() ?? Infinity) : this.sort() === 'oldest' ? (this.date(a.createdDate)?.getTime() ?? 0) - (this.date(b.createdDate)?.getTime() ?? 0) : (this.date(b.createdDate)?.getTime() ?? 0) - (this.date(a.createdDate)?.getTime() ?? 0)) || b.id - a.id);
+  });
+  currentPage = computed(() => Math.max(1, Math.min(this.page(), Math.ceil(this.filteredReports().length / this.pageSize))));
+  groups = computed(() => groupBySite(this.filteredReports().slice((this.currentPage() - 1) * this.pageSize, this.currentPage() * this.pageSize), this.grouped()));
+  constructor() {
+    effect(() => {
+      this.search();
+      this.clientId();
+      this.siteId();
+      this.status();
+      this.priority();
+      this.dateField();
+      this.dateFrom();
+      this.dateTo();
+      this.sort();
+      this.grouped();
+      this.page.set(1);
+    });
     this.getReports();
   }
-
-  reportsData = signal<ReportTableDto[]>([]);
-  reportView = computed(()=>{
-    return this.reportsData().map((reports) => {
-      return {
-        ...reports,
-        createdDate: new Date(reports.createdDate),
-        dueDate: new Date(reports.dueDate),
-      }
-    })
-  });
-
-  // TABLE DATA
-  tableData = computed<TableData[]>(() => {
-    return this.filteredReports().map((report) => {
-      return {
-        ...report,
-        id: '# ' + report.id,
-        actions: [
-          {label: 'View', type: 'link', link: ['/reports', report.id]}
-        ]
-      }
-    })
-  });
-
-  // TABLE INPUT FILTERS
-  clientList = computed(()=>
-    new Set(this.reportsData().map((report) =>
-      report.clientName
-    ))
-  )
-  branchList = computed(()=>{
-    const clientfilter = this.clientFilter()
-    return new Set(this.reportsData().filter(report =>
-      (!clientfilter || report.clientName === clientfilter)).map(report =>
-      report.branchName));
-  })
-  priorityList = computed(()=>
-    new Set(this.reportsData().map((report) =>
-      report.priority))
-  )
-  statusList = computed(()=>
-    new Set(this.reportsData().map((report) =>
-      report.status))
-  )
-
-
-  idFilter = signal<number | null>(null);
-  tittleFilter = signal<string>('');
-  clientFilter = signal<string>('');
-  branchFilter = signal<string>('');
-  hardwareFilter = signal<string>('');
-  priorityFilter = signal<string>('');
-  createdAtFilter = signal<string>('');
-  dueDateFilter = signal<string>('');
-  statusFilter = signal<string>('');
-  filteredReports = computed(()=>
-    this.reportView().filter(report => {
-      const idFilter = this.idFilter();
-      const titleFilter = this.tittleFilter();
-      const clientFilter = this.clientFilter();
-      const branchFilter = this.branchFilter();
-      const hardwareFilter = this.hardwareFilter();
-      const priorityFilter = this.priorityFilter();
-      const createdDateFilter = this.createdAtFilter();
-      const dueDateFilter = this.dueDateFilter();
-      const statusFilter = this.statusFilter();
-
-      const matchId = (idFilter === null || report.id.toString().includes(idFilter.toString()));
-      const matchTitle = report.title.toLowerCase().includes(titleFilter.toLowerCase());
-      const matchClient = (!clientFilter || report.clientName === clientFilter );
-      const matchBranch = (!branchFilter || report.branchName === branchFilter);
-      const matchHardware = report.hardwareName.toLowerCase().includes(hardwareFilter.toLowerCase());
-      const matchPriority = (!priorityFilter || report.priority === priorityFilter);
-      const matchCreatedDate = report.createdDate.toDateString().toLowerCase().includes(createdDateFilter.toLowerCase());
-      const matchDueDate = report.dueDate.toDateString().toLowerCase().includes(dueDateFilter.toLowerCase());
-      const matchStatus = (!statusFilter || report.status === statusFilter);
-
-      return (matchId &&
-          matchTitle &&
-          matchClient &&
-          matchBranch &&
-          matchHardware &&
-          matchPriority &&
-          matchCreatedDate &&
-          matchDueDate &&
-          matchStatus
-      );
-    })
-  )
-
-  getReports(){
-    return this.reportsService.getAllReports().subscribe({
-      next: (data)=>{
-        return this.reportsData.set(data); },
-    })
+  date = validDirectoryDate;
+  setClient(id: number | null) {
+    this.clientId.set(id);
+    this.siteId.set(null);
+  }
+  selectSite(client: number, id: number) {
+    this.setClient(client);
+    this.siteId.set(id);
+  }
+  clearFilters() {
+    this.search.set('');
+    this.setClient(null);
+    this.status.set('');
+    this.priority.set('');
+    this.dateFrom.set('');
+    this.dateTo.set('');
+  }
+  getReports() {
+    if (this.loading())
+      return;
+    this.loading.set(true);
+    this.loadError.set(false);
+    this.service.getAllReports().pipe(takeUntilDestroyed(this.destroyRef), finalize(() => this.loading.set(false))).subscribe({
+      next: data => this.reportsData.set(data), error: () => this.loadError.set(true)
+    });
   }
 }

@@ -1,0 +1,9 @@
+:host { display: block; }
+.transfer-actions { display: flex; gap: 8px; }
+.transfer-actions button { min-height: 34px; font-size: 11px; }
+nz-select { width: 100%; }
+.field-label { display: block; margin: 15px 0 6px; font-size: 12px; color: var(--app-text); }
+p { color: var(--app-muted); font-size: 12px; line-height: 1.6; }
+input[type=file] { max-width: 100%; font-size: 12px; }
+.import-errors { max-height: 220px; overflow: auto; padding-left: 20px; font-size: 12px; overflow-wrap: anywhere; }
+@media (max-width:600px) { .transfer-actions button { font-size: 10px; padding: 0 8px; } }

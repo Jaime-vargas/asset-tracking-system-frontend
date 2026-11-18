@@ -5,9 +5,11 @@
       <h1>Clients</h1>
       <p>Find a client. Everything you need is inside.</p>
     </div>
-    <button nz-button nzType="primary" class="add-client" (click)="openNewSidebar()">
-      <nz-icon nzType="plus" /> Add client
-    </button>
+    @if (isAdmin) {
+      <button nz-button nzType="primary" class="add-client" (click)="openNewSidebar()">
+        <nz-icon nzType="plus" /> Add client
+      </button>
+    }
   </header>
   <div class="contentBody">
     <section class="overview" aria-label="Client overview">
@@ -35,6 +37,7 @@
             (ngModelChange)="clientNameFilter.set($event)"
         /></nz-input-wrapper>
         <select aria-label="Sort clients" [ngModel]="sort()" (ngModelChange)="sort.set($event)">
+          <option value="recent">Recently visited</option>
           <option value="name">Name A–Z</option>
           <option value="hardware">Most equipment</option>
           <option value="reports">Most open reports</option>
@@ -77,7 +80,7 @@
           </p>
           @if (clientStore.clientList().length) {
             <button nz-button (click)="clearFilters()">Clear filters</button>
-          } @else {
+          } @else if (isAdmin) {
             <button nz-button nzType="primary" (click)="openNewSidebar()">Add client</button>
           }
         </div>
@@ -120,13 +123,6 @@
                   >Open workspace <span aria-hidden="true">↗</span></span
                 ></a
               >
-              <button
-                class="edit-client"
-                (click)="openEditSidebar(client)"
-                [attr.aria-label]="'Edit ' + client.name"
-              >
-                <nz-icon nzType="edit" />
-              </button>
             </article>
           }
         </div>

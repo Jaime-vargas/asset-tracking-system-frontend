@@ -1,9 +1,7 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 
-
-@Injectable({providedIn: 'root'})
-export class UtilityService{
-
+@Injectable({ providedIn: 'root' })
+export class UtilityService {
   // BASE COLORS IN ONE PLACE
   baseColors = {
     blue: '#255498',
@@ -11,43 +9,42 @@ export class UtilityService{
     green: '#01ba01',
     red: '#e75557',
     yellow: '#febf48',
-  }
+  };
   // Users page
   color = {
     brown: '#3c1a02',
     yellow: '#fceccc',
     lightGreen: '#bcf3c3',
     green: '#428d5b',
-    lightGrey: "#ded9d9",
+    lightGrey: '#ded9d9',
     grey: '#625f5f',
     blue: '#273265',
     lightBlue: '#ebf3fc',
-  }
+  };
 
   // THIS APPLY JUST FOR LAST UPDATE AND CLOSED AT DATES
-  isValidDate(date: string):string{
-    if (date === "N/A"){
-      return date
-    }else return new Date(date).toDateString();
+  isValidDate(date: string): string {
+    if (date === 'N/A') {
+      return date;
+    } else return new Date(date).toDateString();
   }
 
-  validLongDate(date: string):string{
-    if (date === "N/A"){
-      return date
-    }else return new Date(date).toLocaleDateString('es-MX', {
-      year: 'numeric',
-      month: 'short',
-      day: '2-digit',
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: false,
-    });
+  validLongDate(date: string): string {
+    if (date === 'N/A') {
+      return date;
+    } else
+      return new Date(date).toLocaleDateString('es-MX', {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: false,
+      });
   }
 
   slugify(name: string) {
-    return name
-      .toLowerCase()
-      .replace(/\s+/g, '-');
+    return name.toLowerCase().replace(/\s+/g, '-');
   }
 
   /** Get file content type and set an icon */
@@ -96,5 +93,4 @@ export class UtilityService{
     }
     return `${size.toFixed(2)} ${units[unit]}`;
   }
-
 }

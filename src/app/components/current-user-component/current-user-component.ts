@@ -11,9 +11,7 @@ import {UserData} from '../../interfaces/users/current-user-data';
 
 import {NzFlexDirective} from 'ng-zorro-antd/flex';
 
-import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
 import {NzPopoverDirective} from 'ng-zorro-antd/popover';
-import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {Router} from '@angular/router';
 import {NzModalRef, NzModalService} from 'ng-zorro-antd/modal';
 import {UserChangePasswordForm} from '../forms/user-change-password-form/user-change-password-form';
@@ -22,9 +20,7 @@ import {UserChangePasswordForm} from '../forms/user-change-password-form/user-ch
   selector: 'app-current-user-component',
   imports: [
     NzFlexDirective,
-    NzMenuDirective,
     NzPopoverDirective,
-    NzButtonComponent,
     UserChangePasswordForm,
   ],
   templateUrl: './current-user-component.html',
@@ -35,6 +31,7 @@ export class CurrentUserComponent implements OnInit {
   protected modalService = inject(NzModalService);
   private router = inject(Router);
 
+  protected menuOpen = signal(false);
   userData = signal<UserData | null>(null);
 
   constructor() {
@@ -62,6 +59,7 @@ export class CurrentUserComponent implements OnInit {
   changePasswordModal!: TemplateRef<any>;
   protected modalRef?: NzModalRef;
   changePassword(){
+    this.menuOpen.set(false);
     this.modalRef = this.modalService.create({
       nzContent: this.changePasswordModal,
       nzFooter: null
@@ -69,6 +67,7 @@ export class CurrentUserComponent implements OnInit {
   }
 
   logout() {
+    this.menuOpen.set(false);
     this.authService.logout();
     this.router.navigate(['/login']);
   }

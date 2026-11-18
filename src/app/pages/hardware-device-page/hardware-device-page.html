@@ -1,234 +1,179 @@
-<div class="contentPage">
-  <app-breadcrumb-component [breadcrumb]="breadcrumb()"></app-breadcrumb-component>
-  <div class="contentBody">
-
-    <div nz-row [nzGutter]="[10,10]" >
-      <div nz-col nzSpan="24">
-        <app-dashboard-box-component>
-          <div body nz-flex nzJustify="space-between" nzAlign="center">
-            <div nz-flex nzVertical>
-              <h1 nz-typography style="margin: 0">{{ hardwareView()?.name}}</h1>
-              <span>Last update: {{hardwareView()?.lastMaintenanceDate}}</span>
-            </div>
-            <div nz-flex nzGap="small">
-              <button nz-button class="form-btn default-btn" nz-dropdown [nzDropdownMenu]="exportMenu" nzPlacement="bottomLeft">Export <nz-icon nzType="export" nzTheme="outline" /></button>
-              <button nz-button class="form-btn primary-btn" nzType="primary" (click)="openEditSideBar()"><nz-icon nzType="edit" nzTheme="fill" />Edit Hardware Data</button>
-              <button nz-button class="form-btn primary-btn" nzType="primary" (click)="openNewReportSideBar()">New Report</button>
-            </div>
-           </div>
-        </app-dashboard-box-component>
-      </div>
-
-      <div nz-col nzSpan="14">
-        <div nz-row [nzGutter]="[10,10]">
-          <div nz-col nzSpan="12">
-            <app-dashboard-box-component>
-              <div body>
-                <div nz-flex nzGap="middle" nzAlign="center">
-                  <img [src]="activeReports() > 0 ? './icons/warning.png' : './icons/check.png' " width="35" height="35">
-                  <div>
-                    <h2 nz-typography style="margin: 0;">{{selectedHardwareDetail()?.activeReportsCount}}</h2>
-                    <h4 style="margin: 0;">Active reports</h4>
-                  </div>
-                </div>
-              </div>
-            </app-dashboard-box-component>
+<div class="contentPage device-page">
+  <div class="contentBody device-scroll">
+    @if (hardwareView(); as hardware) {
+      <header class="device-header">
+        <nav class="device-breadcrumb" aria-label="Breadcrumb">
+          @for (item of breadcrumb(); track $index) {
+            @if (item.link) { <a [routerLink]="item.link">{{ item.label }}</a><span aria-hidden="true">/</span> }
+            @else { <span aria-current="page">{{ item.label }}</span> }
+          }
+        </nav>
+        <div class="device-heading">
+          <div class="device-identity">
+            <span class="device-symbol"><nz-icon [nzType]="hardware.type === 'Camera' ? 'video-camera' : 'desktop'" /></span>
+            <div><span class="eyebrow">{{ hardware.type }}</span><h1>{{ hardware.name }}</h1></div>
           </div>
-          <div nz-col nzSpan="12">
-            <app-dashboard-box-component>
-              <div body >
-                <div nz-flex nzGap="middle" nzAlign="center">
-                  <img [src]="overdueReports() > 0 ? './icons/warning.png' : './icons/check.png' " width="35" height="35">
-                  <div >
-                    <h2 nz-typography style="margin: 0;">
-                      {{selectedHardwareDetail()?.overdueReportsCount}}</h2>
-                    <h4 style="margin: 0;">Overdue reports</h4>
-                  </div>
-                </div>
-              </div>
-            </app-dashboard-box-component>
+          <div class="device-actions">
+            @if (hardware.type === 'Camera') {
+              <button nz-button (click)="hardwareStore.getPhotoReportByCameraId()"><nz-icon nzType="export" />Photo report</button>
+            }
+            <button nz-button (click)="openEditSideBar()"><nz-icon nzType="edit" />Edit equipment</button>
+            <button nz-button nzType="primary" (click)="openNewReportSideBar()"><nz-icon nzType="plus" />New report</button>
           </div>
         </div>
-
-
-        <div nz-col nzSpan="24">
-          <!-- GLOBAL HARDWARE DETAILS -->
-          <app-dashboard-box-component [flex]="true">
-            <div body nz-flex nzVertical nzGap="small" >
-              <div nz-row>
-                <h3 nz-typography>Hardware Information</h3>
-              </div>
-              <div nz-row nzAlign="top" style="padding-top: 15px" >
-
-                <!-- PHOTO SECTION -->
-                <div nz-col nzFlex="0 0 180px">
-                  <div nz-flex nzVertical nzAlign="center" nzJustify="center" nzGap="small">
-
-                    @for (photo of hardwareView()?.hardwarePhotos; track photo.label){
-                      <div style="width: 150px; height:150px">
-                        <!-- UPLOAD MODAL -->
-                        <app-upload-drag-and-drop-component
-                          [acceptedFiles]="'image/*'"
-                          [currentPhoto]="photo.filepath"
-                          [fallbackImage]="fallbackCameraImage"
-                          [uploadUrl]="photo.link"
-                          (uploadSuccess)="uploadSuccess($event)">
-                        </app-upload-drag-and-drop-component>
-                      </div>
-                      <div>
-                        <span class="imageTitle">{{photo.label}}</span>
-                        @if (photo.filepath){
-                          <!-- UPLOAD BUTTON MODAL -->
-                          <app-upload-button-component
-                            [uploadUrl]="photo.link"
-                            [acceptedFiles]="'image/*'"
-                            (manualUpload)="uploadCameraPhoto(photo.photoType, $event)">
-                            <div body>
-                              <button nz-button nzType="text">
-                                <nz-icon nzType="edit" nzTheme="outline" />
-                              </button>
-                            </div>
-                          </app-upload-button-component>
-                        }
-                      </div>
-                    }
-                  </div>
-                </div>
-
-                <!-- HARDWARE INFO SECTION -->
-                <div nz-col nzFlex="1 0 350px">
-                  <!-- GLOBAL INFO -->
-                  <app-dashboard-card-component>
-                    <div body>
-                      <div nz-row nzGutter="10">
-                        <div nz-col [nzMd]="{span: 24}" [nzXXl]="{span: 11}" >
-                          @for (detail of hardwareView()?.hardwareGlobalDetails; track detail.label){
-                            <div nz-row>
-                              <div nz-col nzSpan="10">
-                                <span class="label">{{ detail.label }}</span>
-                              </div>
-                              <div nz-col nzSpan="14">
-                                <strong class="hInfo">{{ detail.value }}</strong>
-                              </div>
-                            </div>
-                            <div nz-row>
-                              <div nz-col nzSpan="24">
-                                <nz-divider nzSize="small"></nz-divider>
-                              </div>
-                            </div>
-                          }
-                        </div>
-
-                        <div style="border: 1px #E5E7EEFF solid; margin: 0 5px">
-                        </div>
-
-                        <div nz-col [nzMd]="{span: 24}" [nzXXl]="{span: 11}"  >
-
-                          <!-- SPECIFIC INFO -->
-                          @for (hInfo of hardwareView()?.hardwareInfo; track hInfo.label){
-                            <div nz-row>
-                              <div nz-col nzSpan="10">
-                                <span class="label">{{ hInfo.label }}</span>
-                              </div>
-
-                              <div nz-col nzSpan="14">
-                                @switch (hInfo.label){
-
-                                  @case ('Password'){
-                                    <div>
-                                      @if (hInfo.value){
-                                        {{ showPassword() ? hInfo.value : '••••••••••••' }}
-                                        <button nz-button nzType="text" (click)="showPassword.set(!showPassword())">
-                                          <nz-icon [nzType]="showPassword() ? 'eye-invisible' : 'eye'" />
-                                        </button>
-                                      }
-                                    </div>
-                                  }
-                                  @default {
-                                    <strong class="hInfo">{{hInfo.value}}</strong>
-                                  }
-                                }
-                              </div>
-
-                            </div>
-                            <div nz-row>
-                              <div nz-col nzSpan="24">
-                                <nz-divider nzSize="small"></nz-divider>
-                              </div>
-                            </div>
-                          }
-                        </div>
-                      </div>
-                    </div>
-                  </app-dashboard-card-component>
-                </div>
-              </div>
-            </div>
-          </app-dashboard-box-component>
+        <div class="device-context">
+          <a [routerLink]="['/clients', hardware.clientId, utilityService.slugify(hardware.clientName)]" [queryParams]="{tab:'hardware'}">{{ hardware.clientName }} <nz-icon nzType="arrow-right" /></a>
+          <app-ui-tag tone="ACCENT">{{ hardware.tagName || 'Site not assigned' }}</app-ui-tag>
+          <span class="maintenance">Last maintenance: {{ hardware.lastMaintenanceDate }}</span>
         </div>
-      </div>
-
-      <!-- HISTORY OF REPORTS -->
-      <div nz-col nzSpan="10">
-        <app-dashboard-box-component [boxTitle]="'Recent reports'" [flex]="true">
-          <div body nz-flex nzVertical nzGap="small">
-            @if(lastReports()?.length === 0){
-              <nz-empty nzNotFoundImage="simple"></nz-empty>
-            } @else {
-              @for (report of lastReports(); track report.id){
-                <app-dashboard-card-component class="recentReportCard" [routerLink]="['/reports', report.id]">
-                  <div body>
-                    <div nz-row [nzGutter]="[0,10]">
-                      <div nz-col nzSpan="12">
-                        <app-double-status-tag-component
-                          [status]="report.status" [dueDate]="report.dueDate"></app-double-status-tag-component>
-                      </div>
-                      <div nz-col nzSpan="12" nz-flex nzJustify="flex-end" style="gap: 5px">
-                        <span class="reportDate">{{report.dueDate.toDateString()}}</span>
-                        <nz-icon nzType="right" nzTheme="outline"/>
-                      </div>
-                      <div nz-col nzSpan="24">
-                        <div nz-flex nzGap="small">
-                          <app-priority-tags-component [priority]="report.priority"></app-priority-tags-component>
-                          <strong class="reportTittle">{{ report.title }}</strong>
-                        </div>
-                      </div>
-                      <div nz-col nzSpan="24">
-                        <span>Reported by: <strong>{{report.reportedBy}}</strong> </span>
-                      </div>
-                    </div>
-                  </div>
-                </app-dashboard-card-component>
+      </header>
+      <div class="device-layout">
+        <div class="device-main">
+          <section class="device-panel" aria-labelledby="equipment-heading">
+            <div class="section-heading"><h2 id="equipment-heading">Equipment details</h2><span>Identification &amp; location</span></div>
+            <dl class="detail-grid equipment-details">
+              @for (detail of hardware.hardwareGlobalDetails; track detail.label) {
+                <div><dt>{{ detail.label }}</dt><dd>{{ detail.value || 'Not assigned' }}</dd></div>
               }
-              <button nz-button class="form-btn default-btn" [routerLink]="['/hardware', selectedHardwareId(), 'reports']" > View All Reports </button>
+            </dl>
+          </section>
+          @if (computer(); as pc) {
+            <section class="device-panel" aria-labelledby="computer-specs-heading">
+              <div class="section-heading"><h2 id="computer-specs-heading">Specifications</h2></div>
+              <dl class="detail-grid">
+                <div><dt>Type</dt><dd>{{ pc.computerType === 'SERVER' ? 'Server' : 'Desktop' }}</dd></div>
+                <div><dt>Hostname</dt><dd>{{ pc.hostname || '—' }}</dd></div>
+                <div><dt>Operating system</dt><dd>{{ pc.operatingSystem || '—' }}</dd></div>
+                <div><dt>Processor</dt><dd>{{ pc.processor || '—' }}</dd></div>
+                <div><dt>RAM</dt><dd>{{ pc.ramGb ? pc.ramGb + ' GB' : '—' }}</dd></div>
+                <div><dt>NTP server</dt><dd>{{ pc.ntpServer || '—' }}</dd></div>
+              </dl>
+            </section>
+            <section class="device-panel" aria-labelledby="computer-storage-heading">
+              <div class="section-heading"><h2 id="computer-storage-heading">Storage</h2></div>
+              @for (disk of pc.storage; track $index) {
+                <dl class="detail-grid computer-entry">
+                  <div><dt>Type</dt><dd>{{ disk.storageType }}</dd></div>
+                  <div><dt>Configuration</dt><dd>{{ disk.raidLevel?.replace('_', ' ') || 'Single disk' }}</dd></div>
+                  <div><dt>Disks</dt><dd>{{ disk.diskCount }} × {{ disk.diskCapacityGb }} GB</dd></div>
+                </dl>
+              } @empty { <p class="device-empty">No storage recorded.</p> }
+            </section>
+            <section class="device-panel" aria-labelledby="computer-network-heading">
+              <div class="section-heading"><h2 id="computer-network-heading">Network interfaces</h2></div>
+              @for (network of pc.networkInterfaces; track $index) {
+                <div class="computer-entry">
+                  <h3>{{ network.name || 'Interface ' + ($index + 1) }}</h3>
+                  <dl class="detail-grid">
+                    <div><dt>MAC address</dt><dd>{{ network.macAddress }}</dd></div>
+                    <div><dt>IP address</dt><dd>{{ network.ipAddress || '—' }}</dd></div>
+                    <div><dt>Subnet prefix</dt><dd>{{ network.subnetPrefix === null ? '—' : '/' + network.subnetPrefix }}</dd></div>
+                    <div><dt>Gateway</dt><dd>{{ network.gateway || '—' }}</dd></div>
+                  </dl>
+                </div>
+              } @empty { <p class="device-empty">No network interfaces recorded.</p> }
+            </section>
+            <section class="device-panel" aria-labelledby="computer-credentials-heading">
+              <div class="section-heading"><h2 id="computer-credentials-heading">Credentials</h2></div>
+              @for (credential of pc.credentials; track $index) {
+                <div class="computer-entry">
+                  <h3>{{ credential.label }}</h3>
+                  <dl class="detail-grid">
+                    <div><dt>Username</dt><dd>{{ credential.username || '—' }}</dd></div>
+                    <div><dt>Password</dt><dd>
+                      @if (credential.password) {
+                        <div class="password-value">
+                          <span>{{ revealedCredential() === $index ? credential.password : '********' }}</span>
+                          <button nz-button nzType="text" type="button"
+                            [attr.aria-label]="(revealedCredential() === $index ? 'Hide ' : 'Show ') + credential.label + ' password'"
+                            [attr.aria-pressed]="revealedCredential() === $index"
+                            (click)="revealedCredential.set(revealedCredential() === $index ? null : $index)">
+                            <nz-icon [nzType]="revealedCredential() === $index ? 'eye-invisible' : 'eye'" />
+                          </button>
+                        </div>
+                      } @else { — }
+                    </dd></div>
+                  </dl>
+                </div>
+              } @empty { <p class="device-empty">No credentials recorded.</p> }
+            </section>
+          }
+          @if (hardware.hardwareInfo.length) {
+            <section class="device-panel" aria-labelledby="connection-heading">
+              <div class="section-heading"><h2 id="connection-heading">Connection &amp; access</h2><nz-icon nzType="link" /></div>
+              <dl class="detail-grid">
+                @for (detail of hardware.hardwareInfo; track detail.label) {
+                  <div><dt>{{ detail.label }}</dt><dd [class.technical-value]="detail.label !== 'Password'">
+                    @if (detail.label === 'Password' && detail.value) {
+                      <div class="password-value"><span>{{ showPassword() ? detail.value : '********' }}</span>
+                        <button nz-button nzType="text" [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'" [attr.aria-pressed]="showPassword()" (click)="showPassword.set(!showPassword())"><nz-icon [nzType]="showPassword() ? 'eye-invisible' : 'eye'" /></button>
+                      </div>
+                    } @else { {{ detail.value || 'Not assigned' }} }
+                  </dd></div>
+                }
+              </dl>
+            </section>
+          }
+          @if (hardware.hardwarePhotos.length) {
+            <section class="device-panel" aria-labelledby="photos-heading">
+              <div class="section-heading"><h2 id="photos-heading">Camera photos</h2><span>Preview or update images</span></div>
+              <div class="photo-grid">
+                @for (photo of hardware.hardwarePhotos; track photo.photoType) {
+                  <figure class="camera-photo">
+                    <div class="photo-frame">
+                      <app-upload-drag-and-drop-component [acceptedFiles]="'image/*'" [currentPhoto]="photo.filepath" [fallbackImage]="fallbackCameraImage" [uploadUrl]="photo.link" (uploadSuccess)="uploadSuccess($event)" />
+                    </div>
+                    <figcaption><span>{{ photo.label }}</span>
+                      @if (photo.filepath) {
+                        <app-upload-button-component [uploadUrl]="photo.link" [acceptedFiles]="'image/*'" (manualUpload)="uploadCameraPhoto(photo.photoType, $event)">
+                          <div body><button nz-button nzType="text" [attr.aria-label]="'Replace ' + photo.label"><nz-icon nzType="edit" />Replace</button></div>
+                        </app-upload-button-component>
+                      }
+                    </figcaption>
+                  </figure>
+                }
+              </div>
+            </section>
+          }
+        </div>
+        <aside class="device-panel reports-panel" aria-labelledby="reports-heading">
+          <div class="section-heading"><h2 id="reports-heading">Reports</h2><a [routerLink]="['/hardware', selectedHardwareId(), 'reports']">View all <span aria-hidden="true">&nearr;</span></a></div>
+          <div class="report-summary">
+            <div [class.has-reports]="activeReports() > 0"><span>Active</span><strong>{{ activeReports() }}</strong></div>
+            <div [class.has-overdue]="overdueReports() > 0"><span>Overdue</span><strong>{{ overdueReports() }}</strong></div>
+          </div>
+          <h3>Recent reports</h3>
+          <div class="recent-reports">
+            @for (report of lastReports(); track report.id) {
+              <a class="report-card" [routerLink]="['/reports', report.id]">
+                <div class="report-meta"><app-double-status-tag-component [status]="report.status" [dueDate]="report.dueDate" /><time>{{ report.dueDate | date:'mediumDate' }}</time></div>
+                <strong class="report-title">{{ report.title }}<nz-icon nzType="arrow-right" /></strong>
+                <div class="report-footer"><app-priority-tags-component [priority]="report.priority" /><span>{{ report.reportedBy }}</span></div>
+              </a>
+            } @empty {
+              <div class="reports-empty"><nz-icon nzType="file-text" /><strong>No recent reports</strong><p>Reports for this equipment will appear here.</p><button nz-button (click)="openNewReportSideBar()">Create report</button></div>
             }
           </div>
-        </app-dashboard-box-component>
+        </aside>
       </div>
-    </div>
+    } @else {
+      <div class="device-loading" role="status">Loading equipment details...</div>
+    }
   </div>
 </div>
-
-<nz-dropdown-menu #exportMenu="nzDropdownMenu">
-  <ul nz-menu>
-    <li nz-menu-item (click)="hardwareStore.getPhotoReportByCameraId()">Photo report</li>
-  </ul>
-</nz-dropdown-menu>
-
-<!-- SIDEBAR COMPONENT -->
-@if(openSidebar()){
+@if (computerEditorOpen()) {
+  @if (computer(); as pc) {
+    <app-computer-form [clientId]="pc.clientId" [computerId]="pc.id"
+      (closed)="computerEditorOpen.set(false)" (saved)="computerSaved()" />
+  }
+}
+@if (openSidebar()) {
   <app-edit-side-bar>
     <div body>
-      @switch (sidebarContent()){
-        @case ("cameraForm"){
-          <app-camera-form></app-camera-form>
-        }
-        @case ("reportForm"){
-          <app-report-form></app-report-form>
-        }
+      @switch (sidebarContent()) {
+        @case ('cameraForm') { <app-camera-form /> }
+        @case ('reportForm') { <app-report-form /> }
       }
     </div>
   </app-edit-side-bar>
 }
-<!-- /SIDEBAR COMPONENT -->
-

@@ -11,6 +11,8 @@ import { EditSideBar } from '../../components/edit-side-bar/edit-side-bar';
 import { ClientForm } from '../../components/forms/client-form/client-form';
 import { SidebarStore } from '../../store/sidebar.store';
 import { ClientStore } from '../../store/client.store';
+import { AuthService } from '../../services/auth-service';
+import { RecentClientsService } from '../../services/recent-clients.service';
 import { ListPagination } from '../../components/list-pagination/list-pagination';
 @Component({
   selector: 'app-clients-page',
@@ -34,7 +36,9 @@ export class ClientsPage implements OnInit {
   private imageBase = inject(ApiUrlBaseService).imageBaseUrl;
   openSideBar = this.sidebarStore.isOpen;
   clientNameFilter = signal('');
-  sort = signal('name');
+  protected isAdmin = inject(AuthService).getUserRole() === 'ADMIN';
+  private recentRanks = new Map(inject(RecentClientsService).getIds().map((id, index) => [id, index]));
+  sort = signal('recent');
   onlyOpenReports = signal(false);
   private failedImages = signal<Set<string>>(new Set());
   page = signal(1);
@@ -57,6 +61,11 @@ export class ClientsPage implements OnInit {
           (!this.onlyOpenReports() || client.reportsActive.length > 0),
       )
       .sort((a, b) => {
+        if (this.sort() === 'recent') {
+          const aRank = this.recentRanks.get(a.id) ?? this.recentRanks.size;
+          const bRank = this.recentRanks.get(b.id) ?? this.recentRanks.size;
+          return aRank - bRank || a.name.localeCompare(b.name);
+        }
         const difference =
           this.sort() === 'hardware'
             ? b.totalHardware - a.totalHardware
@@ -110,12 +119,8 @@ export class ClientsPage implements OnInit {
     this.clientNameFilter.set('');
     this.onlyOpenReports.set(false);
   }
-  openEditSidebar(client: ClientTableDto) {
-    this.clientStore.selectedClient.set(client);
-    this.clientStore.formMode.set('edit');
-    this.openSideBar.set(true);
-  }
   openNewSidebar() {
+    if (!this.isAdmin) return;
     this.clientStore.selectedClient.set(null);
     this.clientStore.formMode.set('add');
     this.openSideBar.set(true);

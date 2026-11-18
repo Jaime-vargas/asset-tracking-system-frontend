@@ -4,6 +4,7 @@
     <div>
       <span class="brand-name">Assets Control</span
       ><span class="brand-caption">CLIENT OPERATIONS</span>
+      <span class="brand-release"><app-ui-tag tone="ACCENT">Beta</app-ui-tag><span>{{ version }}</span></span>
     </div>
   </div>
   <div class="menu-label">WORKSPACE</div>
@@ -14,7 +15,7 @@
     <li
       nz-menu-item
       [class.ant-menu-item-selected]="
-        router.url.startsWith('/clients') && !router.url.includes('/hardware')
+        router.url.startsWith('/clients') && (!router.url.includes('/hardware') || isProjectWorkspace())
       "
     >
       <a routerLink="/clients"><nz-icon nzType="apartment" /><span>Clients</span></a>
@@ -22,7 +23,7 @@
     <li
       nz-menu-item
       [class.ant-menu-item-selected]="
-        router.url.includes('/hardware') && !router.url.includes('/reports')
+        router.url.includes('/hardware') && !router.url.includes('/reports') && !isProjectWorkspace()
       "
     >
       <a routerLink="/hardware"><nz-icon nzType="laptop" /><span>Hardware</span></a>
@@ -36,8 +37,37 @@
       </li>
     }
   </ul>
-  <div class="sidebar-note">
-    <nz-icon nzType="folder-open" /><strong>Everything in its place</strong>
-    <p>Documents, equipment and projects connected to your clients.</p>
-  </div>
+  <button class="about-button" type="button" aria-haspopup="dialog" (click)="openAbout()">
+    <nz-icon nzType="info-circle" aria-hidden="true" /> About
+  </button>
 </nav>
+
+<nz-modal nzTitle="About Assets Control" [nzVisible]="aboutOpen()" [nzWidth]="430"
+  [nzCancelText]="null" nzOkText="Close"
+  (nzOnOk)="aboutOpen.set(false)" (nzOnCancel)="aboutOpen.set(false)">
+  <ng-container *nzModalContent>
+    <p class="about-intro">Manage clients, equipment, documents, projects and reports.</p>
+    <dl class="about-details">
+      <div><dt>Developed by</dt><dd>Jaime Vargas</dd></div>
+      <div><dt>GitHub</dt><dd><a href="https://github.com/Jaime-vargas" target="_blank" rel="noopener noreferrer">github.com/Jaime-vargas</a></dd></div>
+      <div><dt>Version</dt><dd>{{ version }}</dd></div>
+      @if (buildDate; as date) {
+        <div><dt>Built</dt><dd>{{ date | date:'medium' }}</dd></div>
+      }
+    </dl>
+
+    <section class="release-notes" aria-labelledby="release-notes-heading">
+      <h2 id="release-notes-heading">Release notes</h2>
+      @for (release of releaseNotes; track release.version; let latest = $first) {
+        <details [open]="latest">
+          <summary><strong>{{ release.version }}</strong><span> · {{ release.title }}</span></summary>
+          <ul>
+            @for (change of release.changes; track change) {
+              <li>{{ change }}</li>
+            }
+          </ul>
+        </details>
+      }
+    </section>
+  </ng-container>
+</nz-modal>

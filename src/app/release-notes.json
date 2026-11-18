@@ -1,0 +1,17 @@
+[
+  {
+    "version": "0.1.0-beta.1",
+    "title": "First public beta",
+    "date": "2026-11-18",
+    "changes": [
+      "Use the responsive client workspace with documents, projects and equipment organized by site.",
+      "Manage cameras, desktops and servers, and export camera inventories by site.",
+      "Organize documents with category and site tags, retain previous versions and download file history.",
+      "Create maintenance checklists with individual equipment confirmation, comments and evidence photos.",
+      "Capture evidence from a mobile camera and view photos in the shared gallery.",
+      "Install Assets Control on your device and download projects with current documents for offline consultation.",
+      "Queue maintenance photos and hardware report photos from downloaded projects for upload when connectivity and a valid session are available.",
+      "Use the redesigned dashboard, user management and report pages."
+    ]
+  }
+]
